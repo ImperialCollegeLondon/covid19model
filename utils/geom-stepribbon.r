@@ -1,3 +1,4 @@
+#' We obtained permission from the authors to redistribute this code
 #' Step ribbon plots.
 #'
 #' \code{geom_stepribbon} is an extension of the \code{geom_ribbon}, and
