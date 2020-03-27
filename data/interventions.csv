@@ -1,0 +1,79 @@
+Country,schools_universities,travel_restrictions,public_events,sport,lockdown,social_distancing_encouraged,self_isolating_if_ill,,Data inputted by,"note: enter the date on which the closing occurred, e.g. as the last day of UK schools will be 2020-03-20, I entered 2020-03-21",comments,Enter your github username below,,,,,,,,,startdate
+Austria,2020-03-14,2020-03-13,2020-03-15,2020-03-15,2020-03-16,2020-03-16,2020-03-16,,Michaela,,,ettieunwin,,,,,,,,,2020-03-15
+Belgium,2020-03-14,2020-03-19,2020-03-14,2020-03-14,2020-03-18,2020-03-14,2020-03-10,,Tresnia,,Belgium closed border for non essential travel https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Belgium#cite_note-101,,,,,,,,,,2020-03-14
+Denmark,2020-03-13,2020-03-13,2020-03-12,2020-03-12,2020-03-13,2020-03-13,2020-03-12,,Michaela + Helen,,Denmark closed borders entirely on the 14th see https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Denmark#cite_note-90,hcoupland,,,,,,,,,2020-03-16
+France,2020-03-14,2020-03-17,2020-03-13,2020-02-13,2020-03-17,2020-03-14,2020-03-16,,Ettie,,,harrisonzhu508,,,,,,,,,2020-03-13
+Germany,2020-03-14,2020-03-16,2020-03-16,2020-03-13,2020-03-22,2020-03-12,2020-03-06,,Ettie,https://drive.google.com/file/d/1J2WMTz33nvyIH8jwKTR1RWRz0iWx1MOj/view?usp=sharing,,Tresnia,,,,,,,,,2020-03-15
+Italy,2020-03-09,2020-03-09,2020-03-09,2020-03-09,2020-03-11,2020-03-09,2020-03-09,,Harrison,,,,,,,,,,,,2020-03-14
+Norway,2020-03-13,2020-03-13,2020-03-12,2020-03-13,2020-03-24,2020-03-16,2020-03-12,,Seth + Helen,,,tmellan,,,,,,,,,2020-03-13
+Spain,2020-03-13,2020-03-12,2020-03-14,2020-03-13,2020-03-14,2020-03-12,2020-03-17,,Ettie + Pablo,,,MonkeyfaceMx,,,,,,,,,2020-03-18
+Sweden,2020-3-18,2020-03-19,2020-03-12,2020-03-12,2090-03-21,2020-03-16,2020-03-10,,Michaela + Isak,,,isakfalk,,,,,,,,,2020-03-14
+Switzerland,2020-03-14,2020-03-18,2020-03-13,2020-03-16,2091-03-20,2020-03-16,2020-03-02,,Harrison,,,sarahfilippi,,,,,,,,,2020-03-14
+United_Kingdom,2020-03-21,2020-03-24,2020-03-24,2020-03-13,2020-03-24,2020-03-16,2020-03-12,,Seth,,,flaxter,,,,,,,,,2020-03-16
+,,,,,,,,,,,,,,,,,,,,,2020-03-18
+Partial lockdowns,,,,,,,,,,,,,,,,,,,,,2020-03-30
+Country,Type of intervention,,Date,Effected population,,,,,,,,,,,,,,,,,2020-03-12
+Italy,Lockdown of Lombardy region and 14 other provinces,,2020-03-08,26%,,,,,,,,,,,,,,,,,2020-03-13
+Italy,self-isolate if ill and quarantine if tested positive,,2020-03-08,extended to whole country on 9/03,,,,,,,,,,,,,,,,,2020-03-13
+Italy,Extended lockdown (non-essential shops + restaurants + caffee still open),,2020-03-09,,,,,,,,,,,,,,,,,,2020-03-12
+Italy,Extended lockdown + closure of non-essential shops,,2020-03-11,,,,,,,,,,,,,,,,,,2020-03-14
+Italy,Extended lockdown + further closure of non-essential businesses and activities,,2020-03-22,,,,,,,,,,,,,,,,,,2020-03-16
+Spain,"Bans events > 1000 people in Basque Country and La Rioja, Madrid",,2020-03-10,,,,,,,,,,,,,,,,,,17/03/2020
+Spain,"La Rioja, Haro was put on lockdown",,2020-03-07,,,1225802,,,,,,,,,,,,,,,2020-03-14
+Spain,Schools closed in Basque region and Madrid,,2020-03-09,,,,,,,,,,,,,,,,,,2020-03-14
+Denmark,Bans events >100 people,,2020-03-12,,,,,,,,,,,,,,,,,,2020-03-17
+Denmark,Bans events >10 people,,2020-03-18,,,,,,,,,,,,,,,,,,2020-03-23
+Belgium,"Police giving fines (from 200 euros to euros 500 and arresting ppl who are out for no reason, but no self authorisation forms as in france or italy",,,https://www.forbes.com/sites/davidnikel/2020/03/14/norway-closes-all-airports-to-foreigners-as-coronavirus-cases-mount/#35214fc41913,,,,,,,,,,,,,,,,,2020-03-16
+Germany,Lockdown in Bavaria,,2020-03-20,,,,,,,,,,,,,,,,,,2020-03-14
+Germany,Non-essential shops closed,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-12
+Spain,"Non-essential shops closed + ""partial lockdown""",,2020-03-15,,,,,,,,,,,,,,,,,,2020-03-16
+Germany,reduce social interaction recommendations by Merkel,,2020-03-12,,,,,,,,,,,,,,,,,,2020-03-11
+Switzerland,self-isolate if ill,,2020-03-11,,,,,,,,,,,,,,,,,,2020-03-09
+Austria,1m distance by law,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-04
+Germany,Robert Koch Inst recommends self isolation,,2020-03-05,,,,,,,,,,,,,,,,,,2020-03-09
+Austria,stay home if symptoms and coming form region,,,,,,,,,,,,,,,,,,,,2020-03-09
+Germany,Gatherings of > 2 people banned,,2020-03-22,"for the whole country, 22% are not allowed without good reason",,,,,,,,,,,,,,,,,2020-03-13
+France,Closure of schools and universities,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-12
+France,Closure of non-essential shops,,2020-03-15,,,,,,,,,,,,,,,,,,2020-03-13
+France,Lockdown: everybody should stay at home. Exceptions: going to work if not possible to work from home; food shopping; medical appointment; some caring duties; physical exercise alone around home) -- Need a self-authorisation form to leave home.,,2020-03-17,,,,,,,,,,,,,,,,,,2020-03-12
+France,Bans events >5000 people,,2020-02-29,,,,,,,,,,,,,,,,,,2020-03-14
+France,Bans events >1000 people,,2020-03-08,,,,,,,,,,,,,,,,,,2020-03-15
+France,Bans events >100 people,,2020-03-13,,,,,,,,,,,,,,,,,,2020-03-12
+Belgium,Bans gathering >2 persons (except family),,2020-03-18,,,,,,,,,,,,,,,,,,2020-03-13
+Belgium,School closed,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-12
+Belgium,"Non essential shops closed (exceptions: food shops, pharmacies, bookstores, gaz stations, hairdressers)",,2020-03-18,,,,,,,,,,,,,,,,,,2020-03-12
+,,,,,,,,,,,,,,,,,,,,,21/03/2090
+Switzerland,Kissing and shaking hands advised against,,2020-03-01,,,,,,,,,,,,,,,,,,12/03/2020
+Country,Population 0-9,,Population 10-19,Population 30-39,Population 40-49,Population 50-59,Population 60-69,,Population 70-79,Population 80+,Total (Thousands),,,,,,,,,,18/03/2020
+UK,8.044.056,,7.642.473,9.295.024,8.604.251,9.173.465,7.286.777,,5.830.635,3.450.616,59.327.297,,,,,,,,,,2020-03-16
+Austria,874.182,,876.208,1.243.416,1.178.265,1.407,1033.32,,790.437,488.195,7.891.023,,,,,,,,,,19/03/2020
+Denmark,606.029,,675.948,672.29,738.207,810.126,654.53,,586.138,272.973,5.016.241,,,,,,,,,,20/03/2091
+France,7.527.474,,7.883.477,8011.05,8.325.667,8.635.057,7.764.786,,5.727.704,4.027.268,57.902.483,,,,,,,,,,16/03/2020
+Germany,7.880.904,,7.930.616,10872.02,10.243.351,13.488.393,10.644.142,,7.471.414,5.875.744,74.406.584,,,,,,,,,,13/03/2020
+Norway,614.323,,643.031,738.724,724.93,712.508,586.156,,446.448,228.739,4.694.859,,,,,,,,,,09/03/2020
+Spain,4.234.487,,4.736.077,5.901.993,7.938.499,7.046.327,5.340.654,,4.015.306,2.923.841,42.137.184,,,,,,,,,,18/03/2020
+Sweden,1.193.951,,1.127.127,1.320.299,1.264.123,1.296.647,1.093.868,,994.244,532.081,8822.34,,,,,,,,,,23/03/2020
+Switzerland,884.945,,834.867,1.219.224,1.166.588,1.320.622,977.435,,751.993,459.215,7.614.889,,,,,,,,,,21/03/2020
+Italy,4.994.995,,5.733.448,6.998.434,9.022.004,9.567.192,7.484.862,,6.028.908,4.528.549,54.358.392,,,,,,,,,,21/03/2020
+,,,,,,,,,,,,,,,,,,,,,16/03/2020
+,,,,,,,,,,,,,,,,,,,,,23/03/2020
+,,,,,,,,,,,,,,,,,,,,,
+NRW,17933,,,,,,,,,,,,,,,,,,,,
+Bayern,13077,,,,,,,,,,,,,,,,,,,,
+BW,11070,,,,,,,,,,,,,,,,,,,,
+Niedersachsen,7982,,,,,,,,,,,,,,,,,,,,
+Hessen,6266,,,,,,,,,,,,,,,,,,,,
+RP,4085,,,,,,,,,,,,,,,,,,,,
+Sachsen,4078,,,,,,,,,,,,,,,,,,,,
+Berlin,3645,,,,,,,,,,,,,,,,,,,,
+SH,2897,,,,,,,,,,,,,,,,,,,,
+Brandenburg,2512,,,,,,,,,,,,,,,,,,,,
+Sachsen A,2208,,,,,,,,,,,,,,,,,,,,
+Thueringen,2143,,,,,,,,,,,,,,,,,,,,
+Hamburg,1841,,,,,,,,,,,,,,,,,,,,
+MeckPom,1610,,,,,,,,,,,,,,,,,,,,
+Saarland,991,,,,,,,,,,,,,,,,,,,,
+Bremen 683,683,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,
+,83021,,,,,,,,,,,,,,,,,,,,
+,"0,2185712049",,,,,,,,,,,,,,,,,,,,
