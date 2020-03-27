@@ -231,6 +231,6 @@ colnames(mu) = countries
 g = (mcmc_intervals(mu,prob = .9))
 ggsave(sprintf("figures/%s-%s-covars-mu.png",StanModel,JOBID),g,width=4,height=6)
 
-system(paste0("Rscript plotting_3_pannel_fn.R ",StanModel,'-',JOBID,'-stanfit.Rdata'))
-system(paste0("Rscript forecast_fn.R ",StanModel,'-',JOBID,'.Rdata'))
+system(paste0("Rscript plot-3-pannel.R ",StanModel,'-',JOBID,'-stanfit.Rdata'))
+system(paste0("Rscript plot-forecast.R ",StanModel,'-',JOBID,'.Rdata'))
 
