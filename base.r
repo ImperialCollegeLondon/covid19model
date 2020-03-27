@@ -211,12 +211,17 @@ print(sprintf("Jobid = %s",JOBID))
 
 save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 
-save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimtaed.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
+save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
 #x = 1:(length(y)+forecast)
 library(bayesplot)
+alpha_labels <- c("School Closure",
+                 "Self Isolation",
+                 "Public Events",
+                 "First Intervention",
+                 "Lockdown", 'Social distancing')
 alpha = (as.matrix(out$alpha))
-colnames(alpha) = plot_labels
+colnames(alpha) = alpha_labels
 g = (mcmc_intervals(alpha, prob = .9)) 
 ggsave(sprintf("figures/%s-%s-covars-alpha-log.png",StanModel,JOBID),g,width=4,height=6)
 g = (mcmc_intervals(as.matrix(alpha),prob = .9,transformations = function(x) exp(-x))) 

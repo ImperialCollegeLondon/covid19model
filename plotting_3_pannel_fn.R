@@ -175,7 +175,7 @@ p2 <-   ggplot(data_country, aes(x = time)) +
     ) +
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b")) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-        legend.position = "None") + 
+        legend.position = "None") 
 
   plot_labels <- c("Complete lockdown", 
                    "Public events banned",

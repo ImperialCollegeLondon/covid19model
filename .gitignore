@@ -37,3 +37,12 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+## no stan rds files being dumped
+stan-models/*.rds
+results/*.Rdata
+results/*.pdf
+results/*.png
+figures/*.png
+figures/*.pdf
+Rplots.pdf
