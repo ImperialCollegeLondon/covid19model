@@ -27,7 +27,7 @@ StanModel = args[1]
 print(sprintf("Running %s",StanModel))
 
 ## Reading all data
-d=readRDS('data/COVID-19-up-to-date.rds') # get new data with script inside data folder
+d=readRDS('data/COVID-19-up-to-date.rds')
 
 ## get CFR
 cfr.by.country = read.csv("data/weighted_fatality.csv")
@@ -38,7 +38,7 @@ serial.interval = read.csv("data/serial_interval.csv")
 covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
 covariates <- covariates[1:11, c(1,2,3,4,5,6, 7, 8)]
 
-## making sure if intervention after lockdown then date is same as of the lockdown date
+## making all covariates that happen after lockdown to have same date as lockdown
 covariates$schools_universities[covariates$schools_universities > covariates$lockdown] <- covariates$lockdown[covariates$schools_universities > covariates$lockdown]
 covariates$travel_restrictions[covariates$travel_restrictions > covariates$lockdown] <- covariates$lockdown[covariates$travel_restrictions > covariates$lockdown] 
 covariates$public_events[covariates$public_events > covariates$lockdown] <- covariates$lockdown[covariates$public_events > covariates$lockdown]
@@ -51,19 +51,22 @@ forecast = 0
 
 DEBUG = FALSE
 if(DEBUG == FALSE) {
-  N2 = 75 
+  N2 = 75 # Increase this for a further forecast
 }  else  {
   ### For faster runs:
-  countries = c("Austria","Belgium") #,Spain")
-  N2 = 60
+  # countries = c("Austria","Belgium") #,Spain")
+  N2 = 75
 }
+# countries = c("Italy","United_Kingdom","Spain","Norway","Austria","Switzerland")
 
 dates = list()
 reported_cases = list()
 stan_data = list(M=length(countries),N=NULL,p=p,x1=poly(1:N2,2)[,1],x2=poly(1:N2,2)[,2],
                  y=NULL,covariate1=NULL,covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,covariate6=NULL,covariate7=NULL,deaths=NULL,f=NULL,
-                 N0=6,cases=NULL,LENGTHSCALE=7,SI=serial.interval$fit[1:N2]) # N0 = 6 to make it consistent with Rayleigh
+                 N0=6,cases=NULL,LENGTHSCALE=7,SI=serial.interval$fit[1:N2],
+                 EpidemicStart = NULL) # N0 = 6 to make it consistent with Rayleigh
 deaths_by_country = list()
+
 
 for(Country in countries) {
   CFR=cfr.by.country$weighted_fatality[cfr.by.country$country == Country]
@@ -71,17 +74,21 @@ for(Country in countries) {
   covariates1 <- covariates[covariates$Country == Country, 2:8]
   
   d1=d[d$Countries.and.territories==Country,]
-  d1$date = as.Date(d1$DateRep,format='%Y-%m-%d')
+  d1$date = as.Date(d1$DateRep,format='%d/%m/%Y')
   d1$t = decimal_date(d1$date) 
   d1=d1[order(d1$t),]
   index = which(d1$Cases>0)[1]
-  index2 = which(cumsum(d1$Deaths)>=5)[1]-30
+  index1 = which(cumsum(d1$Deaths)>=10)[1] # also 5
+  index2 = index1-30
+  
   print(sprintf("First non-zero cases is on day %d, and 30 days before 5 days is day %d",index,index2))
   d1=d1[index2:nrow(d1),]
+  stan_data$EpidemicStart = c(stan_data$EpidemicStart,index1+1-index2)
+  
   
   for (ii in 1:ncol(covariates1)) {
     covariate = names(covariates1)[ii]
-    d1[covariate] <- (as.Date(d1$DateRep) >= as.Date(covariates1[1,covariate]))*1  # should this be > or >=?
+    d1[covariate] <- (as.Date(d1$DateRep, format='%d/%m/%Y') >= as.Date(covariates1[1,covariate]))*1  # should this be > or >=?
   }
   
   dates[[Country]] = d1$date
@@ -196,7 +203,8 @@ m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
 } else { 
-  fit = sampling(m,data=stan_data,iter=4000,warmup=1000,chains=4,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
+  # fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=8,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
+  fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
 }  
 
 out = rstan::extract(fit)
@@ -213,24 +221,28 @@ save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 
 save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
-#x = 1:(length(y)+forecast)
+# to visualize results
 library(bayesplot)
-alpha_labels <- c("School Closure",
+filename <- paste0('base-',JOBID)
+plot_labels <- c("School Closure",
                  "Self Isolation",
                  "Public Events",
                  "First Intervention",
                  "Lockdown", 'Social distancing')
 alpha = (as.matrix(out$alpha))
-colnames(alpha) = alpha_labels
-g = (mcmc_intervals(alpha, prob = .9)) 
-ggsave(sprintf("figures/%s-%s-covars-alpha-log.png",StanModel,JOBID),g,width=4,height=6)
-g = (mcmc_intervals(as.matrix(alpha),prob = .9,transformations = function(x) exp(-x))) 
-ggsave(sprintf("figures/%s-%s-covars-alpha.png",StanModel,JOBID),g,width=4,height=6)
+colnames(alpha) = plot_labels
+g = (mcmc_intervals(alpha, prob = .9))
+ggsave(sprintf("results/%s-covars-alpha-log.pdf",filename),g,width=4,height=6)
+g = (mcmc_intervals(alpha, prob = .9,transformations = function(x) exp(-x)))
+ggsave(sprintf("results/%s-covars-alpha.pdf",filename),g,width=4,height=6)
 mu = (as.matrix(out$mu))
 colnames(mu) = countries
 g = (mcmc_intervals(mu,prob = .9))
-ggsave(sprintf("figures/%s-%s-covars-mu.png",StanModel,JOBID),g,width=4,height=6)
-
-system(paste0("Rscript plot-3-panel.r ",StanModel,'-',JOBID,'-stanfit.Rdata'))
-system(paste0("Rscript plot-forecast.r ",StanModel,'-',JOBID,'.Rdata'))
-
+ggsave(sprintf("results/%s-covars-mu.pdf",filename),g,width=4,height=6)
+dimensions <- dim(out$Rt)
+Rt = (as.matrix(out$Rt[,dimensions[2],]))
+colnames(Rt) = countries
+g = (mcmc_intervals(Rt,prob = .9))
+ggsave(sprintf("results/%s-covars-final-rt.pdf",filename),g,width=4,height=6)
+system(paste0("Rscript plot-3-panel.r ", filename,'.Rdata'))
+system(paste0("Rscript plot-forecast.r ",filename,'.Rdata')) ## to run this code you will need to adjust manual values of forecast required

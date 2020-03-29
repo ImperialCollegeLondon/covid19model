@@ -13,6 +13,7 @@ library(ggpubr)
 library(bayesplot)
 library(cowplot)
 
+source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
 make_forecast_plot <- function(){
   
@@ -26,7 +27,7 @@ make_forecast_plot <- function(){
   
   for(i in 1:11){
     N <- length(dates[[i]])
-    N2 <- N + 14
+    N2 <- N + 7
     country <- countries[[i]]
     
     predicted_cases <- colMeans(prediction[,1:N,i])
@@ -69,12 +70,12 @@ make_forecast_plot <- function(){
                                "rt_max" = rt_ui)
     
     times <- as_date(as.character(dates[[i]]))
-    times_forecast <- times[length(times)] + 0:14
+    times_forecast <- times[length(times)] + 0:7
     data_country_forecast <- data.frame("time" = times_forecast,
-                                       "country" = rep(country, 15),
-                                       "estimated_deaths_forecast" = estimated_deaths_forecast,
-                                       "death_min_forecast" = estimated_deaths_li_forecast,
-                                       "death_max_forecast"= estimated_deaths_ui_forecast)
+                                        "country" = rep(country, 8),
+                                        "estimated_deaths_forecast" = estimated_deaths_forecast,
+                                        "death_min_forecast" = estimated_deaths_li_forecast,
+                                        "death_max_forecast"= estimated_deaths_ui_forecast)
     
     make_single_plot(data_country = data_country, 
                      data_country_forecast = data_country_forecast,
@@ -115,12 +116,12 @@ make_single_plot <- function(data_country, data_country_forecast, filename, coun
                 aes(x = time, 
                     ymin = death_min_forecast, 
                     ymax = death_max_forecast),
-                    fill = "black", alpha=0.35) +
+                fill = "black", alpha=0.35) +
     geom_vline(xintercept = data_deaths$time[length(data_deaths$time)], 
                col = "black", linetype = "dashed", alpha = 0.5) + 
     #scale_fill_manual(name = "", 
-     #                 labels = c("Confirmed deaths", "Predicted deaths"),
-     #                 values = c("coral4", "deepskyblue4")) + 
+    #                 labels = c("Confirmed deaths", "Predicted deaths"),
+    #                 values = c("coral4", "deepskyblue4")) + 
     xlab("Date") +
     ylab("Daily number of deaths\n") + 
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b")) + 
@@ -134,10 +135,9 @@ make_single_plot <- function(data_country, data_country_forecast, filename, coun
              color="black")
   print(p)
   
-  ggsave(file= paste0("figures/", country, "_forecast_", filename, ".png"), 
-            p, width = 10)
+  ggsave(file= paste0("figures/", country, "_forecast_", filename, ".pdf"), 
+         p, width = 10)
 }
 #-----------------------------------------------------------------------------------------------
-#filename <- "base-forecast-1236664.pbs.Rdata"
 make_forecast_plot()
 

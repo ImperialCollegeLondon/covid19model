@@ -1,14 +1,14 @@
 Country,schools_universities,travel_restrictions,public_events,sport,lockdown,social_distancing_encouraged,self_isolating_if_ill,,Data inputted by,"note: enter the date on which the closing occurred, e.g. as the last day of UK schools will be 2020-03-20, I entered 2020-03-21",comments,Enter your github username below,,,,,,,,,startdate
-Austria,2020-03-14,2020-03-13,2020-03-15,2020-03-15,2020-03-16,2020-03-16,2020-03-16,,Michaela,,,ettieunwin,,,,,,,,,2020-03-15
-Belgium,2020-03-14,2020-03-19,2020-03-14,2020-03-14,2020-03-18,2020-03-14,2020-03-10,,Tresnia,,Belgium closed border for non essential travel https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Belgium#cite_note-101,,,,,,,,,,2020-03-14
-Denmark,2020-03-13,2020-03-13,2020-03-12,2020-03-12,2020-03-13,2020-03-13,2020-03-12,,Michaela + Helen,,Denmark closed borders entirely on the 14th see https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Denmark#cite_note-90,hcoupland,,,,,,,,,2020-03-16
-France,2020-03-14,2020-03-17,2020-03-13,2020-02-13,2020-03-17,2020-03-14,2020-03-16,,Ettie,,,harrisonzhu508,,,,,,,,,2020-03-13
-Germany,2020-03-14,2020-03-16,2020-03-16,2020-03-13,2020-03-22,2020-03-12,2020-03-06,,Ettie,https://drive.google.com/file/d/1J2WMTz33nvyIH8jwKTR1RWRz0iWx1MOj/view?usp=sharing,,Tresnia,,,,,,,,,2020-03-15
-Italy,2020-03-09,2020-03-09,2020-03-09,2020-03-09,2020-03-11,2020-03-09,2020-03-09,,Harrison,,,,,,,,,,,,2020-03-14
-Norway,2020-03-13,2020-03-13,2020-03-12,2020-03-13,2020-03-24,2020-03-16,2020-03-12,,Seth + Helen,,,tmellan,,,,,,,,,2020-03-13
-Spain,2020-03-13,2020-03-12,2020-03-14,2020-03-13,2020-03-14,2020-03-12,2020-03-17,,Ettie + Pablo,,,MonkeyfaceMx,,,,,,,,,2020-03-18
+Austria,2020-03-14,2020-03-13,2020-03-10,2020-03-15,2020-03-16,2020-03-16,2020-03-16,,Michaela,,,ettieunwin,,,,,,,,,2020-03-15
+Belgium,2020-03-14,2020-03-19,2020-03-12,2020-03-14,2020-03-18,2020-03-14,2020-03-10,,Tresnia,,Belgium closed border for non essential travel https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Belgium#cite_note-101,,,,,,,,,,2020-03-14
+Denmark,2020-03-13,2020-03-13,2020-03-12,2020-03-12,2020-03-18,2020-03-13,2020-03-12,,Michaela + Helen,,Denmark closed borders entirely on the 14th see https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Denmark#cite_note-90,hcoupland,,,,,,,,,2020-03-16
+France,2020-03-14,2020-03-17,2020-03-13,2020-02-13,2020-03-17,2020-03-16,2020-03-16,,Ettie,,,harrisonzhu508,,,,,,,,,2020-03-13
+Germany,2020-03-14,2020-03-16,2020-03-22,2020-03-13,2020-03-22,2020-03-12,2020-03-06,,Ettie,https://drive.google.com/file/d/1J2WMTz33nvyIH8jwKTR1RWRz0iWx1MOj/view?usp=sharing,,Tresnia,,,,,,,,,2020-03-15
+Italy,2020-03-05,2020-03-09,2020-03-09,2020-03-09,2020-03-11,2020-03-09,2020-03-09,,Harrison,,,,,,,,,,,,2020-03-14
+Norway,2020-03-13,2020-03-13,2020-03-12,2020-03-13,2020-03-24,2020-03-16,2020-03-15,,Seth + Helen,,,tmellan,,,,,,,,,2020-03-13
+Spain,2020-03-13,2020-03-12,2020-03-14,2020-03-13,2020-03-14,2020-03-09,2020-03-17,,Ettie + Pablo,,,MonkeyfaceMx,,,,,,,,,2020-03-18
 Sweden,2020-3-18,2020-03-19,2020-03-12,2020-03-12,2090-03-21,2020-03-16,2020-03-10,,Michaela + Isak,,,isakfalk,,,,,,,,,2020-03-14
-Switzerland,2020-03-14,2020-03-18,2020-03-13,2020-03-16,2091-03-20,2020-03-16,2020-03-02,,Harrison,,,sarahfilippi,,,,,,,,,2020-03-14
+Switzerland,2020-03-14,2020-03-18,2020-03-13,2020-03-16,2020-03-20,2020-03-16,2020-03-02,,Harrison,,,sarahfilippi,,,,,,,,,2020-03-14
 United_Kingdom,2020-03-21,2020-03-24,2020-03-24,2020-03-13,2020-03-24,2020-03-16,2020-03-12,,Seth,,,flaxter,,,,,,,,,2020-03-16
 ,,,,,,,,,,,,,,,,,,,,,2020-03-18
 Partial lockdowns,,,,,,,,,,,,,,,,,,,,,2020-03-30

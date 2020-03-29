@@ -117,11 +117,11 @@ make_plots <- function(data_country, covariates_country_long,
                        filename2, country){
   
   data_cases_95 <- data.frame(data_country$time, data_country$predicted_min, 
-                               data_country$predicted_max)
+                              data_country$predicted_max)
   names(data_cases_95) <- c("time", "cases_min", "cases_max")
   data_cases_95$key <- rep("nintyfive", length(data_cases_95$time))
   data_cases_50 <- data.frame(data_country$time, data_country$predicted_min2, 
-                               data_country$predicted_max2)
+                              data_country$predicted_max2)
   names(data_cases_50) <- c("time", "cases_min", "cases_max")
   data_cases_50$key <- rep("fifty", length(data_cases_50$time))
   data_cases <- rbind(data_cases_95, data_cases_50)
@@ -130,8 +130,6 @@ make_plots <- function(data_country, covariates_country_long,
   p1 <- ggplot(data_country) +
     geom_bar(data = data_country, aes(x = time, y = reported_cases), 
              fill = "coral4", stat='identity', alpha=0.5) + 
-    #geom_line(data = data_country, aes(x = time, y = predicted_cases), 
-    #          col = "deepskyblue4", stat='identity', alpha=0.5) + 
     geom_ribbon(data = data_cases, 
                 aes(x = time, ymin = cases_min, ymax = cases_max, fill = key)) +
     xlab("") +
@@ -144,7 +142,7 @@ make_plots <- function(data_country, covariates_country_long,
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "None") + 
     guides(fill=guide_legend(ncol=1))
-
+  
   data_deaths_95 <- data.frame(data_country$time, data_country$death_min, 
                                data_country$death_max)
   names(data_deaths_95) <- c("time", "death_min", "death_max")
@@ -156,27 +154,23 @@ make_plots <- function(data_country, covariates_country_long,
   data_deaths <- rbind(data_deaths_95, data_deaths_50)
   levels(data_deaths$key) <- c("ninetyfive", "fifty")
   
-  data_cases_95 <- data.frame(data_country$time, data_country$predicted_min,
-                              data_country$predicted_max)
-  names(data_cases_95) <- c("time", "cases_min", "cases_max")
-  data_cases_95$key <- rep("95%", length(data_cases_95$time))
-  data_cases_50 <- data.frame(data_country$time, data_country$predicted_min2,
-                              data_country$predicted_max2)
-  names(data_cases_50) <- c("time", "cases_min", "cases_max")
-  data_cases_50$key <- rep("50%", length(data_cases_50$time))
-  data_cases <- rbind(data_cases_95, data_cases_50)
-  levels(data_cases$key) <- c("95%", "50%")
   
-p2 <-   ggplot(data_country, aes(x = time)) +
-    geom_col(data = data_country, aes(y = reported_cases, fill = "reported")) +
+  p2 <-   ggplot(data_country, aes(x = time)) +
+    geom_bar(data = data_country, aes(y = deaths, fill = "reported"),
+             fill = "coral4", stat='identity', alpha=0.5) +
     geom_ribbon(
-      data = data_cases,
-      aes(ymin = cases_min, ymax = cases_max, fill = key)
-    ) +
+      data = data_deaths,
+      aes(ymin = death_min, ymax = death_max, fill = key)) +
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b")) +
+    scale_fill_manual(name = "", labels = c("50%", "95%"),
+                      values = c(alpha("deepskyblue4", 0.55), 
+                                 alpha("deepskyblue4", 0.45))) + 
+    theme_pubr() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-        legend.position = "None") 
-
+          legend.position = "None") + 
+    guides(fill=guide_legend(ncol=1))
+  
+  
   plot_labels <- c("Complete lockdown", 
                    "Public events banned",
                    "School closure",
@@ -194,7 +188,7 @@ p2 <-   ggplot(data_country, aes(x = time)) +
   data_rt_50$key <- rep("fifty", length(data_rt_50$time))
   data_rt <- rbind(data_rt_95, data_rt_50)
   levels(data_rt$key) <- c("ninetyfive", "fifth")
-
+  
   p3 <- ggplot(data_country) +
     geom_stepribbon(data = data_rt, aes(x = time, ymin = rt_min, ymax = rt_max, 
                                         group = key,
@@ -211,24 +205,24 @@ p2 <-   ggplot(data_country, aes(x = time)) +
     xlab("") +
     ylab(expression(R[t])) +
     scale_fill_manual(name = "", labels = c("50%", "95%"),
-                       values = c(alpha("seagreen", 0.75), alpha("seagreen", 0.5))) + 
+                      values = c(alpha("seagreen", 0.75), alpha("seagreen", 0.5))) + 
     scale_shape_manual(name = "Interventions", labels = plot_labels,
                        values = c(21, 22, 23, 24, 25, 12)) + 
     scale_colour_discrete(name = "Interventions", labels = plot_labels) + 
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b"), 
-                     limits = c(data_country$time[1], 
-                                data_country$time[length(data_country$time)])) + 
+                 limits = c(data_country$time[1], 
+                            data_country$time[length(data_country$time)])) + 
     theme_pubr() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="right")
   
   p <- plot_grid(p1, p2, p3, ncol = 3, rel_widths = c(1, 1, 2))
-  save_plot(filename = paste0("figures/", country, "_three_pannel_", filename2, ".png"), 
+  save_plot(filename = paste0("figures/", country, "_three_pannel_", filename2, ".pdf"), 
             p, base_width = 14)
 }
 
 #-----------------------------------------------------------------------------------------------
-# filename <- "base-joint-1236305.pbs.Rdata"
+#filename <- "base-joint-1236305.pbs.Rdata"
 # make_three_pannel_plot(filename)
 
 make_three_pannel_plot()
