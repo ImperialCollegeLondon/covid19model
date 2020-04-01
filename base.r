@@ -29,10 +29,10 @@ print(sprintf("Running %s",StanModel))
 ## Reading all data
 d=readRDS('data/COVID-19-up-to-date.rds')
 
-## get CFR
-cfr.by.country = read.csv("data/weighted_fatality.csv")
-cfr.by.country$country = as.character(cfr.by.country[,2])
-cfr.by.country$country[cfr.by.country$country == "United Kingdom"] = "United_Kingdom"
+## get IFR
+ifr.by.country = read.csv("data/weighted_fatality.csv")
+ifr.by.country$country = as.character(ifr.by.country[,2])
+ifr.by.country$country[ifr.by.country$country == "United Kingdom"] = "United_Kingdom"
 
 serial.interval = read.csv("data/serial_interval.csv")
 covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
@@ -69,7 +69,7 @@ deaths_by_country = list()
 
 
 for(Country in countries) {
-  CFR=cfr.by.country$weighted_fatality[cfr.by.country$country == Country]
+  IFR=ifr.by.country$weighted_fatality[ifr.by.country$country == Country]
   
   covariates1 <- covariates[covariates$Country == Country, 2:8]
   
@@ -109,15 +109,15 @@ for(Country in countries) {
     cv = 0.45
     
     for(i in 1:length(h))
-      h[i] = (CFR*pgammaAlt(i,mean = mean,cv=cv) - CFR*pgammaAlt(i-1,mean = mean,cv=cv)) / (1-CFR*pgammaAlt(i-1,mean = mean,cv=cv))
+      h[i] = (IFR*pgammaAlt(i,mean = mean,cv=cv) - IFR*pgammaAlt(i-1,mean = mean,cv=cv)) / (1-IFR*pgammaAlt(i-1,mean = mean,cv=cv))
   } else { # NEW
     mean1 = 5.1; cv1 = 0.86; # infection to onset
     mean2 = 18.8; cv2 = 0.45 # onset to death
-    ## assume that CFR is probability of dying given infection
+    ## assume that IFR is probability of dying given infection
     x1 = rgammaAlt(5e6,mean1,cv1) # infection-to-onset ----> do all people who are infected get to onset?
     x2 = rgammaAlt(5e6,mean2,cv2) # onset-to-death
     f = ecdf(x1+x2)
-    convolution = function(u) (CFR * f(u))
+    convolution = function(u) (IFR * f(u))
     
     h[1] = (convolution(1.5) - convolution(0)) 
     for(i in 2:length(h)) {
