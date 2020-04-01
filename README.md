@@ -17,6 +17,26 @@ short period. To be comparable with report please uncomment the line 206 and
 comment out line 207. This will run sampling for 4000 iterations with 2000
 warmups and 4 chains.
 
+## Model dependencies
+
+The following R packages are required to run the model and plot the results:
+
+* bayesplot
+* cowplot
+* data.table
+* dplyr
+* EnvStats
+* gdata
+* ggplot2
+* ggpubr
+* gridExtra
+* lubridate
+* matrixStats
+* readxl
+* rstan
+* scales
+* tidyr
+
 ## Running the code with Docker
 
 You can get up and running with the model quickly using [Docker][]. [See
