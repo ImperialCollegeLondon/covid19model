@@ -25,12 +25,13 @@ parameters {
   real<lower=0> mu[M]; // intercept for Rt
   real<lower=0> alpha[6]; // the hier term
   real<lower=0> kappa;
-  real<lower=0> y[M];
+  vector<lower=0>[M] y_raw;
   real<lower=0> phi;
   real<lower=0> tau;
 }
 
 transformed parameters {
+    vector<lower = 0>[M] y = tau * y_raw;
     real convolution;
     matrix[N2, M] prediction = rep_matrix(0,N2,M);
     matrix[N2, M] E_deaths  = rep_matrix(0,N2,M);
@@ -65,9 +66,7 @@ transformed parameters {
 }
 model {
   tau ~ exponential(0.03);
-  for (m in 1:M){
-      y[m] ~ exponential(1.0/tau);
-  }
+  target += -sum(y_raw); // exponential(1) prior on y_raw implies y ~ exponential(1 / tau)
   phi ~ normal(0,5);
   kappa ~ normal(0,0.5);
   mu ~ normal(2.4, kappa); // citation needed 
