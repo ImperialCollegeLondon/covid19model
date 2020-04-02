@@ -72,10 +72,8 @@ model {
   mu ~ normal(2.4, kappa); // citation needed 
   alpha ~ gamma(.5,1);
   for(m in 1:M){
-    for(i in EpidemicStart[m]:N[m]){
-       deaths[i,m] ~ neg_binomial_2(E_deaths[i,m],phi); 
-    }
-   }
+    deaths[EpidemicStart[m]:N[m], m] ~ neg_binomial_2(E_deaths[EpidemicStart[m]:N[m], m], phi);
+  }
 }
 
 generated quantities {
