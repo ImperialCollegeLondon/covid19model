@@ -27,7 +27,8 @@ that in the current directory and includes any changes made. The use of `$(id
 -u)` and `$(id -g)` ensure that all model output files will be owned by the
 current user instead of root.
 
-For Windows, from the root directory of the project run the command:
+If using Powershell on Windows, from the root directory of the project run the
+command:
 ```
 docker run --rm -it -v ${pwd}:/var/model covid19model:latest 0 0
 ```
