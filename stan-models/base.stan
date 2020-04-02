@@ -32,7 +32,6 @@ parameters {
 
 transformed parameters {
     vector<lower = 0>[M] y = tau * y_raw;
-    real convolution;
     matrix[N2, M] prediction = rep_matrix(0,N2,M);
     matrix[N2, M] E_deaths  = rep_matrix(0,N2,M);
     matrix[N2, M] Rt = rep_matrix(0,N2,M);
@@ -42,7 +41,7 @@ transformed parameters {
         covariate3[,m] * (-alpha[3])+ covariate4[,m] * (-alpha[4]) + covariate5[,m] * (-alpha[5]) + 
         covariate6[,m] * (-alpha[6])); // + GP[i]); // to_vector(x) * time_effect
       for (i in (N0+1):N2) {
-        convolution=0;
+        real convolution=0;
         for(j in 1:(i-1)) {
           convolution += prediction[j, m]*SI[i-j]; // Correctd 22nd March
         }
@@ -79,13 +78,12 @@ model {
 generated quantities {
     matrix[N2, M] lp0 = rep_matrix(1000,N2,M); // log-probability for LOO for the counterfactual model
     matrix[N2, M] lp1 = rep_matrix(1000,N2,M); // log-probability for LOO for the main model
-    real convolution0;
     matrix[N2, M] prediction0 = rep_matrix(0,N2,M);
     matrix[N2, M] E_deaths0  = rep_matrix(0,N2,M);
     for (m in 1:M){
       prediction0[1:N0,m] = rep_vector(y[m],N0); // learn the number of cases in the first N0 days
       for (i in (N0+1):N2) {
-        convolution0=0;
+        real convolution0=0;
         for(j in 1:(i-1)) {
           convolution0 += prediction0[j, m]*SI[i-j]; // Correctd 22nd March
         }
