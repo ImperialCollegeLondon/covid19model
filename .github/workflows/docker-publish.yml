@@ -29,4 +29,4 @@ jobs:
 
     - name: Perform a short debug simulation run
       run: |
-        docker run --rm -it -v $(pwd):/var/model --env DEBUG=TRUE covid19model $(id -u) $(id -g)
+        docker run --rm -v $(pwd):/var/model --env DEBUG=TRUE covid19model $(id -u) $(id -g)
