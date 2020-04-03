@@ -1,15 +1,38 @@
 import yaml
 import pandas as pd
 import numpy as np
-from Python.util import *
-from scipy.stats import gamma
-from numpy.random import gamma
+from Python.util import poly, dt_to_dec
+from scipy.stats import gamma_scipy
+from numpy.random import gamma_np
 from statsmodels.distributions.empirical_distribution import ECDF
 
 
 class HierarchicalDataset:
     """Base Dataset class containing attributes relating to the datasets used for the modelling and methods
     for data wrangling
+
+        Args:
+            - config_dir
+            - cases_dir
+            - ifr_dir
+            - serial_interval_dir
+            - interventions_dir
+            - num_countries
+            - num_covariates
+            - N2: number of days including forecast
+            - DEBUG: flag for debugging setting
+
+
+        Attributes:
+            - countries
+            - cases
+            - serial_interval
+            - num_countries
+            - num_covariates
+            - DEBUG
+            - ifr
+            - covariate_names
+            - covariates
     """
 
     def __init__(
@@ -24,15 +47,6 @@ class HierarchicalDataset:
         N2=75,
         DEBUG=False,
     ):
-        """
-
-        Arguments:
-
-
-        Attributes:
-
-        """
-
         with open(config_dir, "r") as stream:
             # merci https://stackoverflow.com/questions/1773805/how-can-i-parse-a-yaml-file-in-python
             try:
@@ -90,9 +104,9 @@ class HierarchicalDataset:
         # M, number of countries
         stan_data["M"] = self.num_countries
         stan_data["p"] = self.num_covariates
-        stan_data["x1"] = poly(np.linspace(0, N2-1, N2), 2)[:, 0]
+        stan_data["x1"] = poly(np.linspace(0, N2 - 1, N2), 2)[:, 0]
         # for some reason it is negative, check util.py
-        stan_data["x2"] = -poly(np.linspace(0, N2-1, N2), 2)[:, 1]
+        stan_data["x2"] = -poly(np.linspace(0, N2 - 1, N2), 2)[:, 1]
         # TODO: this is hardcoded in base.r, beware
         stan_data["N0"] = self.num_covariates
         stan_data["SI"] = self.serial_interval["fit"][:N2]
@@ -173,25 +187,25 @@ class HierarchicalDataset:
                 scale = mean * cv ** 2
                 for i in range(len(h)):
                     h[i] = (
-                        ifr * gamma.cdf(i, loc=loc, scale=scale)
-                        - ifr * gamma.cdf(i - 1, loc=loc, scale=scale)
-                    ) / (1 - ifr * gamma.cdf(i - 1, loc=loc, scale=scale))
+                        ifr * gamma_scipy.cdf(i, loc=loc, scale=scale)
+                        - ifr * gamma_scipy.cdf(i - 1, loc=loc, scale=scale)
+                    ) / (1 - ifr * gamma_scipy.cdf(i - 1, loc=loc, scale=scale))
 
             else:
                 # infection to onset
-                mean1 = 5.1
-                cv1 = 0.86
-                loc1 = 1 / cv1 ** 2
-                scale1 = mean1 * cv1 ** 2
+                mean_1 = 5.1
+                cv_1 = 0.86
+                loc_1 = 1 / cv_1 ** 2
+                scale_1 = mean_1 * cv_1 ** 2
                 # onset to death
-                mean2 = 18.8
-                cv2 = 0.45
-                loc2 = 1 / cv2 ** 2
-                scale2 = mean2 * cv2 ** 2
+                mean_2 = 18.8
+                cv_2 = 0.45
+                loc_2 = 1 / cv_2 ** 2
+                scale_2 = mean_2 * cv_2 ** 2
                 # assume that IFR is probability of dying given infection
-                x1 = gamma(shape=loc1, scale=scale1, size=int(5e6))
+                x1 = gamma_np(shape=loc_1, scale=scale_1, size=int(5e6))
                 # infection-to-onset ----> do all people who are infected get to onset?
-                x2 = gamma(shape=loc2, scale=scale2, size=int(5e6))
+                x2 = gamma_np(shape=loc_2, scale=scale_2, size=int(5e6))
 
                 # CDF of sum of 2 gamma distributions
                 gamma_cdf = ECDF(x1 + x2)
