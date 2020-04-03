@@ -1,0 +1,11 @@
+name: covid19model
+dependencies:
+  - r-bayesplot
+  - r-data.table
+  - r-envstats
+  - r-lubridate
+  - r-gdata
+  - r-ggpubr
+  - r-rstan
+channels:
+  - conda-forge
