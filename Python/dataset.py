@@ -109,6 +109,7 @@ class HierarchicalDataset:
         stan_data["x2"] = -poly(np.linspace(0, N2 - 1, N2), 2)[:, 1]
         # TODO: this is hardcoded in base.r, beware
         stan_data["N0"] = self.num_covariates
+        stan_data["N2"] = N2
         stan_data["SI"] = self.serial_interval["fit"][:N2]
         stan_data["x"] = np.linspace(1, N2, N2)
 
@@ -117,7 +118,7 @@ class HierarchicalDataset:
         stan_data["y"] = []
         stan_data["N"] = []
         # initialise with number of covariates
-        for i in range(self.num_covariates):
+        for i in range(1, self.num_covariates+1):
             stan_data["covariate{}".format(i)] = np.zeros((N2, self.num_countries))
 
         # store the covariates in a numpy array, initialised
@@ -233,14 +234,16 @@ class HierarchicalDataset:
             stan_data["y"].append(cases["cases"].values[0])
             stan_data["deaths"][:N, country_num] = cases["deaths"]
             stan_data["cases"][:N, country_num] = cases["cases"]
-
             covariates2 = np.zeros((N2, self.num_covariates))
             covariates2[:N, :] = cases[self.covariate_names].values
             covariates2[N:N2, :] = covariates2[N - 1, :]
             covariates2 = pd.DataFrame(covariates2, columns=self.covariate_names)
 
             for j, covariate in enumerate(self.covariate_names):
-                stan_data["covariate{}".format(j)][:, country_num] = covariates2[
+                stan_data["covariate{}".format(j+1)][:, country_num] = covariates2[
                     covariate
                 ]
+        # convert these arrays to integer dtype
+        stan_data["cases"] = stan_data["cases"].astype(int) 
+        stan_data["deaths"] = stan_data["deaths"].astype(int)
         return stan_data
