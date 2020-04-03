@@ -26,3 +26,7 @@ jobs:
     - name: Build docker image
       run: |
         docker build -f docker/Dockerfile -t covid19model:latest .
+
+    - name: Perform a short debug simulation run
+      run: |
+        docker run --rm -it -v $(pwd):/var/model --env DEBUG=TRUE covid19model $(id -u) $(id -g)
