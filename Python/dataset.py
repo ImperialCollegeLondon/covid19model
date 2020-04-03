@@ -12,7 +12,18 @@ class HierarchicalDataset:
     for data wrangling
     """
 
-    def __init__(self, config_dir="data/catalog.yml", cases_dir="data/COVID-19-up-to-date.csv", ifr_dir="data/weighted_fatality.csv", serial_interval_dir="data/serial_interval.csv", interventions_dir="data/interventions.csv", num_countries=11, num_covariates=6, N2=75, DEBUG=False):
+    def __init__(
+        self,
+        config_dir="data/catalog.yml",
+        cases_dir="data/COVID-19-up-to-date.csv",
+        ifr_dir="data/weighted_fatality.csv",
+        serial_interval_dir="data/serial_interval.csv",
+        interventions_dir="data/interventions.csv",
+        num_countries=11,
+        num_covariates=6,
+        N2=75,
+        DEBUG=False,
+    ):
         """
 
         Arguments:
@@ -49,18 +60,19 @@ class HierarchicalDataset:
         self.ifr = ifr
         # pick out the covariates for the countries (11 by default, 8 interventions)
         # num_covariates+1 because we need the Country index column too
-        covariates = covariates.iloc[:num_countries, :num_covariates+1]
+        covariates = covariates.iloc[:num_countries, : num_covariates + 1]
         self.covariate_names = list(covariates.columns)[1:]
         # convert the dates to datetime
         for covariate_name in self.covariate_names:
             covariates[covariate_name] = covariates[covariate_name].apply(
-                pd.to_datetime, format='%Y-%m-%d')
+                pd.to_datetime, format="%Y-%m-%d"
+            )
 
         # making all covariates that happen after lockdown to have same date as lockdown
         non_lockdown_covariates = self.covariate_names.copy()
         non_lockdown_covariates.remove("lockdown")
         for covariate_name in non_lockdown_covariates:
-            ind = (covariates[covariate_name] > covariates["lockdown"])
+            ind = covariates[covariate_name] > covariates["lockdown"]
             covariates[covariate_name][ind] = covariates["lockdown"][ind]
 
         self.covariates = covariates
@@ -84,7 +96,7 @@ class HierarchicalDataset:
         # TODO: this is hardcoded in base.r, beware
         stan_data["N0"] = self.num_covariates
         stan_data["SI"] = self.serial_interval["fit"][:N2]
-        stan_data["x"] = np.linspace(1,N2,N2)
+        stan_data["x"] = np.linspace(1, N2, N2)
 
         # TODO: we will use lists, but we need to be careful of stack memory in the future
         stan_data["EpidemicStart"] = []
@@ -95,18 +107,18 @@ class HierarchicalDataset:
             stan_data["covariate{}".format(i)] = np.zeros((N2, self.num_countries))
 
         # store the covariates in a numpy array, initialised
-        stan_data["deaths"] = np.ones((N2, self.num_countries))*(-1)
-        stan_data["cases"] = np.zeros((N2, self.num_countries))*(-1)
+        stan_data["deaths"] = np.ones((N2, self.num_countries)) * (-1)
+        stan_data["cases"] = np.zeros((N2, self.num_countries)) * (-1)
         stan_data["f"] = np.zeros((N2, self.num_countries))
 
         # we will generate the dataset in this country order. Could also use a pandas dataframe, but not necessary in my opinion
         for country_num, country in enumerate(self.countries):
             ifr = self.ifr["weighted_fatality"][self.ifr["country"] == country]
-            covariates1 = self.covariates.loc[self.covariates["Country"]
-                                              == country, self.covariate_names]
+            covariates1 = self.covariates.loc[
+                self.covariates["Country"] == country, self.covariate_names
+            ]
             cases = self.cases[self.cases["countriesAndTerritories"] == country]
-            cases["date"] = cases["dateRep"].apply(
-                pd.to_datetime, format='%d/%m/%Y')
+            cases["date"] = cases["dateRep"].apply(pd.to_datetime, format="%d/%m/%Y")
 
             cases["t"] = cases["date"].apply(lambda v: dt_to_dec(v))
             cases = cases.sort_values(by="t")
@@ -121,17 +133,21 @@ class HierarchicalDataset:
 
             # TODO: what is the latter?
             print(
-                "First non-zero cases is on day {}, and 30 days before 5 days is day {}".format(index, index_2))
+                "First non-zero cases is on day {}, and 30 days before 5 days is day {}".format(
+                    index, index_2
+                )
+            )
 
             # # only care about this timeframe
-            cases = cases[index_2:cases.shape[0]]
+            cases = cases[index_2 : cases.shape[0]]
 
             # update Epidemic Start day for each country
-            stan_data["EpidemicStart"].append(index_1+1-index_2)
+            stan_data["EpidemicStart"].append(index_1 + 1 - index_2)
             # turn intervention dates into boolean
             for covariate in self.covariate_names:
                 cases[covariate] = (
-                    cases["date"] > covariates1[covariate].values[0])*1
+                    cases["date"] > covariates1[covariate].values[0]
+                ) * 1
 
             # record dates for cases in the country
             cases[country] = cases["date"]
@@ -144,68 +160,73 @@ class HierarchicalDataset:
             forecast = N2 - N
 
             if forecast < 0:
-                raise ValueError(
-                    "Increase N2 to make it work. N2=N, forecast=N2-N")
+                raise ValueError("Increase N2 to make it work. N2=N, forecast=N2-N")
 
             # discrete hazard rate from time t=0,...,99
-            h = np.zeros(forecast+N)
+            h = np.zeros(forecast + N)
 
             if self.DEBUG:
                 mean = 18.8
                 cv = 0.45
 
-                loc = 1/cv**2
-                scale = mean*cv**2
+                loc = 1 / cv ** 2
+                scale = mean * cv ** 2
                 for i in range(len(h)):
-                    h[i] = (ifr*gamma.cdf(i, loc=loc, scale=scale) - ifr*gamma.cdf(i-1,
-                                                                                   loc=loc, scale=scale))/(1 - ifr*gamma.cdf(i-1, loc=loc, scale=scale))
+                    h[i] = (
+                        ifr * gamma.cdf(i, loc=loc, scale=scale)
+                        - ifr * gamma.cdf(i - 1, loc=loc, scale=scale)
+                    ) / (1 - ifr * gamma.cdf(i - 1, loc=loc, scale=scale))
 
             else:
                 # infection to onset
                 mean1 = 5.1
                 cv1 = 0.86
-                loc1 = 1/cv1**2
-                scale1 = mean1*cv1**2
+                loc1 = 1 / cv1 ** 2
+                scale1 = mean1 * cv1 ** 2
                 # onset to death
                 mean2 = 18.8
                 cv2 = 0.45
-                loc2 = 1/cv2**2
-                scale2 = mean2*cv2**2
+                loc2 = 1 / cv2 ** 2
+                scale2 = mean2 * cv2 ** 2
                 # assume that IFR is probability of dying given infection
                 x1 = gamma(shape=loc1, scale=scale1, size=int(5e6))
                 # infection-to-onset ----> do all people who are infected get to onset?
-                x2 = gamma(shape=loc2, scale=scale2,size= int(5e6))
+                x2 = gamma(shape=loc2, scale=scale2, size=int(5e6))
 
                 # CDF of sum of 2 gamma distributions
-                gamma_cdf = ECDF(x1+x2)
+                gamma_cdf = ECDF(x1 + x2)
 
                 # probability distribution of the infection-to-death distribution \pi_m in the paper
-                def convolution(u): return ifr*gamma_cdf(u)
+                def convolution(u):
+                    return ifr * gamma_cdf(u)
 
                 h[0] = convolution(1.5) - convolution(0)
 
                 for i in range(1, len(h)):
-                    h[i] = (convolution(i+0.5) - convolution(i-0.5)) / \
-                        (1-convolution(i-0.5))
+                    h[i] = (convolution(i + 0.5) - convolution(i - 0.5)) / (
+                        1 - convolution(i - 0.5)
+                    )
 
             # TODO: Check these quantities via tests
             s = np.zeros(N2)
             s[0] = 1
             for i in range(1, N2):
-                s[i] = s[i-1]*(1-h[i-1])
+                s[i] = s[i - 1] * (1 - h[i - 1])
 
             # slot in these values
             stan_data["N"].append(N)
-            stan_data["f"][:, country_num] = h*s
+            stan_data["f"][:, country_num] = h * s
             stan_data["y"].append(cases["cases"].values[0])
             stan_data["deaths"][:N, country_num] = cases["deaths"]
             stan_data["cases"][:N, country_num] = cases["cases"]
 
             covariates2 = np.zeros((N2, self.num_covariates))
             covariates2[:N, :] = cases[self.covariate_names].values
-            covariates2[N:N2,:] = covariates2[N-1,:]
+            covariates2[N:N2, :] = covariates2[N - 1, :]
             covariates2 = pd.DataFrame(covariates2, columns=self.covariate_names)
 
             for j, covariate in enumerate(self.covariate_names):
-                stan_data["covariate{}".format(j)][:, country_num] = covariates2[covariate]
+                stan_data["covariate{}".format(j)][:, country_num] = covariates2[
+                    covariate
+                ]
         return stan_data
