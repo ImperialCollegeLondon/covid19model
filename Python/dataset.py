@@ -90,9 +90,9 @@ class HierarchicalDataset:
         # M, number of countries
         stan_data["M"] = self.num_countries
         stan_data["p"] = self.num_covariates
-        stan_data["x1"] = poly(np.linspace(0, 74, 75), 2)[:, 0]
+        stan_data["x1"] = poly(np.linspace(0, N2-1, N2), 2)[:, 0]
         # for some reason it is negative, check util.py
-        stan_data["x2"] = -poly(np.linspace(0, 74, 75), 2)[:, 1]
+        stan_data["x2"] = -poly(np.linspace(0, N2-1, N2), 2)[:, 1]
         # TODO: this is hardcoded in base.r, beware
         stan_data["N0"] = self.num_covariates
         stan_data["SI"] = self.serial_interval["fit"][:N2]
