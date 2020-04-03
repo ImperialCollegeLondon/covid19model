@@ -29,4 +29,13 @@ jobs:
 
     - name: Perform a short debug simulation run
       run: |
-        docker run --rm -v $(pwd):/var/model --env DEBUG=TRUE covid19model $(id -u) $(id -g)
+        docker run --rm -v $(pwd):/var/model --env DEBUG=TRUE covid19model:latest $(id -u) $(id -g)
+
+    - name: Push image to GitHub packages
+      if: ${{ github.ref }} == "refs/heads/actions"
+      run: |
+        IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/covid19model:latest"
+        docker tag covid19model:latest $IMAGE
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker push $IMAGE
+        
