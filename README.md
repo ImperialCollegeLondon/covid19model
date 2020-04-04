@@ -1,3 +1,5 @@
+![](https://github.com/ImperialCollegeLondon/covid19model/workflows/CI/badge.svg)
+
 # covid19model
 Code for modelling estimated deaths and cases for COVID19 from Report 13 published by MRC Centre for Global Infectious Disease Analysis, Imperial College London: [Estimating the number of infections and the impact of nonpharmaceutical interventions on COVID-19 in 11 European countries](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-13-europe-npi-impact/) 
 
