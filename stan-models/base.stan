@@ -25,13 +25,13 @@ parameters {
   real<lower=0> mu[M]; // intercept for Rt
   real<lower=0> alpha[6]; // the hier term
   real<lower=0> kappa;
-  real<lower=0> y[M];
+  vector<lower=0>[M] y_raw;
   real<lower=0> phi;
   real<lower=0> tau;
 }
 
 transformed parameters {
-    real convolution;
+    vector<lower = 0>[M] y = tau * y_raw;
     matrix[N2, M] prediction = rep_matrix(0,N2,M);
     matrix[N2, M] E_deaths  = rep_matrix(0,N2,M);
     matrix[N2, M] Rt = rep_matrix(0,N2,M);
@@ -41,7 +41,7 @@ transformed parameters {
         covariate3[,m] * (-alpha[3])+ covariate4[,m] * (-alpha[4]) + covariate5[,m] * (-alpha[5]) + 
         covariate6[,m] * (-alpha[6])); // + GP[i]); // to_vector(x) * time_effect
       for (i in (N0+1):N2) {
-        convolution=0;
+        real convolution=0;
         for(j in 1:(i-1)) {
           convolution += prediction[j, m]*SI[i-j]; // Correctd 22nd March
         }
@@ -65,30 +65,25 @@ transformed parameters {
 }
 model {
   tau ~ exponential(0.03);
-  for (m in 1:M){
-      y[m] ~ exponential(1.0/tau);
-  }
+  target += -sum(y_raw); // exponential(1) prior on y_raw implies y ~ exponential(1 / tau)
   phi ~ normal(0,5);
   kappa ~ normal(0,0.5);
   mu ~ normal(2.4, kappa); // citation needed 
   alpha ~ gamma(.5,1);
   for(m in 1:M){
-    for(i in EpidemicStart[m]:N[m]){
-       deaths[i,m] ~ neg_binomial_2(E_deaths[i,m],phi); 
-    }
-   }
+    deaths[EpidemicStart[m]:N[m], m] ~ neg_binomial_2(E_deaths[EpidemicStart[m]:N[m], m], phi);
+  }
 }
 
 generated quantities {
     matrix[N2, M] lp0 = rep_matrix(1000,N2,M); // log-probability for LOO for the counterfactual model
     matrix[N2, M] lp1 = rep_matrix(1000,N2,M); // log-probability for LOO for the main model
-    real convolution0;
     matrix[N2, M] prediction0 = rep_matrix(0,N2,M);
     matrix[N2, M] E_deaths0  = rep_matrix(0,N2,M);
     for (m in 1:M){
       prediction0[1:N0,m] = rep_vector(y[m],N0); // learn the number of cases in the first N0 days
       for (i in (N0+1):N2) {
-        convolution0=0;
+        real convolution0=0;
         for(j in 1:(i-1)) {
           convolution0 += prediction0[j, m]*SI[i-j]; // Correctd 22nd March
         }
