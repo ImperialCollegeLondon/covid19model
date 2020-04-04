@@ -9,4 +9,4 @@ then
 fi
 
 # Run the code using the required UID/GID
-sudo -u \#"$1" -g \#"$2" Rscript base.r base
+sudo --preserve-env -u \#"$1" -g \#"$2" Rscript base.r base
