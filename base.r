@@ -49,7 +49,13 @@ covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$l
 p <- ncol(covariates) - 1
 forecast = 0
 
-DEBUG = FALSE
+if (Sys.getenv("DEBUG") == "TRUE") {
+   DEBUG = TRUE
+   print("Performing a DEBUG run")   
+}  else  {
+   DEBUG = FALSE
+}
+
 if(DEBUG == FALSE) {
   N2 = 75 # Increase this for a further forecast
 }  else  {
