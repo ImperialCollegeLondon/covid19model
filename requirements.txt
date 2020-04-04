@@ -17,7 +17,7 @@ backports.weakref==1.0.post1
 beautifulsoup4==4.7.1
 bitarray==0.9.3
 bkcharts==0.2
-bleach==3.1.0
+bleach==3.1.4
 bokeh==1.2.0
 boto==2.49.0
 Bottleneck==1.2.1
