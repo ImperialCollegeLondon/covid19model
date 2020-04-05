@@ -7,7 +7,7 @@ This repository has code for replication purposes. The bleeding edge code and ad
 
 ## Contributing
 
-We welcome all potential collaborators and contributors from the wider community. Please see ![contributing](contributing.md) for more details.
+We welcome all potential collaborators and contributors from the wider community. Please see [contributing](contributing.md) for more details.
 
 # Installing dependencies
 
