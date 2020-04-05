@@ -22,9 +22,8 @@ conda activate covid19model
 
 ## Using Docker
 
-All dependencies for the model can be provided by building a [Docker][]
-image. Please note that using this method separate instructions are required to
-run the model - [see details](docker/).
+A [Docker][] image providing all model dependencies is available. See
+[docker/README.md](docker/) for details of running the model with Docker.
 
 [Docker]: https://www.docker.com/
 
