@@ -37,11 +37,11 @@ class HierarchicalDataset:
 
     def __init__(
         self,
-        config_dir="../data/catalog.yml",
-        cases_dir="../data/COVID-19-up-to-date.csv",
-        ifr_dir="../data/weighted_fatality.csv",
-        serial_interval_dir="../data/serial_interval.csv",
-        interventions_dir="../data/interventions.csv",
+        config_dir="../../data/catalog.yml",
+        cases_dir="../../data/COVID-19-up-to-date.csv",
+        ifr_dir="../../data/weighted_fatality.csv",
+        serial_interval_dir="../../data/serial_interval.csv",
+        interventions_dir="../../data/interventions.csv",
         num_countries=11,
         num_covariates=6,
         N2=75,
