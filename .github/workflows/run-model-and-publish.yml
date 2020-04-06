@@ -4,6 +4,11 @@ name: RUN_MODEL_AND_PUBLISH
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
+
+# This workflow can be started manually by using the GitHub API
+# send a POST request to https://api.github.com/repos/ImperialCollegeLondon/covid19model/dispatches
+# with a an Authorization token <GitHub_Token> header and JSON payload:
+# {"event_type": "run-and-publish"}
 on:
   repository_dispatch:
     types: run-and-publish
