@@ -5,6 +5,10 @@ Code for modelling estimated deaths and cases for COVID19 from Report 13 publish
 
 This repository has code for replication purposes. The bleeding edge code and advancements are done in a private repository. Ask report authors for any collaborations. 
 
+## Contributing
+
+We welcome all potential collaborators and contributors from the wider community. Please see [contributing](contributing.md) for more details.
+
 # Installing dependencies
 
 ## Using Conda
@@ -22,9 +26,8 @@ conda activate covid19model
 
 ## Using Docker
 
-All dependencies for the model can be provided by building a [Docker][]
-image. Please note that using this method separate instructions are required to
-run the model - [see details](docker/).
+A [Docker][] image providing all model dependencies is available. See
+[docker/README.md](docker/) for details of running the model with Docker.
 
 [Docker]: https://www.docker.com/
 
