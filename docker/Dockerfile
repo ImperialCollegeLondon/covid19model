@@ -8,5 +8,4 @@ COPY docker/run_model_script.sh /root/
 COPY docker/download_data.sh /root/
 WORKDIR /var/model
 ENTRYPOINT [ "sh" ]
-CMD ["/root/run_model_script.sh"]
-
+CMD ["Rscript base.r base"] 
