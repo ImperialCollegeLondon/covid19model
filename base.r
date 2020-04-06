@@ -19,7 +19,7 @@ countries <- c(
 )
 
 # Default run parameters for the model
-DEBUG = FALSE
+DEBUG = TRUE
 FULL = FALSE
 
 args = commandArgs(trailingOnly=TRUE)
@@ -61,13 +61,12 @@ if (Sys.getenv("DEBUG") == "TRUE") {
   print("Performing a full run")
 }
 
-if(DEBUG == FALSE) {
-  N2 = 75 # Increase this for a further forecast
-}  else  {
-  ### For faster runs:
-  # countries = c("Austria","Belgium") #,Spain")
-  N2 = 75
-}
+# Time difference between original report and current extension
+deltaT = (max(as.Date(d1$DateRep,format='%d/%m/%Y')) - as.Date("28/03/2020",format='%d/%m/%Y'))
+N2 = 75 + as.numeric(deltaT, units = "days")
+
+### For faster runs:
+# countries = c("Austria","Belgium") #,Spain")
 # countries = c("Italy","United_Kingdom","Spain","Norway","Austria","Switzerland")
 
 dates = list()
