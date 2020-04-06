@@ -7,5 +7,5 @@ RUN install2.r --error --deps TRUE \
 COPY docker/run_model_script.sh /root/
 COPY docker/download_data.sh /root/
 WORKDIR /var/model
-ENTRYPOINT [ "sh" ]
-CMD ["Rscript base.r base"] 
+ENTRYPOINT [ "sh", "-c" ]
+CMD ["Rscript", "base.r", "base"] 
