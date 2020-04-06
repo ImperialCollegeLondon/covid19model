@@ -27,11 +27,11 @@ jobs:
 
     - name: Download the newest data from the ECDC
       run: |
-        docker run --rm -v $(pwd):/var/model --env DEBUG=TRUE covid19model:latest /root/download_data.sh $(id -u) $(id -g)
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest Rscript data/fetch-ecdc.R
 
     - name: Perform the model run
       run: |
-        docker run --rm -v $(pwd):/var/model --env DEBUG=TRUE covid19model:latest $(id -u) $(id -g)
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3

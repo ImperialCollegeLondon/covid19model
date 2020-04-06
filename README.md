@@ -42,4 +42,4 @@ There are two ways to run our code:-
 * Results has the stored stan fits and data used for plotting
 * Figures have the images with daily cases, daily death and Rt for all countries.
 
-## Please note to not make you wait for long we have by default run sampling for short period. To be comparable with report please uncomment the line 206 and comment out line 207. This will run sampling for 4000 iterations with 2000 warmups and 4 chains.
+## Please note to not make you wait for long we have by default run sampling for short period. To be comparable with report please set either the environment variable FULL to TRUE or change the default setting on line 23

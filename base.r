@@ -18,6 +18,10 @@ countries <- c(
   "Switzerland"
 )
 
+# Default run parameters for the model
+DEBUG = FALSE
+FULL = FALSE
+
 args = commandArgs(trailingOnly=TRUE)
 if(length(args) == 0) {
   args = 'base'
@@ -52,8 +56,9 @@ forecast = 0
 if (Sys.getenv("DEBUG") == "TRUE") {
    DEBUG = TRUE
    print("Performing a DEBUG run")   
-}  else  {
-   DEBUG = FALSE
+} else if (Sys.getenv("FULL") == "TRUE") {
+  FULL = TRUE
+  print("Performing a full run")
 }
 
 if(DEBUG == FALSE) {
@@ -208,8 +213,9 @@ m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 
 if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
+} else if (FULL) {
+  fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=8,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
 } else { 
-  # fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=8,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
   fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
 }  
 
