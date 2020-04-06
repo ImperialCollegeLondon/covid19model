@@ -12,6 +12,7 @@ library(gridExtra)
 library(ggpubr)
 library(bayesplot)
 library(cowplot)
+library(svglite)
 
 source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
@@ -215,6 +216,26 @@ make_plots <- function(data_country, covariates_country_long,
     theme_pubr() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="right")
+  
+  # Special plot settings for mobile
+  p3_mobile <- p3  +
+    theme(legend.position="below")
+  
+  # Plots for Web, Desktop version
+  save_plot(filename = paste0("web/figures/desktop/", country, "_infections", ".svg"), 
+            p1, base_height = 4, base_asp = 1.618)
+  save_plot(filename = paste0("web/figures/desktop/", country, "_deaths", ".svg"), 
+            p2, base_height = 4, base_asp = 1.618)
+  save_plot(filename = paste0("web/figures/desktop/", country, "_rt", ".svg"), 
+            p3, base_height = 4, base_asp = 1.618 * 2)
+  
+  # Plots for Web, Mobile version
+  save_plot(filename = paste0("web/figures/mobile/", country, "_infections", ".svg"), 
+            p1, base_height = 4, base_asp = 1.1)
+  save_plot(filename = paste0("web/figures/mobile/", country, "_deaths", ".svg"), 
+            p2, base_height = 4, base_asp = 1.1)
+  save_plot(filename = paste0("web/figures/mobile/", country, "_rt", ".svg"), 
+            p3_mobile, base_height = 4, base_asp = 1.1)
   
   p <- plot_grid(p1, p2, p3, ncol = 3, rel_widths = c(1, 1, 2))
   save_plot(filename = paste0("figures/", country, "_three_pannel_", filename2, ".pdf"), 

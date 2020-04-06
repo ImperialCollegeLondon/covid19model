@@ -1,7 +1,7 @@
 FROM jrnold/rstan:latest
 
 RUN install2.r --error --deps TRUE \
-	gdata EnvStats ggpubr \
+	gdata EnvStats ggpubr svglite \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 COPY docker/run_model_script.sh /root/

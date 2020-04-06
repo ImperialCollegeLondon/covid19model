@@ -131,12 +131,18 @@ make_single_plot <- function(data_country, data_country_forecast, filename, coun
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
     guides(fill=guide_legend(ncol=1, reverse = TRUE)) + 
     annotate(geom="text", x=data_country$time[length(data_country$time)]+8, 
-             y=10000, label="Forecast",
+             y=10000, label="",
              color="black")
   print(p)
   
   ggsave(file= paste0("figures/", country, "_forecast_", filename, ".pdf"), 
          p, width = 10)
+  
+  # Produce plots for Website
+  save_plot(filename = paste0("web/figures/desktop/", country, "_forecast", ".svg"), 
+            p, base_height = 4, base_asp = 1.618 * 2 * 8/12)
+  save_plot(filename = paste0("web/figures/mobile/", country, "_forecast", ".svg"), 
+            p, base_height = 4, base_asp = 1.1)
 }
 #-----------------------------------------------------------------------------------------------
 make_forecast_plot()
