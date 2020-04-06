@@ -40,7 +40,7 @@ jobs:
 
     - name: Perform the full model run, aprox. 90 minutes
       run: |
-        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env FULL=TRUE covid19model:latest
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env FULL=FALSE covid19model:latest
 
     - name: Fix SVG font families for publishing
       run: |
