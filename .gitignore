@@ -1,3 +1,6 @@
+# Ignore generated figures in website
+web/figures/
+
 # History files
 .Rhistory
 .Rapp.history

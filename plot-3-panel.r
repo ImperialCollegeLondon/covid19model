@@ -139,7 +139,7 @@ make_plots <- function(data_country, covariates_country_long,
     scale_fill_manual(name = "", labels = c("50%", "95%"),
                       values = c(alpha("deepskyblue4", 0.55), 
                                  alpha("deepskyblue4", 0.45))) + 
-    theme_pubr() + 
+    theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "None") + 
     guides(fill=guide_legend(ncol=1))
@@ -166,7 +166,7 @@ make_plots <- function(data_country, covariates_country_long,
     scale_fill_manual(name = "", labels = c("50%", "95%"),
                       values = c(alpha("deepskyblue4", 0.55), 
                                  alpha("deepskyblue4", 0.45))) + 
-    theme_pubr() + 
+    theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "None") + 
     guides(fill=guide_legend(ncol=1))
@@ -213,7 +213,7 @@ make_plots <- function(data_country, covariates_country_long,
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b"), 
                  limits = c(data_country$time[1], 
                             data_country$time[length(data_country$time)])) + 
-    theme_pubr() + 
+    theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="right")
   
