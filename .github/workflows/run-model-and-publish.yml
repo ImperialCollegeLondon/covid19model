@@ -11,7 +11,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  docker:
+  run-and-publish:
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
 
@@ -34,25 +34,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./web
-
-  conda:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-10.15, ubuntu-18.04, windows-2019]
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: s-weigand/setup-conda@v1
-
-    - name: Create virtual environment
-      run: |
-        conda env create -f environment.yml
-
-    # conda activate does not get on well with GitHub actions so
-    # work around this with conda run
-    - name: Run short debug simulation
-      run: |
-        conda run --name covid19model Rscript base.r base
-      env:
-        DEBUG: "TRUE"
