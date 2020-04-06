@@ -1,10 +1,9 @@
 FROM jrnold/rstan:latest
 
-RUN apt-get update && apt-get install -y software-properties-common
-RUN add-apt-repository universe && apt-get update && apt-get install -y \
-    ttf-ubuntu-font-family \
+RUN apt-get update && apt-get install -y \
     fonts-open-sans \
-    fonts-arkpandora
+    fonts-arkpandora \
+	fonts-adf-verana
 
 RUN ttf-ubuntu-font-family
 
