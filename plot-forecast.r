@@ -139,8 +139,10 @@ make_single_plot <- function(data_country, data_country_forecast, filename, coun
          p, width = 10)
   
   # Produce plots for Website
+  dir.create("web/figures/desktop/", showWarnings = FALSE, recursive = TRUE)
   save_plot(filename = paste0("web/figures/desktop/", country, "_forecast", ".svg"), 
             p, base_height = 4, base_asp = 1.618 * 2 * 8/12)
+  dir.create("web/figures/mobile/", showWarnings = FALSE, recursive = TRUE)
   save_plot(filename = paste0("web/figures/mobile/", country, "_forecast", ".svg"), 
             p, base_height = 4, base_asp = 1.1)
 }

@@ -222,6 +222,7 @@ make_plots <- function(data_country, covariates_country_long,
     theme(legend.position="below")
   
   # Plots for Web, Desktop version
+  dir.create("web/figures/desktop/", showWarnings = FALSE, recursive = TRUE)
   save_plot(filename = paste0("web/figures/desktop/", country, "_infections", ".svg"), 
             p1, base_height = 4, base_asp = 1.618)
   save_plot(filename = paste0("web/figures/desktop/", country, "_deaths", ".svg"), 
@@ -230,6 +231,7 @@ make_plots <- function(data_country, covariates_country_long,
             p3, base_height = 4, base_asp = 1.618 * 2)
   
   # Plots for Web, Mobile version
+  dir.create("web/figures/mobile/", showWarnings = FALSE, recursive = TRUE)
   save_plot(filename = paste0("web/figures/mobile/", country, "_infections", ".svg"), 
             p1, base_height = 4, base_asp = 1.1)
   save_plot(filename = paste0("web/figures/mobile/", country, "_deaths", ".svg"), 
