@@ -22,12 +22,16 @@ jobs:
   # This workflow contains a single job called "build"
   run-and-publish:
     # Set secret to enable the workflow
-    if: secrets.GH_PAGES_ACCESS_TOKEN != null && secrets.GH_PAGES_ACCESS_TOKEN != ""
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    # should throw an error if the token is not set, to enable the action only for repos which have set this token
+    - name: Check if access token is set
+      env:
+        SECRET_TEST: ${{ secrets.GH_PAGES_ACCESS_TOKEN }}
+      run: echo "$SECRET_TEST" >> /dev/null
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
