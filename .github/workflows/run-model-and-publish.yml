@@ -21,6 +21,8 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   run-and-publish:
+    # Set secret to enable the workflow
+    if: ${{ secrets.GH_PAGES_ACCESS_TOKEN }} != null && ${{ secrets.GH_PAGES_ACCESS_TOKEN }} != ""
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
 
