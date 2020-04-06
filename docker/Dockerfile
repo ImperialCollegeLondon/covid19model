@@ -1,5 +1,6 @@
 FROM jrnold/rstan:latest
 
+RUN echo "deb http://http.debian.net/debian stretch-backports main contrib non-free" >> /etc/apt/sources.list.d/stretch-backports.list
 RUN apt-get update && apt-get install -y \
     fonts-open-sans \
     fonts-arkpandora \
