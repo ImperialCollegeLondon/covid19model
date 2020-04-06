@@ -5,6 +5,10 @@ Code for modelling estimated deaths and cases for COVID19 from Report 13 publish
 
 This repository has code for replication purposes. The bleeding edge code and advancements are done in a private repository. Ask report authors for any collaborations. 
 
+## Contributing
+
+We welcome all potential collaborators and contributors from the wider community. Please see [contributing](contributing.md) for more details.
+
 # Installing dependencies
 
 ## Using Conda
