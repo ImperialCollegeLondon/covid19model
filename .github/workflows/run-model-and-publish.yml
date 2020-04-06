@@ -30,7 +30,7 @@ jobs:
     # should throw an error if the token is not set, to enable the action only for repos which have set this token
     - name: Check if access token is set
       env:
-        SECRET_TEST: ${{ secrets.GH_PAGES_ACCESS_TOKEN_DOESNT_EXIST }}
+        SECRET_TEST: ${{ secrets.GH_PAGES_ACCESS_TOKEN }}
       run: "[ -z \"$SECRET_TEST\" ] && exit 1 || exit 0 "
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
