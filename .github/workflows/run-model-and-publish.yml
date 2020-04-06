@@ -31,7 +31,7 @@ jobs:
     - name: Check if access token is set
       env:
         SECRET_TEST: ${{ secrets.GH_PAGES_ACCESS_TOKEN_DOESNT_EXIST }}
-      run: echo "$SECRET_TEST" >> /dev/null
+      run: "[ -z \"$SECRET_TEST\" ] && exit 1 || exit 0 "
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
