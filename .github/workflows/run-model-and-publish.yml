@@ -5,8 +5,8 @@ name: RUN_MODEL_AND_PUBLISH
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  watch: # For debugging purposes
-    types: [started]
+  repository_dispatch:
+    types: run-and-publish
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
