@@ -25,7 +25,11 @@ jobs:
       run: |
         docker build -f docker/Dockerfile -t covid19model:latest .
 
-    - name: Perform a short debug simulation run
+    - name: Download the newest data from the ECDC
+      run: |
+        docker run --rm -v $(pwd):/var/model --env DEBUG=TRUE covid19model:latest /root/download_data.sh $(id -u) $(id -g)
+
+    - name: Perform the model run
       run: |
         docker run --rm -v $(pwd):/var/model --env DEBUG=TRUE covid19model:latest $(id -u) $(id -g)
 
