@@ -12,6 +12,10 @@ name: RUN_MODEL_AND_PUBLISH
 on:
   repository_dispatch:
     types: run-and-publish
+  schedule:
+    # approximate publishing time of the ECDC data is 1pm CET. Include some slack, since many times it isn't on time
+    # execution at 12:30 UTC (14:30 CET with daylight saving) every day
+    - cron:  '30 12 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -32,15 +36,15 @@ jobs:
 
     - name: Download the newest data from the ECDC
       run: |
-        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest Rscript data/fetch-ecdc.R
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) covid19model:latest Rscript data/fetch-ecdc.R
 
-    - name: Perform the model run
+    - name: Perform the full model run, aprox. 90 minutes
       run: |
-        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env FULL=TRUE covid19model:latest
 
     - name: Fix SVG font families for publishing
       run: |
-        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest Rscript web-fix-fonts.R
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) covid19model:latest Rscript web-fix-fonts.R
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
