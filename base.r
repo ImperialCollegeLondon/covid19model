@@ -259,7 +259,7 @@ system(paste0("Rscript plot-3-panel.r ", filename,'.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'.Rdata')) ## to run this code you will need to adjust manual values of forecast required
 
 # Verify that the whole output for the web has been generated correctly and update last-update dates
-verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
+verify_result <- system(paste0("Rscript web-verify-output.R", filename,'.Rdata'),intern=FALSE)
 if(verify_result != 0){
   stop("Verification of web output failed!")
 }
