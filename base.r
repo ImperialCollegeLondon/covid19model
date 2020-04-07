@@ -48,6 +48,7 @@ covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$l
 
 p <- ncol(covariates) - 1
 forecast = 0
+DEBUG=TRUE
 
 if (Sys.getenv("DEBUG") == "TRUE") {
    DEBUG = TRUE
@@ -67,8 +68,8 @@ if(DEBUG == FALSE) {
 
 dates = list()
 reported_cases = list()
-stan_data = list(M=length(countries),N=NULL,p=p,x1=poly(1:N2,2)[,1],x2=poly(1:N2,2)[,2],
-                 y=NULL,covariate1=NULL,covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,covariate6=NULL,covariate7=NULL,deaths=NULL,f=NULL,
+stan_data = list(M=length(countries),N=NULL,p=p,
+                 y=NULL,x1=NULL,x2=NULL,x3=NULL,x4=NULL,x5=NULL,x6=NULL,x7=NULL,deaths=NULL,f=NULL,
                  N0=6,cases=NULL,LENGTHSCALE=7,SI=serial.interval$fit[1:N2],
                  EpidemicStart = NULL) # N0 = 6 to make it consistent with Rayleigh
 deaths_by_country = list()
@@ -153,50 +154,49 @@ for(Country in countries) {
   stan_data$N = c(stan_data$N,N)
   stan_data$y = c(stan_data$y,y[1]) # just the index case!
   # stan_data$x = cbind(stan_data$x,x)
-  stan_data$covariate1 = cbind(stan_data$covariate1,covariates2[,1])
-  stan_data$covariate2 = cbind(stan_data$covariate2,covariates2[,2])
-  stan_data$covariate3 = cbind(stan_data$covariate3,covariates2[,3])
-  stan_data$covariate4 = cbind(stan_data$covariate4,covariates2[,4])
-  stan_data$covariate5 = cbind(stan_data$covariate5,covariates2[,5])
-  stan_data$covariate6 = cbind(stan_data$covariate6,covariates2[,6])
-  stan_data$covariate7 = cbind(stan_data$covariate7,covariates2[,7]) 
+  stan_data$x1 = cbind(stan_data$x1,covariates2[,1])
+  stan_data$x2 = cbind(stan_data$x2,covariates2[,2])
+  stan_data$x3 = cbind(stan_data$x3,covariates2[,3])
+  stan_data$x4 = cbind(stan_data$x4,covariates2[,4])
+  stan_data$x5 = cbind(stan_data$x5,covariates2[,5])
+  stan_data$x6 = cbind(stan_data$x6,covariates2[,6])
+  stan_data$x7 = cbind(stan_data$x7,covariates2[,7]) 
   stan_data$f = cbind(stan_data$f,f)
   stan_data$deaths = cbind(stan_data$deaths,deaths)
   stan_data$cases = cbind(stan_data$cases,cases)
   
   stan_data$N2=N2
-  stan_data$x=1:N2
   if(length(stan_data$N) == 1) {
     stan_data$N = as.array(stan_data$N)
   }
 }
 
-stan_data$covariate2 = 0 * stan_data$covariate2 # remove travel bans
-stan_data$covariate4 = 0 * stan_data$covariate5 # remove sport
+stan_data$x2 = 0 * stan_data$x2 # remove travel bans
+stan_data$x4 = 0 * stan_data$x5 # remove sport
 
 #stan_data$covariate1 = stan_data$covariate1 # school closure
-stan_data$covariate2 = stan_data$covariate7 # self-isolating if ill
+stan_data$x2 = stan_data$x7 # self-isolating if ill
 #stan_data$covariate3 = stan_data$covariate3 # public events
 # create the `any intervention` covariate
-stan_data$covariate4 = 1*as.data.frame((stan_data$covariate1+
-                                          stan_data$covariate3+
-                                          stan_data$covariate5+
-                                          stan_data$covariate6+
-                                          stan_data$covariate7) >= 1)
-stan_data$covariate5 = stan_data$covariate5 # lockdown
-stan_data$covariate6 = stan_data$covariate6 # social distancing encouraged
-stan_data$covariate7 = 0 # models should only take 6 covariates
+stan_data$x4 = 1*as.data.frame((stan_data$x1+
+                                          stan_data$x3+
+                                          stan_data$x5+
+                                          stan_data$x6+
+                                          stan_data$x7) >= 1)
+stan_data$x5 = stan_data$x5 # lockdown
+stan_data$x6 = stan_data$x6 # social distancing encouraged
+stan_data$x7 = 0 # models should only take 6 covariates
 
 if(DEBUG) {
   for(i in 1:length(countries)) {
     write.csv(
       data.frame(date=dates[[i]],
-                 `school closure`=stan_data$covariate1[1:stan_data$N[i],i],
-                 `self isolating if ill`=stan_data$covariate2[1:stan_data$N[i],i],
-                 `public events`=stan_data$covariate3[1:stan_data$N[i],i],
-                 `government makes any intervention`=stan_data$covariate4[1:stan_data$N[i],i],
-                 `lockdown`=stan_data$covariate5[1:stan_data$N[i],i],
-                 `social distancing encouraged`=stan_data$covariate6[1:stan_data$N[i],i]),
+                 `school closure`=stan_data$x1[1:stan_data$N[i],i],
+                 `self isolating if ill`=stan_data$x2[1:stan_data$N[i],i],
+                 `public events`=stan_data$x3[1:stan_data$N[i],i],
+                 `government makes any intervention`=stan_data$x4[1:stan_data$N[i],i],
+                 `lockdown`=stan_data$x5[1:stan_data$N[i],i],
+                 `social distancing encouraged`=stan_data$x6[1:stan_data$N[i],i]),
       file=sprintf("results/%s-check-dates.csv",countries[i]),row.names=F)
   }
 }
