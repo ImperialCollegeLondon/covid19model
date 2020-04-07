@@ -19,7 +19,7 @@ countries <- c(
 )
 
 # Default run parameters for the model
-DEBUG = TRUE
+DEBUG = FALSE
 FULL = FALSE
 
 args = commandArgs(trailingOnly=TRUE)
