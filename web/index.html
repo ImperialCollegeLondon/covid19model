@@ -127,11 +127,21 @@
                 </div>
             </div>
         </div>
+        <div class="row mt-4">
+            <div class="col text-center">
+                <p>
+                    Last updated <span id="last_update">UNVERIFIED</span>.
+                <br>
+                    The results are updated daily. Any comments or suggestions, please contact the authors of the 
+                    <a href="https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-Europe-estimates-and-NPI-impact-30-03-2020.pdf">paper</a>.
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" 
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" 
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
@@ -149,7 +159,7 @@
         }
 
         function setCountry(country) {
-            function setImage(name) { 
+            function setImage(name, latest_update) { 
                 // Ensures that no stale images are ever shown, even if the network is down 
                 $("#" + name + "-overlay").css("display", "flex")
                 $("#" + name + "-picture").imagesLoaded()
@@ -157,15 +167,20 @@
                     $("#" + name  + "-overlay").css("display", "none")
                 })
 
-                $("#" + name + "-desktop").attr("src", "figures/desktop/" + country + "_" + name + ".svg");
-                $("#" + name + "-mobile").attr("srcset", "figures/mobile/" + country + "_" + name + ".svg");
+                // Appending the latest update to the query string of the filename ensures that caching works correctly
+                $("#" + name + "-desktop").attr("src", "figures/desktop/" + country + "_" + name + ".svg?update=" + latest_update);
+                $("#" + name + "-mobile").attr("srcset", "figures/mobile/" + country + "_" + name + ".svg?update=" + latest_update);
             }
+            $.getJSON("data/latest-updates.json", function( json ) {
+                latest_update = json[country]
+                $("#last_update").html(latest_update)
 
-            $("#country-title").html(formatName(country));
-            setImage("infections");
-            setImage("deaths");
-            setImage("rt");
-            setImage("forecast");
+                $("#country-title").html(formatName(country));
+                setImage("infections", latest_update);
+                setImage("deaths", latest_update);
+                setImage("rt", latest_update);
+                setImage("forecast", latest_update);
+            });
         }
 
         $(function () {

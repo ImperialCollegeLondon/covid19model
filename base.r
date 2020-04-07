@@ -19,7 +19,7 @@ countries <- c(
 )
 
 # Default run parameters for the model
-DEBUG = FALSE
+DEBUG = TRUE
 FULL = FALSE
 
 args = commandArgs(trailingOnly=TRUE)
@@ -257,3 +257,9 @@ g = (mcmc_intervals(Rt,prob = .9))
 ggsave(sprintf("results/%s-covars-final-rt.pdf",filename),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", filename,'.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'.Rdata')) ## to run this code you will need to adjust manual values of forecast required
+
+# Verify that the whole output for the web has been generated correctly and update last-update dates
+verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
+if(verify_result != 0){
+  stop("Verification of web output failed!")
+}

@@ -7,5 +7,7 @@ dependencies:
   - r-gdata
   - r-ggpubr
   - r-rstan
+  - r-svglite
+  - r-jsonlite
 channels:
   - conda-forge

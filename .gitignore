@@ -1,5 +1,6 @@
 # Ignore generated figures in website
 web/figures/
+web/data/
 
 # History files
 .Rhistory
