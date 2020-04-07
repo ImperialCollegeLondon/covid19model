@@ -1,3 +1,7 @@
+body {
+  font-family: 'Fira Sans', sans-serif;
+}
+
 footer {
     background-color: #333333;
     color: #cccccc;
@@ -11,7 +15,7 @@ footer a:hover {
 }
 
 .navbar-custom {
-    background-color: #003e74;
+    background-color: #003b73;
     font-weight: 500;
 }
 /* change the brand and text color */
@@ -35,6 +39,36 @@ footer a:hover {
 .navbar-custom .navbar-toggler {
 border-color: rgb(255,255,255);
 } 
+
+a.navbar-brand {
+  font-size: 1rem;
+}
+
+a.navbar-brand > img {
+  height: 1.7rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+  a.navbar-brand > img {
+    height: 2.7rem;
+    margin-left: 4rem;
+    margin-right: 2rem;
+    margin-top: 0.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  a.navbar-brand {
+    font-size: 1.4rem;
+    font-weight: 500;
+  }
+}
+
+
 
 .spinner {
     height: 60px;
