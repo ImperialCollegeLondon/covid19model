@@ -2,6 +2,14 @@ body {
   font-family: 'Fira Sans', sans-serif;
 }
 
+a {
+  color: #003b73;
+}
+
+.card-header {
+  font-weight: 700;
+}
+
 footer {
     background-color: #333333;
     color: #cccccc;
@@ -12,6 +20,10 @@ footer a {
 }
 footer a:hover {
     color: #afcbe3;
+}
+
+.bg-primary {
+  background-color: #003b73 !important;
 }
 
 .navbar-custom {
@@ -57,7 +69,7 @@ a.navbar-brand > img {
   a.navbar-brand > img {
     height: 2.7rem;
     margin-left: 4rem;
-    margin-right: 2rem;
+    margin-right: 3rem;
     margin-top: 0.7rem;
     margin-bottom: 0.7rem;
   }

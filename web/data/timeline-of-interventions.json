@@ -1,0 +1,39 @@
+{
+    "Austria": [
+        {
+            "type": "lockdown",
+            "date": "2020-03-16", 
+            "name": "Lockdown ordered",
+            "description": "Banning all access to public spaces and gatherings of more than 5 people. Advice to maintain 1m distance.",
+            "sources": ["Bundesministerium. Coronavirus - Aktuelle Maßnahmen. https://www.sozialministerium.at/Informationen-zum-Coronavirus/Coronavirus—AktuelleMaßnahmen.html (2020)."]
+        },
+        {
+            "type": "social_distancing",
+            "date": "2020-03-16", 
+            "name": "Social distancing encouraged",
+            "description": "Recommendation to maintain a distance of 1m.",
+            "sources": ["Bundesministerium. Coronavirus - Aktuelle Maßnahmen. https://www.sozialministerium.at/Informationen-zum-Coronavirus/Coronavirus—AktuelleMaßnahmen.html (2020)."]
+        },
+        {
+            "type": "case_based",
+            "date": "2020-03-16", 
+            "name": "Case-based measures",
+            "description": "Implemented at lockdown.",
+            "sources": ["Bundesministerium. Coronavirus - Aktuelle Maßnahmen. https://www.sozialministerium.at/Informationen-zum-Coronavirus/Coronavirus—AktuelleMaßnahmen.html (2020)."]
+        },
+        {
+            "type": "school_closure",
+            "date": "2020-03-14", 
+            "name": "School closure ordered",
+            "description": "Nationwide school closures.", 
+            "sources": ["Bundesministerium. Coronavirus (COVID-19): Status quo – Schulen, Hochschulen, Universitäten und Forschungsinstitutionen. https://www.bmbwf.gv.at/Ministerium/Informationspflicht/corona/corona_status.html."]
+        },
+        {
+            "type": "public_events_banned",
+            "date": "2020-03-10",
+            "name": "Public events banned", 
+            "description": "Banning of gatherings of more than 5 people.", 
+            "sources": ["Henley, J. Coronavirus: EU states enact tough measures to stem spread. The Guardian https://www.theguardian.com/world/2020/mar/10/coronavirus-several-eu-states-ban-mass-eventsafter-italian-lockdown (2020)."]
+        }
+    ]
+}
