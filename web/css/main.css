@@ -26,6 +26,10 @@ footer a:hover {
   background-color: #003b73 !important;
 }
 
+.border-primary {
+  border-color: #003b73!important;
+}
+
 .navbar-custom {
     background-color: #003b73;
     font-weight: 500;

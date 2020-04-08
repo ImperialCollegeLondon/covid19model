@@ -35,5 +35,42 @@
             "description": "Banning of gatherings of more than 5 people.", 
             "sources": ["Henley, J. Coronavirus: EU states enact tough measures to stem spread. The Guardian https://www.theguardian.com/world/2020/mar/10/coronavirus-several-eu-states-ban-mass-eventsafter-italian-lockdown (2020)."]
         }
+    ],
+    "Belgium": [
+        {
+            "type": "lockdown",
+            "date": "2020-03-18", 
+            "name": "Lockdown ordered",
+            "description": "Citizens are required to stay at home except for work and essential journeys. Going outdoors only with household members or 1 friend.",
+            "sources": ["Belgium.be. Coronavirus: reinforced measures | Belgium.be. https://www.belgium.be/en/news/2020/coronavirus_reinforced_measures (2020)"]
+        },
+        {
+            "type": "social_distancing",
+            "date": "2020-03-14", 
+            "name": "Social distancing encouraged",
+            "description": "Public transport recommended only for essential journeys, work from home encouraged, all public places e.g. restaurants closed.",
+            "sources": ["Federal Public Service. Coronavirus : Phase 2 maintained, transition to the federal phase and additional measures. https://www.info-coronavirus.be/en/2020/03/12/phase-2-maintainedtransition-to-the-federal-phase-and-additional-measures/ (2020)"]
+        },
+        {
+            "type": "school_closure",
+            "date": "2020-03-14", 
+            "name": "School closure ordered",
+            "description": "Nationwide school closures.", 
+            "sources": ["Federal Public Service. Coronavirus : Phase 2 maintained, transition to the federal phase and additional measures. https://www.info-coronavirus.be/en/2020/03/12/phase-2-maintainedtransition-to-the-federal-phase-and-additional-measures/ (2020)"]
+        },
+        {
+            "type": "public_events_banned",
+            "date": "2020-03-12",
+            "name": "Public events banned", 
+            "description": "All recreational activities cancelled regardless of size.", 
+            "sources": ["Federal Public Service. Coronavirus : Phase 2 maintained, transition to the federal phase and additional measures. https://www.info-coronavirus.be/en/2020/03/12/phase-2-maintainedtransition-to-the-federal-phase-and-additional-measures/ (2020)"]
+        },
+        {
+            "type": "case_based",
+            "date": "2020-03-10", 
+            "name": "Case-based measures",
+            "description": "Everyone should stay at home if experiencing a cough or fever.",
+            "sources": ["Federal Public Service. Protect yourself and protect the others. https://www.infocoronavirus.be/en/2020/03/10/protect-yourself-and-protect-the-others/ (2020)"]
+        }
     ]
 }
