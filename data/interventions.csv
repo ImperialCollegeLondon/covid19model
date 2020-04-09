@@ -1,79 +1,84 @@
-Country,schools_universities,travel_restrictions,public_events,sport,lockdown,social_distancing_encouraged,self_isolating_if_ill,,Data inputted by,"note: enter the date on which the closing occurred, e.g. as the last day of UK schools will be 2020-03-20, I entered 2020-03-21",comments,Enter your github username below,,,,,,,,,startdate
-Austria,2020-03-14,2020-03-13,2020-03-10,2020-03-15,2020-03-16,2020-03-16,2020-03-16,,Michaela,,,ettieunwin,,,,,,,,,2020-03-15
-Belgium,2020-03-14,2020-03-19,2020-03-12,2020-03-14,2020-03-18,2020-03-14,2020-03-10,,Tresnia,,Belgium closed border for non essential travel https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Belgium#cite_note-101,,,,,,,,,,2020-03-14
-Denmark,2020-03-13,2020-03-13,2020-03-12,2020-03-12,2020-03-18,2020-03-13,2020-03-12,,Michaela + Helen,,Denmark closed borders entirely on the 14th see https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Denmark#cite_note-90,hcoupland,,,,,,,,,2020-03-16
-France,2020-03-14,2020-03-17,2020-03-13,2020-02-13,2020-03-17,2020-03-16,2020-03-16,,Ettie,,,harrisonzhu508,,,,,,,,,2020-03-13
-Germany,2020-03-14,2020-03-16,2020-03-22,2020-03-13,2020-03-22,2020-03-12,2020-03-06,,Ettie,https://drive.google.com/file/d/1J2WMTz33nvyIH8jwKTR1RWRz0iWx1MOj/view?usp=sharing,,Tresnia,,,,,,,,,2020-03-15
-Italy,2020-03-05,2020-03-09,2020-03-09,2020-03-09,2020-03-11,2020-03-09,2020-03-09,,Harrison,,,,,,,,,,,,2020-03-14
-Norway,2020-03-13,2020-03-13,2020-03-12,2020-03-13,2020-03-24,2020-03-16,2020-03-15,,Seth + Helen,,,tmellan,,,,,,,,,2020-03-13
-Spain,2020-03-13,2020-03-12,2020-03-14,2020-03-13,2020-03-14,2020-03-09,2020-03-17,,Ettie + Pablo,,,MonkeyfaceMx,,,,,,,,,2020-03-18
-Sweden,2020-3-18,2020-03-19,2020-03-12,2020-03-12,2090-03-21,2020-03-16,2020-03-10,,Michaela + Isak,,,isakfalk,,,,,,,,,2020-03-14
-Switzerland,2020-03-14,2020-03-18,2020-03-13,2020-03-16,2020-03-20,2020-03-16,2020-03-02,,Harrison,,,sarahfilippi,,,,,,,,,2020-03-14
-United_Kingdom,2020-03-21,2020-03-24,2020-03-24,2020-03-13,2020-03-24,2020-03-16,2020-03-12,,Seth,,,flaxter,,,,,,,,,2020-03-16
-,,,,,,,,,,,,,,,,,,,,,2020-03-18
-Partial lockdowns,,,,,,,,,,,,,,,,,,,,,2020-03-30
-Country,Type of intervention,,Date,Effected population,,,,,,,,,,,,,,,,,2020-03-12
-Italy,Lockdown of Lombardy region and 14 other provinces,,2020-03-08,26%,,,,,,,,,,,,,,,,,2020-03-13
-Italy,self-isolate if ill and quarantine if tested positive,,2020-03-08,extended to whole country on 9/03,,,,,,,,,,,,,,,,,2020-03-13
-Italy,Extended lockdown (non-essential shops + restaurants + caffee still open),,2020-03-09,,,,,,,,,,,,,,,,,,2020-03-12
-Italy,Extended lockdown + closure of non-essential shops,,2020-03-11,,,,,,,,,,,,,,,,,,2020-03-14
-Italy,Extended lockdown + further closure of non-essential businesses and activities,,2020-03-22,,,,,,,,,,,,,,,,,,2020-03-16
-Spain,"Bans events > 1000 people in Basque Country and La Rioja, Madrid",,2020-03-10,,,,,,,,,,,,,,,,,,17/03/2020
-Spain,"La Rioja, Haro was put on lockdown",,2020-03-07,,,1225802,,,,,,,,,,,,,,,2020-03-14
-Spain,Schools closed in Basque region and Madrid,,2020-03-09,,,,,,,,,,,,,,,,,,2020-03-14
-Denmark,Bans events >100 people,,2020-03-12,,,,,,,,,,,,,,,,,,2020-03-17
-Denmark,Bans events >10 people,,2020-03-18,,,,,,,,,,,,,,,,,,2020-03-23
-Belgium,"Police giving fines (from 200 euros to euros 500 and arresting ppl who are out for no reason, but no self authorisation forms as in france or italy",,,https://www.forbes.com/sites/davidnikel/2020/03/14/norway-closes-all-airports-to-foreigners-as-coronavirus-cases-mount/#35214fc41913,,,,,,,,,,,,,,,,,2020-03-16
-Germany,Lockdown in Bavaria,,2020-03-20,,,,,,,,,,,,,,,,,,2020-03-14
-Germany,Non-essential shops closed,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-12
-Spain,"Non-essential shops closed + ""partial lockdown""",,2020-03-15,,,,,,,,,,,,,,,,,,2020-03-16
-Germany,reduce social interaction recommendations by Merkel,,2020-03-12,,,,,,,,,,,,,,,,,,2020-03-11
-Switzerland,self-isolate if ill,,2020-03-11,,,,,,,,,,,,,,,,,,2020-03-09
-Austria,1m distance by law,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-04
-Germany,Robert Koch Inst recommends self isolation,,2020-03-05,,,,,,,,,,,,,,,,,,2020-03-09
-Austria,stay home if symptoms and coming form region,,,,,,,,,,,,,,,,,,,,2020-03-09
-Germany,Gatherings of > 2 people banned,,2020-03-22,"for the whole country, 22% are not allowed without good reason",,,,,,,,,,,,,,,,,2020-03-13
-France,Closure of schools and universities,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-12
-France,Closure of non-essential shops,,2020-03-15,,,,,,,,,,,,,,,,,,2020-03-13
-France,Lockdown: everybody should stay at home. Exceptions: going to work if not possible to work from home; food shopping; medical appointment; some caring duties; physical exercise alone around home) -- Need a self-authorisation form to leave home.,,2020-03-17,,,,,,,,,,,,,,,,,,2020-03-12
-France,Bans events >5000 people,,2020-02-29,,,,,,,,,,,,,,,,,,2020-03-14
-France,Bans events >1000 people,,2020-03-08,,,,,,,,,,,,,,,,,,2020-03-15
-France,Bans events >100 people,,2020-03-13,,,,,,,,,,,,,,,,,,2020-03-12
-Belgium,Bans gathering >2 persons (except family),,2020-03-18,,,,,,,,,,,,,,,,,,2020-03-13
-Belgium,School closed,,2020-03-16,,,,,,,,,,,,,,,,,,2020-03-12
-Belgium,"Non essential shops closed (exceptions: food shops, pharmacies, bookstores, gaz stations, hairdressers)",,2020-03-18,,,,,,,,,,,,,,,,,,2020-03-12
-,,,,,,,,,,,,,,,,,,,,,21/03/2090
-Switzerland,Kissing and shaking hands advised against,,2020-03-01,,,,,,,,,,,,,,,,,,12/03/2020
-Country,Population 0-9,,Population 10-19,Population 30-39,Population 40-49,Population 50-59,Population 60-69,,Population 70-79,Population 80+,Total (Thousands),,,,,,,,,,18/03/2020
-UK,8.044.056,,7.642.473,9.295.024,8.604.251,9.173.465,7.286.777,,5.830.635,3.450.616,59.327.297,,,,,,,,,,2020-03-16
-Austria,874.182,,876.208,1.243.416,1.178.265,1.407,1033.32,,790.437,488.195,7.891.023,,,,,,,,,,19/03/2020
-Denmark,606.029,,675.948,672.29,738.207,810.126,654.53,,586.138,272.973,5.016.241,,,,,,,,,,20/03/2091
-France,7.527.474,,7.883.477,8011.05,8.325.667,8.635.057,7.764.786,,5.727.704,4.027.268,57.902.483,,,,,,,,,,16/03/2020
-Germany,7.880.904,,7.930.616,10872.02,10.243.351,13.488.393,10.644.142,,7.471.414,5.875.744,74.406.584,,,,,,,,,,13/03/2020
-Norway,614.323,,643.031,738.724,724.93,712.508,586.156,,446.448,228.739,4.694.859,,,,,,,,,,09/03/2020
-Spain,4.234.487,,4.736.077,5.901.993,7.938.499,7.046.327,5.340.654,,4.015.306,2.923.841,42.137.184,,,,,,,,,,18/03/2020
-Sweden,1.193.951,,1.127.127,1.320.299,1.264.123,1.296.647,1.093.868,,994.244,532.081,8822.34,,,,,,,,,,23/03/2020
-Switzerland,884.945,,834.867,1.219.224,1.166.588,1.320.622,977.435,,751.993,459.215,7.614.889,,,,,,,,,,21/03/2020
-Italy,4.994.995,,5.733.448,6.998.434,9.022.004,9.567.192,7.484.862,,6.028.908,4.528.549,54.358.392,,,,,,,,,,21/03/2020
-,,,,,,,,,,,,,,,,,,,,,16/03/2020
-,,,,,,,,,,,,,,,,,,,,,23/03/2020
-,,,,,,,,,,,,,,,,,,,,,
-NRW,17933,,,,,,,,,,,,,,,,,,,,
-Bayern,13077,,,,,,,,,,,,,,,,,,,,
-BW,11070,,,,,,,,,,,,,,,,,,,,
-Niedersachsen,7982,,,,,,,,,,,,,,,,,,,,
-Hessen,6266,,,,,,,,,,,,,,,,,,,,
-RP,4085,,,,,,,,,,,,,,,,,,,,
-Sachsen,4078,,,,,,,,,,,,,,,,,,,,
-Berlin,3645,,,,,,,,,,,,,,,,,,,,
-SH,2897,,,,,,,,,,,,,,,,,,,,
-Brandenburg,2512,,,,,,,,,,,,,,,,,,,,
-Sachsen A,2208,,,,,,,,,,,,,,,,,,,,
-Thueringen,2143,,,,,,,,,,,,,,,,,,,,
-Hamburg,1841,,,,,,,,,,,,,,,,,,,,
-MeckPom,1610,,,,,,,,,,,,,,,,,,,,
-Saarland,991,,,,,,,,,,,,,,,,,,,,
-Bremen 683,683,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,
-,83021,,,,,,,,,,,,,,,,,,,,
-,"0,2185712049",,,,,,,,,,,,,,,,,,,,
+Country,Type,Event,Date effective,Link,,
+Austria,Schools + Universities,Nationwide school closures.,14.03.2020,https://www.bmbwf.gv.at/Ministerium/Informationspflicht/corona/corona_status.html,,
+Austria,Public events,Banning of gatherings of more than 10 people. ,10.03.2020,https://www.theguardian.com/world/2020/mar/10/coronavirus-several-eu-states-ban-mass-events-after-italian-lockdown,,
+Austria,Lockdown,Banning all access to public spaces and gatherings of more than 5 people. Advice to maintain 1m distance.,16.03.2020,https://www.sozialministerium.at/Informationen-zum-Coronavirus/Coronavirus---Aktuelle-Ma%C3%9Fnahmen.html,Document on website: Verordnung_V20200325-web,
+Austria,Social distancing encouraged,Recommendation to maintain a distance of 1m.,16.03.2020,https://www.sozialministerium.at/Informationen-zum-Coronavirus/Coronavirus---Aktuelle-Ma%C3%9Fnahmen.html,Document on website: Verordnung_V20200325-web,
+Austria,Self-isolating if ill,Implemented at lockdown.,16.03.2020,https://www.sozialministerium.at/Informationen-zum-Coronavirus/Coronavirus---Aktuelle-Ma%C3%9Fnahmen.html,,
+Belgium,Schools + Universities,Nationwide school closures.,14.03.2020,https://www.info-coronavirus.be/en/2020/03/12/phase-2-maintained-transition-to-the-federal-phase-and-additional-measures/,,
+Belgium,Public events,All recreational activities cancelled regardless of size.,12.03.2020,https://www.info-coronavirus.be/en/2020/03/12/phase-2-maintained-transition-to-the-federal-phase-and-additional-measures/,,
+Belgium,Lockdown,Citizens are required to stay at home except for work and essential journeys. Going outdoors only with household members or 1 friend.,18.03.2020,https://www.belgium.be/en/news/2020/coronavirus_reinforced_measures,,
+Belgium,Social distancing encouraged,"Public transport recommended only for essential journeys, work from home encouraged, all public places e.g. restaurants closed.",14.03.2020,https://www.info-coronavirus.be/en/2020/03/12/phase-2-maintained-transition-to-the-federal-phase-and-additional-measures/,,
+Belgium,Self-isolating if ill,Everyone should stay at home if experiencing a cough or fever.,10.03.2020,https://www.info-coronavirus.be/en/2020/03/10/protect-yourself-and-protect-the-others/,,
+Denmark,Schools + Universities,Secondary schools shut and universities (primary schools also shut on 16th).,13.03.2020,https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Denmark,,
+Denmark,Public events,"Bans of events >100 people, closes cultural institutions, leisure facilities etc.",12.03.2020,https://nyheder.tv2.dk/samfund/2020-03-11-danmark-lukker-ned-her-er-regeringens-nye-tiltag,,
+Denmark,Lockdown,Bans of gatherings of >10 people in public and all public places were shut.,18.03.2020,https://nyheder.tv2.dk/samfund/2020-03-11-danmark-lukker-ned-her-er-regeringens-nye-tiltag,https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Denmark,
+Denmark,Social distancing encouraged,Limited use of public transport. All cultural institutions shut and recommendation to keep appropriate distance.,13.03.2020,https://politi.dk/coronavirus-i-danmark/seneste-nyt-fra-myndighederne/nye-tiltag-mod-covid-19,,
+Denmark,Self-isolating if ill,Everyone should stay at home if experiencing a cough or fever.,12.03.2020,https://stps.dk/da/ansvar-og-retningslinjer/vejledning/indberetning-om-covid-19/,,
+France,Schools + Universities,Nationwide school closures.,14.03.2020,https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_France,,
+France,Public events,Bans of events >100 people.,13.03.2020,https://www.thelocal.fr/20200313/france-bans-gatherings-of-over-100-people-to-fight-coronavirus-pandemic,,
+France,Lockdown,Everybody has to stay at home. Need a self-authorisation form to leave home.,17.03.2020,https://www.theguardian.com/world/2020/mar/16/coronavirus-spain-takes-over-private-healthcare-amid-more-european-lockdowns,,
+France,Social distancing encouraged,Advice at the time of lockdown.,16.03.2020,https://www.theguardian.com/world/2020/mar/16/coronavirus-spain-takes-over-private-healthcare-amid-more-european-lockdowns,,
+France,Self-isolating if ill,Advice at the time of lockdown.,16.03.2020,https://www.theguardian.com/world/2020/mar/16/coronavirus-spain-takes-over-private-healthcare-amid-more-european-lockdowns,,
+Germany,Schools + Universities,Nationwide school closures.,14.03.2020,https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Germany,,
+Germany,Public events,No gatherings of >1000 people (12th March). Otherwise regional destrictions only until lockdown.,22.03.2020,https://web.archive.org/web/20200317073042/https://www.bmi.bund.de/SharedDocs/faqs/DE/themen/bevoelkerungsschutz/coronavirus/coronavirus-faqs.html#doc13738352bodyText7,,
+Germany,Lockdown,"Gatherings of > 2 people banned, 1.5 m distance",22.03.2020,https://www.bmi.bund.de/SharedDocs/downloads/DE/veroeffentlichungen/2020/hinweis-einschraenkung-soziale-kontakte.pdf?__blob=publicationFile&v=1,https://www.bbc.co.uk/news/world-europe-51999080,
+Germany,Social distancing encouraged,Avoid social interaction wherever possible recommended by Merkel,12.03.2020,https://www.bundesregierung.de/breg-de/themen/coronavirus/mpk-1730186,,
+Germany,Self-isolating if ill,Advice for everyone experiencing symptoms to contact a health care agency to get tested and then self-isolate.,06.03.2020,https://web.archive.org/web/20200312004624/https://www.rki.de/SharedDocs/FAQ/NCOV2019/FAQ_Liste.html,,
+Italy,Schools + Universities,Nationwide school closures.,05.03.2020,http://www.salute.gov.it/portale/nuovocoronavirus/dettaglioVideoNuovoCoronavirus.jsp?lingua=italiano&menu=multimedia&p=video&id=2052,,
+Italy,Public events,The government bans all public events.,09.03.2020,https://edition.cnn.com/2020/03/08/europe/italy-coronavirus-lockdown-europe-intl/index.html,,
+Italy,Lockdown,The government closes all public places. People have to stay at home except for essential travel.,11.03.2020,https://www.wsj.com/articles/italy-hardens-nationwide-quarantine-11583962093,https://en.wikipedia.org/wiki/2020_Italy_coronavirus_lockdown,
+Italy,Social distancing encouraged,A distance of more than 1m has to be kept and any other form of alternative aggregation is to be excluded.,09.03.2020,https://www.romatoday.it/attualita/coronavirus-pub-cinema-teatri-locali-chiusi-nuovo-decreto.html,,
+Italy,Self-isolating if ill,self-isolate if ill and quarantine if tested positive,09.03.2020,https://www.gazzettaufficiale.it/eli/id/2020/03/08/20A01522/sg,,
+Norway,Schools + Universities,Norwegian Directorate of Health closes all educational institutions. Including childcare facilities and all schools,13.03.2020,https://www.fhi.no/en/news/2020/norwegian-directorate-of-health-implements-the-following-today---from-6-p.m/,,
+Norway,Public events,The Directorate of Health bans all non-necessary social contact.,12.03.2020,https://www.fhi.no/en/news/2020/norwegian-directorate-of-health-implements-the-following-today---from-6-p.m/,,
+Norway,Lockdown,Only people living together are allowed outside together. Everyone has to keep a 2m distance.,24.03.2020,https://translate.google.com/translate?sl=no&tl=en&u=https%3A%2F%2Fwww.nrk.no%2Fnorge%2Ffolkehelseinstituttet-mener-23.000-kan-vaere-smittet-1.14958149,,
+Norway,Social distancing encouraged,The Directorate of Health advises against all travelling and non-necessary social contacts.,16.03.2020,https://www.fhi.no/en/news/2020/norwegian-directorate-of-health-implements-the-following-today---from-6-p.m/,,
+Norway,Self-isolating if ill,Advice to self-isolate for 7 days if experiencing a cough or fever symptoms.,15.03.2020,https://www.regjeringen.no/en/aktuelt/the-government-is-establishing-clear-quarantine-and-isolation-rules/id2693647/,,
+Spain,Schools + Universities,Nationwide school closures.,13.03.2020,https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Spain,,
+Spain,Public events,Banning of all public events by lockdown.,14.03.2020,https://www.mscbs.gob.es/gabinete/notasPrensa.do?id=4807,,
+Spain,Lockdown,,14.03.2020,https://www.boe.es/eli/es/rd/2020/03/14/463/con,,
+Spain,Social distancing encouraged,Advice on social distancing and working remotely from home. ,09.03.2020,https://www.mscbs.gob.es/gabinete/notasPrensa.do?id=4806,used to say 12/3/2020,
+Spain,Self-isolating if ill,,17.03.2020,https://www.mscbs.gob.es/profesionales/saludPublica/ccayes/alertasActual/nCov-China/ciudadania.htm,,
+Sweden,Schools + Universities,Colleges and upper secondary schools shut. 18/3/2020 only 48% closed,17.03.2090,https://www.folkhalsomyndigheten.se/nyheter-och-press/nyhetsarkiv/2020/mars/larosaten-och-gymnasieskolor-uppmanas-nu-att-bedriva-distansundervisning,,
+Sweden,Public events,Since March 29 the limit is 50 persons.,29.03.2020,https://www.visitstockholm.com/good-to-know/coronavirus/,,
+Sweden,Lockdown,No lockdown occured.,17.03.2090,,,
+Sweden,Social distancing encouraged,"People even with mild symptoms told to limit social contact, encouragement to work from home.",16.03.2020,https://sverigesradio.se/sida/artikel.aspx?programid=2054&artikel=7430511,,
+Sweden,Self-isolating if ill,,10.03.2020,https://www.folkhalsomyndigheten.se/nyheter-och-press/nyhetsarkiv/2020/mars/flera-tecken-pa-samhallsspridning-av-covid-19-i-sverige/,,
+Switzerland,Schools + Universities,No in person teaching until 4th of April.,14.03.2020,https://www.bag.admin.ch/bag/de/home/das-bag/aktuell/medienmitteilungen.msg-id-78437.html,,
+Switzerland,Public events,The government bans events >100 people.,13.03.2020,https://www.bag.admin.ch/bag/fr/home/das-bag/aktuell/medienmitteilungen.msg-id-78437.html,,
+Switzerland,Lockdown,Gatherings of more than 5 people are banned.,20.03.2020,https://www.bag.admin.ch/bag/de/home/das-bag/aktuell/medienmitteilungen.msg-id-78513.html,,
+Switzerland,Social distancing encouraged,Advice on keeping distance. All business where this cannot be realised have been closed in all states (kantons).,16.03.2020,https://www.bag.admin.ch/bag/de/home/das-bag/aktuell/medienmitteilungen.msg-id-78454.html,,
+Switzerland,Self-isolating if ill,Advice to self-isolate if experiencing a cough or fever symptoms.,02.03.2020,https://www.bag.admin.ch/bag/de/home/das-bag/aktuell/medienmitteilungen.msg-id-78304.html,,
+United_Kingdom,Schools + Universities,"Nationwide school closure. Childminders, nurseries and sixth forms are told to follow the guidance.",21.03.2020,https://www.gov.uk/government/news/schools-colleges-and-early-years-settings-to-close,https://www.gov.uk/government/collections/coronavirus-covid-19-guidance-for-schools-and-other-educational-settings,
+United_Kingdom,Public events,Implemented with lockdown.,24.03.2020,https://www.gov.uk/government/speeches/pm-address-to-the-nation-on-coronavirus-23-march-2020,https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/874742/Full_guidance_on_staying_at_home_and_away_from_others__1_.pdf,
+United_Kingdom,Lockdown,Gatherings of more than 2 people not from the same household banned and police-enforceable.,24.03.2020,https://www.gov.uk/government/speeches/pm-address-to-the-nation-on-coronavirus-23-march-2020,,
+United_Kingdom,Social distancing encouraged,"Advice to avoid pubs, clubs, theatres and other public institutions.",16.03.2020,https://www.telegraph.co.uk/global-health/science-and-disease/coronavirus-news-uk-latest-update-covid-19-death-toll-cases/,,
+United_Kingdom,Self-isolating if ill,Advice to self-isolate for 7 days if experiencing a cough or fever symptoms.,12.03.2020,https://www.bbc.co.uk/news/uk-51857856,,
+Greece,Schools + Universities,Nationwide closure of educational institutions,11.03.2020,https://www.kathimerini.gr/1068505/article/epikairothta/ellada/kleinoyn-gia-dyo-evdomades-sxoleia-panepisthmia-paidikoi-sta8moi-kai-frontisthria,Lucia,
+Greece,Public events,Ban of gatherings of more than 10 people,19.03.2020,https://www.garda.com/crisis24/news-alerts/322026/greece-prime-minister-bans-mass-gatherings-due-to-covid-19-march-11-update-5,Lucia,"(larger mass gatherings banned before, but couldn't get a clear start date)"
+Greece,Lockdown,Ban on non-essential transport and movement across the country. Police enforcing restrictions with fines.,23.03.2020,https://www.in.gr/2020/03/22/greece/apagoreysi-kykloforias-analytikos-odigos-pou-tha-epitrepetai-metakinisi-ti-tha-isxysei-gia-tous-ergazomenous/,Lucia,(weddings and ceremonies still allowed under conditions provided by law)
+Greece,Social distancing encouraged,"In supermarkets, pharmacies and other essentials keep 2mt distance",16.03.2020,https://www.news247.gr/epixeiriseis/koronoios-elegchos-eisodoy-sta-soyper-market-apo-deytera.7602282.html,Lucia,
+Greece,Self-isolating if ill,Isolate at home if showing mild symptoms or fever,09.03.2020,http://www.ekathimerini.com/250416/article/ekathimerini/news/with-covid-19-cases-at-84-those-with-symptoms-urged-to-stay-home,Lucia,
+Greece,Closure of cultural institutions,"closure of Cinemas, theaters, theaters, Libraries, Museums, archaeological and historical sites",14.03.2020,https://eody.gov.gr/anastoli-leitoyrgias-meta-apo-eisigisi-tis-epitropis-empeirognomonon-toy-ypoyrgeioy-ygeias/,Lucia,
+Greece,Closure of restaurants,"closure of malls, cafes, bars and food outlets",14.03.2020,http://www.ekathimerini.com/250618/article/ekathimerini/news/malls-cafes-bars-eateries-to-close-as-coronavirus-cases-rise-to-190,Lucia,
+Greece,Advice to work from home,Govt endorses flexible working hours and teleworking,10.03.2020,http://en.protothema.gr/greek-government-plans-flexible-working-hours-and-telework-to-battle-coronavirus/,Lucia,"(not specifically working from home, but allows workers to avoid rush hour travel and to work from home if child is home from school or in the event of self isolation)"
+Greece,Keep distance from others,"Video from Greek government recommending keeping 1m distance (27 secs in) ""κρατάμε απόσταση τουλάχιστον 1 μέτρου από άλλους και ιδιαίτερα όσους βήχουν, φτέρνίξονται ή έχουν πυρετό"" = ""keep a distance of at least 1 meter from others and especially those who cough, sneeze or have a fever""",25.02.2020,https://government.gov.gr/aples-ke-chrisimes-odigies-gia-tin-prostasia-mas-apo-ton-koronoio/,Rebecca,
+Portugal,Schools + Universities,Nationwide school closures.,14.03.2020,https://covid19estamoson.gov.pt/wp-content/uploads/2020/03/20200313-Suspens%C3%86o-de-todas-as-atividades-letivas-e-n%C3%86o-letivas-com-presen%E2%80%A1a-de-estudantes-em-todas-as-institui%E2%80%A1a%CC%88es-de-Ensino-Superior.pdf,Rebecca,
+Portugal,Public events,Gatherings of more than 100 people banned.,12.03.2020,https://www.barrons.com/news/portugal-bans-gatherings-of-more-than-100-due-to-coronavirus-01584292204,Rebecca,
+Portugal,Lockdown,"State of emergency declared on the 18th and new measures defined on the 19th, to come into place on 00:00 of 22nd March",22.03.2020,https://www.politico.eu/article/portugal-quarantine-measures-coronavirus-covid19-antonio-costa-shutdown-state-of-emergency/,Rebecca,"(20200319 Communiqué of the Council of Ministers - Measures approved by the Council of Ministers on March 19, 2020) ""Decree takes effect on March 22 00:00"""
+Portugal,Social distancing encouraged,"Capacity restrictions of entry to bars and restaurants, encouraged to limit frequency of visits to supermarkets/gyms/public services. Nightclubs closed.",12.03.2020,https://covid19estamoson.gov.pt/wp-content/uploads/2020/03/20200312-Medidas-extraordin-rias-de-conten%E2%80%A1%C3%86o-e-mitiga%E2%80%A1%C3%86o-do-coronav%C2%A1rus-Conselho-de-Ministros-de-12-de-mar%E2%80%A1o-de-2020.pdf,Rebecca,
+Portugal,Self-isolating if ill,Mandatory isolation is imposed for people who are sick or being monitored by health authorities.,19.03.2020,https://www.politico.eu/article/portugal-quarantine-measures-coronavirus-covid19-antonio-costa-shutdown-state-of-emergency/,Rebecca,
+Portugal,Closure of cultural institutions,"The closure of certain types of facilities and establishments (such as, for example, those intended for recreational, cultural, sporting and catering activities, among others)",22.03.2020,https://covid19estamoson.gov.pt/documentacao/comunicados/,Rebecca,"Approved by ministers on March 19 but ""Decree takes effect on March 22 00:00"""
+Portugal,Closure of restaurants,"The closure of certain types of facilities and establishments (such as, for example, those intended for recreational, cultural, sporting and catering activities, among others)",22.03.2020,https://covid19estamoson.gov.pt/documentacao/comunicados/,Rebecca,"Approved by ministers on March 19 but ""Decree takes effect on March 22 00:00"""
+Portugal,Work from home,É obrigatória a adoção do regime de teletrabalho sempre que as funções em causa o permitam - google translation: It is mandatory to adopt the teleworking regime whenever the functions in question allow,22.03.2020,https://covid19estamoson.gov.pt/documentacao/comunicados/,Rebecca,"Approved by ministers on March 19 but ""Decree takes effect on March 22 00:00"""
+Portugal,Stay at home,"States that everyone who isn't in mandatory confinement or an essential worker should only go out in public for essential reasons e.g. health reasons, acquisition of goods, caring for the vulnerable, exercise.",22.03.2020,https://covid19estamoson.gov.pt/documentacao/comunicados/,Rebecca,"Approved by ministers on March 19 but ""Decree takes effect on March 22 00:00"""
+Portugal,Keep distance from others,"Transmission prevention measures in public service establishments: ""Maintain distance and space between citizens in all situations"" and ""Ensure that counter service is provided at the appropriate distance (at least 1 meter, ideally 2)""",17.03.2020,https://covid19.min-saude.pt/wp-content/uploads/2020/03/i026012.pdf,Rebecca,
+Portugal,Public gatherings,Gatherings of more than 5 people prohibited (except those with family ties).,02.04.2020,https://www.portugal.gov.pt/pt/gc22/governo/comunicado-de-conselho-de-ministros?i=339,Rebecca,
+Netherlands,Schools + Universities,exemption for children of essential workers,14.03.2020,https://www.rijksoverheid.nl/actueel/nieuws/2020/03/15/aanvullende-maatregelen-onderwijs-horeca-sport,Pablo,
+Netherlands,Public events,Public gatherings >100 people,12.03.2020,https://www.iq-mag.net/2020/03/dutch-government-bans-events-100-people/#.XoxumC2Q3yk,Pablo,https://www.rijksoverheid.nl/actueel/nieuws/2020/03/12/nieuwe-maatregelen-tegen-verspreiding-coronavirus-in-nederland
+Netherlands,Social distancing encouraged,"Social distancing and self-isolation for people with flue-like symptoms as of Marc 12 for the whole country, previously only for the Noord-Brabant province",12.03.2020,https://www.rivm.nl/en/news/expansion-of-coronavirus-measures,Pablo,https://www.rijksoverheid.nl/actueel/nieuws/2020/03/12/nieuwe-maatregelen-tegen-verspreiding-coronavirus-in-nederland
+Netherlands,Lockdown,"Intelligent lockdown, people are still allowed to meet if keeping their distance",23.03.2020,,,
+Netherlands,Self-isolating if ill,"Social distancing and self-isolation for people with flue-like symptoms as of Marc 12 for the whole country, previously only for the Noord-Brabant province",12.03.2020,https://www.rivm.nl/en/news/expansion-of-coronavirus-measures,Pablo,
+Netherlands,Closure of cultural institutions,"museums, concert halls and theatres were closed following the ban of large gatherings",12.03.2020,https://www.rijksoverheid.nl/actueel/nieuws/2020/03/12/nieuwe-maatregelen-tegen-verspreiding-coronavirus-in-nederland,Lucia,
+Netherlands,Closure of restaurants,"Schools, restaurants, gyms, sports venues, sex clubs, etc. closed as of 18:00hrs March 15",15.03.2020,https://www.rijksoverheid.nl/actueel/nieuws/2020/03/15/aanvullende-maatregelen-onderwijs-horeca-sport,,
+Netherlands,Advice to work from home,,12.03.2020,https://www.rijksoverheid.nl/actueel/nieuws/2020/03/12/nieuwe-maatregelen-tegen-verspreiding-coronavirus-in-nederland,Lucia,
