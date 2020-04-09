@@ -22,10 +22,7 @@ make_forecast_plot <- function(){
   
   load(paste0("results/", filename))
   
-  data_interventions <- read.csv("data/interventions.csv", 
-                                 stringsAsFactors = FALSE)
-  
-  for(i in 1:11){
+  for(i in 1:14){
     N <- length(dates[[i]])
     N2 <- N + 7
     country <- countries[[i]]
@@ -42,9 +39,9 @@ make_forecast_plot <- function(){
     estimated_deaths_li_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.025)[N:N2]
     estimated_deaths_ui_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.975)[N:N2]
     
-    rt <- colMeans(out$Rt[,1:N,i])
-    rt_li <- colQuantiles(out$Rt[,1:N,i],probs=.025)
-    rt_ui <- colQuantiles(out$Rt[,1:N,i],probs=.975)
+    rt <- colMeans(out$Rt_adj[,1:N,i])
+    rt_li <- colQuantiles(out$Rt_adj[,1:N,i],probs=.025)
+    rt_ui <- colQuantiles(out$Rt_adj[,1:N,i],probs=.975)
     
     data_country <- data.frame("time" = as_date(as.character(dates[[i]])),
                                "country" = rep(country, length(dates[[i]])),
