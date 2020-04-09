@@ -11,7 +11,7 @@ docker run --rm -it -v $(pwd):/var/model harrisonzhu5080/covid19model:latest $(i
 If your user is not in the docker group then you will need to run the above
 command prefixed with `sudo`. The same applies to all following commands.
 
-In the above, the `-v $(pwd)/:/var/model` option makes the current directory
+In the above, the `-v $(pwd):/var/model` option makes the current directory
 accessible when the container is run. This means the code which is executed is
 that in the current directory and includes any changes made. The use of `$(id
 -u)` and `$(id -g)` ensure that all model output files will be owned by the
