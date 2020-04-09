@@ -23,11 +23,21 @@ make_three_pannel_plot <- function(){
   filename2 <- args[1]
   load(paste0("results/", filename2))
   print(sprintf("loading: %s",paste0("results/",filename2)))
-  data_interventions <- read.csv("data/interventions.csv", 
-                                 stringsAsFactors = FALSE)
-  covariates <- data_interventions[1:11, c(1,2,3,4,5,6, 7, 8)]
+  covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
+  names_covariates = c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
+  covariates <- covariates %>%
+    filter((Type %in% names_covariates))
+  covariates <- covariates[,c(1,2,4)]
+  covariates <- spread(covariates, Type, Date.effective)
+  names(covariates) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
+  covariates <- covariates[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
+  covariates$schools_universities <- as.Date(covariates$schools_universities, format = "%d.%m.%Y")
+  covariates$lockdown <- as.Date(covariates$lockdown, format = "%d.%m.%Y")
+  covariates$public_events <- as.Date(covariates$public_events, format = "%d.%m.%Y")
+  covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
+  covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
   
-  for(i in 1:11){
+  for(i in 1:14){
     print(i)
     N <- length(dates[[i]])
     country <- countries[[i]]
@@ -45,20 +55,16 @@ make_three_pannel_plot <- function(){
     estimated_deaths_li2 <- colQuantiles(estimated.deaths[,1:N,i], probs=.25)
     estimated_deaths_ui2 <- colQuantiles(estimated.deaths[,1:N,i], probs=.75)
     
-    rt <- colMeans(out$Rt[,1:N,i])
-    rt_li <- colQuantiles(out$Rt[,1:N,i],probs=.025)
-    rt_ui <- colQuantiles(out$Rt[,1:N,i],probs=.975)
-    rt_li2 <- colQuantiles(out$Rt[,1:N,i],probs=.25)
-    rt_ui2 <- colQuantiles(out$Rt[,1:N,i],probs=.75)
+    rt <- colMeans(out$Rt_adj[,1:N,i])
+    rt_li <- colQuantiles(out$Rt_adj[,1:N,i],probs=.025)
+    rt_ui <- colQuantiles(out$Rt_adj[,1:N,i],probs=.975)
+    rt_li2 <- colQuantiles(out$Rt_adj[,1:N,i],probs=.25)
+    rt_ui2 <- colQuantiles(out$Rt_adj[,1:N,i],probs=.75)
     
     
     # delete these 2 lines
-    covariates_country <- covariates[which(covariates$Country == country), 2:8]   
-    
-    # Remove sport
-    covariates_country$sport = NULL 
-    covariates_country$travel_restrictions = NULL 
-    covariates_country_long <- gather(covariates_country[], key = "key", 
+    covariates_country <- covariates[which(covariates$Country == country), 2:6] 
+    covariates_country_long <- gather(covariates_country, key = "key", 
                                       value = "value")
     covariates_country_long$x <- rep(NULL, length(covariates_country_long$key))
     un_dates <- unique(covariates_country_long$value)
