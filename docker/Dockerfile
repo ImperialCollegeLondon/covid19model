@@ -1,10 +1,14 @@
 FROM jrnold/rstan:latest
 
+RUN echo "deb http://http.debian.net/debian stretch-backports main contrib non-free" >> /etc/apt/sources.list.d/stretch-backports.list
+RUN apt-get update && apt-get install -y \
+    fonts-open-sans \
+    fonts-arkpandora \
+	fonts-adf-verana
+
 RUN install2.r --error --deps TRUE \
-	gdata EnvStats ggpubr \
+	gdata EnvStats ggpubr svglite jsonlite \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
-COPY docker/run_model_script.sh /root/
 WORKDIR /var/model
-ENTRYPOINT ["sh", "/root/run_model_script.sh"]
-
+CMD Rscript base.r base

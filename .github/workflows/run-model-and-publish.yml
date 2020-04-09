@@ -1,0 +1,58 @@
+# This is a basic workflow to help you get started with Actions
+
+name: RUN_MODEL_AND_PUBLISH
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+
+# This workflow can be started manually by using the GitHub API
+# send a POST request to https://api.github.com/repos/ImperialCollegeLondon/covid19model/dispatches
+# with a an Authorization token <GitHub_Token> header and JSON payload:
+# {"event_type": "run-and-publish"}
+on:
+  repository_dispatch:
+    types: run-and-publish
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  run-and-publish:
+    # Set secret to enable the workflow
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # should throw an error if the token is not set, to enable the action only for repos which have set this token
+    - name: Check if access token is set
+      env:
+        SECRET_TEST: ${{ secrets.GH_PAGES_ACCESS_TOKEN }}
+      run: "[ -z \"$SECRET_TEST\" ] && exit 1 || exit 0 "
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    # Docker build
+    - name: Build docker image
+      run: |
+        docker build -f docker/Dockerfile -t covid19model:latest .
+
+    - name: Download the newest data from the ECDC
+      run: |
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) covid19model:latest Rscript data/fetch-ecdc.R
+
+    - name: Perform the full model run, aprox. 90 minutes
+      run: |
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env FULL=TRUE covid19model:latest
+
+    - name: Fix SVG font families for publishing
+      run: |
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) covid19model:latest Rscript web-fix-fonts.R
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.GH_PAGES_ACCESS_TOKEN }}
+        external_repository: ImperialCollegeLondon/covid19estimates
+        publish_branch: master
+        publish_dir: ./web
+        keep_files: true

@@ -18,6 +18,10 @@ countries <- c(
   "Switzerland"
 )
 
+# Default run parameters for the model
+DEBUG = FALSE
+FULL = FALSE
+
 args = commandArgs(trailingOnly=TRUE)
 if(length(args) == 0) {
   args = 'base'
@@ -52,17 +56,17 @@ forecast = 0
 if (Sys.getenv("DEBUG") == "TRUE") {
    DEBUG = TRUE
    print("Performing a DEBUG run")   
-}  else  {
-   DEBUG = FALSE
+} else if (Sys.getenv("FULL") == "TRUE") {
+  FULL = TRUE
+  print("Performing a full run")
 }
 
-if(DEBUG == FALSE) {
-  N2 = 75 # Increase this for a further forecast
-}  else  {
-  ### For faster runs:
-  # countries = c("Austria","Belgium") #,Spain")
-  N2 = 75
-}
+# Time difference between original report and current extension
+deltaT = (max(as.Date(d$DateRep,format='%d/%m/%Y')) - as.Date("28/03/2020",format='%d/%m/%Y'))
+N2 = 75 + as.numeric(deltaT, units = "days")
+
+### For faster runs:
+# countries = c("Austria","Belgium") #,Spain")
 # countries = c("Italy","United_Kingdom","Spain","Norway","Austria","Switzerland")
 
 dates = list()
@@ -208,8 +212,9 @@ m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 
 if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
+} else if (FULL) {
+  fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=8,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
 } else { 
-  # fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=8,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
   fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.90, max_treedepth = 10))
 }  
 
@@ -252,3 +257,9 @@ g = (mcmc_intervals(Rt,prob = .9))
 ggsave(sprintf("results/%s-covars-final-rt.pdf",filename),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", filename,'.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'.Rdata')) ## to run this code you will need to adjust manual values of forecast required
+
+# Verify that the whole output for the web has been generated correctly and update last-update dates
+verify_result <- system(paste0("Rscript web-verify-output.R ", filename,'.Rdata'),intern=FALSE)
+if(verify_result != 0){
+  stop("Verification of web output failed!")
+}
