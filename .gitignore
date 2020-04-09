@@ -1,6 +1,5 @@
 # Ignore generated figures in website
-web/figures/
-web/data/latest-updates.json
+web
 
 # History files
 .Rhistory
