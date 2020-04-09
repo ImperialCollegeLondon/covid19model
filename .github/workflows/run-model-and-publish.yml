@@ -42,7 +42,7 @@ jobs:
 
     - name: Perform the full model run, aprox. 90 minutes
       run: |
-        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env FULL=TRUE covid19model:latest
+        docker run --rm -v $(pwd):/var/model --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest
 
     - name: Fix SVG font families for publishing
       run: |
@@ -52,4 +52,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.GH_PAGES_ACCESS_TOKEN }}
+        external_repository: ImperialCollegeLondon/covid19estimates
+        publish_branch: master
         publish_dir: ./web
+        keep_files: true
