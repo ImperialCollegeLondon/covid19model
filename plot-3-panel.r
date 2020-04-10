@@ -17,7 +17,7 @@ library(svglite)
 source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
 make_three_pannel_plot <- function(){
-  
+  print("Making three panel plots...")
   args <- commandArgs(trailingOnly = TRUE)
   
   if (length(args)==1){
@@ -45,10 +45,19 @@ make_three_pannel_plot <- function(){
   covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
   covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
   
-  for(i in 1:length(countries)){
+  tryCatch({
+    print(region_to_country_map)
+  },error=function(e){
+    for(country in countries){
+      region_to_country_map[[country]] <- country
+    }
+  })
+
+  for(i in 1:length(region_to_country_map)){
     print(i)
     N <- length(dates[[i]])
-    country <- countries[[i]]
+    Region <- names(region_to_country_map)[i]
+    country <- region_to_country_map[[Region]]
     
     predicted_cases <- colMeans(prediction[,1:N,i])
     predicted_cases_li <- colQuantiles(prediction[,1:N,i], probs=.025)
@@ -122,10 +131,11 @@ make_three_pannel_plot <- function(){
     make_plots(data_country = data_country, 
                covariates_country_long = covariates_country_long,
                filename2 = filename2,
-               country = country,
+               country = Region,
                percent_pop = percent_pop)
     
   }
+  print("Three panel plots complete.")
 }
 
 #---------------------------------------------------------------------------

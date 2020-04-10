@@ -61,9 +61,20 @@ covariates$schools_universities[covariates$schools_universities > covariates$loc
 covariates$public_events[covariates$public_events > covariates$lockdown] <- covariates$lockdown[covariates$public_events > covariates$lockdown]
 covariates$social_distancing_encouraged[covariates$social_distancing_encouraged > covariates$lockdown] <- covariates$lockdown[covariates$social_distancing_encouraged > covariates$lockdown]
 covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$lockdown] <- covariates$lockdown[covariates$self_isolating_if_ill > covariates$lockdown]
-
+# Todo duplicate data directly at this stage for regions without a full set.
+# for (Region in names(region_to_country_map)){
+#   if (length(covariates$Country[covariates$Country==Region])==0)
+#   {
+#     temp <- covariates[covariates$Country==region_to_country_map[[Region]],]
+#     temp$Country = Region
+#     browser()
+#     for (i in 1:length(temp)){
+#       covariates[i] <- c(covariates[i],temp[i])
+#     }
+#     browser()
+#   }
+# }
 forecast = 0
-
 DEBUG = TRUE
 N2 = 90 # increase if you need more forecast
 
@@ -223,7 +234,7 @@ print(sprintf("Jobid = %s",JOBID))
 save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 
 countries <- names(region_to_country_map)
-save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,
+save(fit,prediction,dates,reported_cases,deaths_by_country,countries,region_to_country_map,estimated.deaths,
      estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
 library(bayesplot)
@@ -241,7 +252,4 @@ ggsave(sprintf("results/%s-final-rt.png",filename),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'))
 system(paste0("Rscript make-table.r results/",filename,'-stanfit.Rdata'))
-verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
-if(verify_result != 0){
-  stop("Verification of web output failed!")
-}
+
