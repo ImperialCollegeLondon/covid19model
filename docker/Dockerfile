@@ -7,8 +7,14 @@ RUN apt-get update && apt-get install -y \
 	fonts-adf-verana
 
 RUN install2.r --error --deps TRUE \
-	tidyr gdata EnvStats ggpubr svglite jsonlite optparse \
+	ggplot2 tidyr gdata EnvStats ggpubr svglite jsonlite optparse \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 WORKDIR /var/model
+
+COPY data data/
+COPY stan-models stan-models/
+COPY utils utils/
+COPY *.r .
+
 CMD Rscript base.r base
