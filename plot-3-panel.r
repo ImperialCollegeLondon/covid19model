@@ -12,6 +12,7 @@ library(gridExtra)
 library(ggpubr)
 library(bayesplot)
 library(cowplot)
+library(svglite)
 
 source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
@@ -19,11 +20,19 @@ make_three_pannel_plot <- function(){
   
   args <- commandArgs(trailingOnly = TRUE)
   
-  filename2 <- args[1]
+  if (length(args)==1){
+    filename2 = args[1]
+    percent_pop = FALSE
+  } else {
+    filename2 = args[1]
+    percent_pop = args[2]
+  }
+  
   load(paste0("results/", filename2))
   print(sprintf("loading: %s",paste0("results/",filename2)))
   covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
-  names_covariates = c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
+  names_covariates = c('Schools + Universities','Self-isolating if ill', 'Public events', 
+                       'Lockdown', 'Social distancing encouraged')
   covariates <- covariates %>%
     filter((Type %in% names_covariates))
   covariates <- covariates[,c(1,2,4)]
@@ -113,15 +122,18 @@ make_three_pannel_plot <- function(){
     make_plots(data_country = data_country, 
                covariates_country_long = covariates_country_long,
                filename2 = filename2,
-               country = country)
+               country = country,
+               percent_pop = percent_pop)
     
   }
 }
 
 #---------------------------------------------------------------------------
 make_plots <- function(data_country, covariates_country_long, 
-                       filename2, country){
+                       filename2, country, percent_pop){
   
+  if (country == 'United_Kingdom')
+    country = 'United Kingdom'
   data_cases_95 <- data.frame(data_country$time, data_country$predicted_min, 
                               data_country$predicted_max)
   names(data_cases_95) <- c("time", "cases_min", "cases_max")
@@ -139,14 +151,15 @@ make_plots <- function(data_country, covariates_country_long,
     geom_ribbon(data = data_cases, 
                 aes(x = time, ymin = cases_min, ymax = cases_max, fill = key)) +
     xlab("") +
-    ylab("Daily number of infections") +
+    ylab("Daily number of infections\n") +
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b")) + 
+    scale_y_continuous(expand = c(0, 0), labels = comma) + 
     scale_fill_manual(name = "", labels = c("50%", "95%"),
                       values = c(alpha("deepskyblue4", 0.55), 
                                  alpha("deepskyblue4", 0.45))) + 
     theme_pubr() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-          legend.position = "None") + 
+          legend.position = "None") + ggtitle(country) +
     guides(fill=guide_legend(ncol=1))
   
   data_deaths_95 <- data.frame(data_country$time, data_country$death_min, 
@@ -168,9 +181,12 @@ make_plots <- function(data_country, covariates_country_long,
       data = data_deaths,
       aes(ymin = death_min, ymax = death_max, fill = key)) +
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b")) +
+    scale_y_continuous(expand = c(0, 0), labels = comma) + 
     scale_fill_manual(name = "", labels = c("50%", "95%"),
                       values = c(alpha("deepskyblue4", 0.55), 
                                  alpha("deepskyblue4", 0.45))) + 
+    ylab("Daily number of deaths\n") + 
+    xlab("") +
     theme_pubr() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "None") + 
@@ -218,17 +234,38 @@ make_plots <- function(data_country, covariates_country_long,
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b"), 
                  limits = c(data_country$time[1], 
                             data_country$time[length(data_country$time)])) + 
+    scale_y_continuous(expand = expansion(mult=c(0,0.1))) + 
     theme_pubr() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="right")
+  if (country == 'United Kingdom')
+    country = 'United_Kingdom'
+  # Special plot settings for mobile
+  p3_mobile <- p3  +
+    theme(legend.position="below")
+  
+  # Plots for Web, Desktop version
+  dir.create("web/figures/desktop/", showWarnings = FALSE, recursive = TRUE)
+  save_plot(filename = paste0("web/figures/desktop/", country, "_infections", ".svg"), 
+            p1, base_height = 4, base_asp = 1.618)
+  save_plot(filename = paste0("web/figures/desktop/", country, "_deaths", ".svg"), 
+            p2, base_height = 4, base_asp = 1.618)
+  save_plot(filename = paste0("web/figures/desktop/", country, "_rt", ".svg"), 
+            p3, base_height = 4, base_asp = 1.618 * 2)
+  
+  # Plots for Web, Mobile version
+  dir.create("web/figures/mobile/", showWarnings = FALSE, recursive = TRUE)
+  save_plot(filename = paste0("web/figures/mobile/", country, "_infections", ".svg"), 
+            p1, base_height = 4, base_asp = 1.1)
+  save_plot(filename = paste0("web/figures/mobile/", country, "_deaths", ".svg"), 
+            p2, base_height = 4, base_asp = 1.1)
+  save_plot(filename = paste0("web/figures/mobile/", country, "_rt", ".svg"), 
+            p3_mobile, base_height = 4, base_asp = 1.1)
   
   p <- plot_grid(p1, p2, p3, ncol = 3, rel_widths = c(1, 1, 2))
-  save_plot(filename = paste0("figures/", country, "_three_pannel_", filename2, ".pdf"), 
+  save_plot(filename = paste0("figures/", country, "_three_pannel_", filename2, ".png"), 
             p, base_width = 14)
 }
 
-#-----------------------------------------------------------------------------------------------
-#filename <- "base-joint-1236305.pbs.Rdata"
-# make_three_pannel_plot(filename)
 
 make_three_pannel_plot()
