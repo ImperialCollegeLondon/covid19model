@@ -23,12 +23,6 @@ verify_web_output <- function(){
   args <- commandArgs(trailingOnly = TRUE)
   filename2 <- args[1]
   load(paste0("results/", filename2))
-  print(sprintf("loading: %s",paste0("results/",filename2)))
-
-  print(dir("/"))
-  print(dir("web/"))
-  print(dir("web/figures/"))
-  print(dir("web/figures/mobile/"))
   
   date_results <- list()
   

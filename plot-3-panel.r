@@ -1,4 +1,3 @@
-library(ggplot2)
 library(tidyr)
 library(dplyr)
 library(rstan)
@@ -13,6 +12,7 @@ library(ggpubr)
 library(bayesplot)
 library(cowplot)
 library(svglite)
+library(ggplot2)
 
 source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
