@@ -3,6 +3,8 @@ library(scales)
 library(ggpubr)
 library(bayesplot)
 library(matrixStats)
+library(cowplot)
+library(svglite)
 args <- commandArgs(trailingOnly = TRUE)
 filename <- args[1]
 
@@ -72,5 +74,11 @@ p = ggplot(data) +theme_pubr() +  geom_point(aes(x=m,y=parameter,colour=type),po
   theme(plot.margin = margin(0, 2, 0, .5, "cm"))
 #+ guides(fill=guide_legend(nrow=2))
 p    
-ggsave(filename = "results/covars-alpha-reduction.pdf",
+ggsave(filename = "results/covars-alpha-reduction.png",
        p,height=4,width=8)
+dir.create("web/figures/desktop/", showWarnings = FALSE, recursive = TRUE)
+dir.create("web/figures/mobile/", showWarnings = FALSE, recursive = TRUE)
+save_plot(filename = paste0("web/figures/desktop/",  "covars-alpha-reduction.svg"), 
+          p, base_height = 4, base_asp = 1.618 * 2 * 8/12)
+save_plot(filename = paste0("web/figures/mobile/", "covars-alpha-reduction.svg"), 
+          p, base_height = 4, base_asp = 1.1)
