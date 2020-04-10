@@ -45,7 +45,7 @@ make_three_pannel_plot <- function(){
   covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
   covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
   
-  for(i in 1:14){
+  for(i in 1:length(countries)){
     print(i)
     N <- length(dates[[i]])
     country <- countries[[i]]

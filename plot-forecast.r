@@ -22,7 +22,7 @@ make_forecast_plot <- function(){
   
   load(paste0("results/", filename))
   
-  for(i in 1:14){
+  for(i in 1:length(countries)){
     N <- length(dates[[i]])
     N2 <- N + 7
     country <- countries[[i]]
