@@ -23,16 +23,9 @@ jobs:
     - uses: actions/checkout@v2
 
     # Docker build
-    - name: Build docker image with caching
-      uses: whoan/docker-build-with-cache-action@v4
-      with:
-        username: "${{ secrets.DOCKERHUB_USERNAME }}"
-        password: "${{ secrets.DOCKERHUB_PASSWORD }}"
-        image_name: "${{ secrets.DOCKERHUB_USERNAME }}/covid19model"
-        image_tag: covid19model:latest
-        push_image_and_stages: false
-        push_git_tag: true
-        dockerfile: docker/Dockerfile
+    - name: Build docker image
+      run: |
+        docker build -f docker/Dockerfile -t covid19model:latest .
 
     - name: Perform a short debug simulation run
       run: |
