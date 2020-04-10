@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
 	fonts-adf-verana
 
 RUN install2.r --error --deps TRUE \
-	gdata EnvStats ggpubr svglite jsonlite \
+	gdata EnvStats ggpubr svglite jsonlite optparse \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 WORKDIR /var/model
