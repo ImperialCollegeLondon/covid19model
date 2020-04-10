@@ -30,7 +30,4 @@ COPY stan-models stan-models/
 COPY utils utils/
 COPY *.r ./
 
-RUN mkdir results
-RUN mkdir figures
-
 CMD Rscript base.r base

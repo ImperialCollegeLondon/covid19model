@@ -65,6 +65,11 @@ if(DEBUG) {
 ## Reading all data
 d=readRDS('data/COVID-19-up-to-date.rds')
 
+## Ensure that output directories exist
+dir.create("results/", showWarnings = FALSE, recursive = TRUE)
+dir.create("figures/", showWarnings = FALSE, recursive = TRUE)
+dir.create("web/", showWarnings = FALSE, recursive = TRUE)
+
 ## get IFR and population from same file
 ifr.by.country = read.csv("data/popt_ifr.csv")
 ifr.by.country$country = as.character(ifr.by.country[,2])
