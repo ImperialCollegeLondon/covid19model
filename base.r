@@ -229,11 +229,16 @@ system(paste0("Rscript covariate-size-effects.r ", filename,'-stanfit.Rdata'))
 mu = (as.matrix(out$mu))
 colnames(mu) = countries
 g = (mcmc_intervals(mu,prob = .9))
-ggsave(sprintf("results/%s-mu.pdf",filename),g,width=4,height=6)
+ggsave(sprintf("results/%s-mu.png",filename),g,width=4,height=6)
 tmp = lapply(1:length(countries), function(i) (out$Rt_adj[,stan_data$N[i],i]))
 Rt_adj = do.call(cbind,tmp)
 colnames(Rt_adj) = countries
 g = (mcmc_intervals(Rt_adj,prob = .9))
-ggsave(sprintf("results/%s-final-rt.pdf",filename),g,width=4,height=6)
+ggsave(sprintf("results/%s-final-rt.png",filename),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'))
+system(paste0("Rscript make-table.r results/",filename,'-stanfit.Rdata'))
+verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
+if(verify_result != 0){
+  stop("Verification of web output failed!")
+}

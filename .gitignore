@@ -49,6 +49,8 @@ results/*.png
 figures/*.png
 figures/*.pdf
 Rplots.pdf
+web/*
+results/*.csv
 
 
 
