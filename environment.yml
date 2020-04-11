@@ -9,5 +9,6 @@ dependencies:
   - r-tidyr
   - r-dplyr
   - r-rstan
+  - r-optparse
 channels:
   - conda-forge

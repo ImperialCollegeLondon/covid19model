@@ -124,11 +124,11 @@ make_single_plot <- function(data_country, data_country_forecast, filename, coun
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b")) + 
     scale_y_continuous(trans='log10', labels=comma) + 
     coord_cartesian(ylim = c(1, 100000), expand = FALSE) + 
-    theme_pubr() + 
+    theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
     guides(fill=guide_legend(ncol=1, reverse = TRUE)) + 
     annotate(geom="text", x=data_country$time[length(data_country$time)]+8, 
-             y=10000, label="Forecast",
+             y=10000, label="",
              color="black")
   print(p)
   
