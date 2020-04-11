@@ -123,6 +123,10 @@ total_infected[order(total_infected$countries),c("countries","value")]
 total_infected <- total_infected[,c("countries","value")]
 write.csv(total_infected,paste0("results/total_infected_",date_till_percentage,".csv"),row.names=F)
 
+# Store copy for web output
+dir.create("web/data/", showWarnings = FALSE, recursive = TRUE)
+write.csv(total_infected,paste0("web/data/total_infected.csv"),row.names=F)
+
 fraction_obs_infected <- do.call(rbind, fraction_obs_infected)
 fraction_obs_infected_df <- as.data.frame(fraction_obs_infected)
 names(fraction_obs_infected_df) <- dates_all

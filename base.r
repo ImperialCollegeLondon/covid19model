@@ -5,6 +5,7 @@ library(gdata)
 library(dplyr)
 library(tidyr)
 library(EnvStats)
+library(optparse)
 
 countries <- c(
   "Denmark",
@@ -23,16 +24,51 @@ countries <- c(
   "Netherlands"
 )
 
-args = commandArgs(trailingOnly=TRUE)
-if(length(args) == 0) {
-  args = 'base'
-} 
-StanModel = args[1]
+# Commandline options and parsing
+parser <- OptionParser()
+parser <- add_option(parser, c("-D", "--debug"), action="store_true",
+                     help="Perform a debug run of the model")
+parser <- add_option(parser, c("-F", "--full"), action="store_true",
+                     help="Perform a full run of the model")
+cmdoptions <- parse_args(parser, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
 
+# Default run parameters for the model
+if(is.null(cmdoptions$options$debug)) {
+  DEBUG = Sys.getenv("DEBUG") == "TRUE"
+} else {
+  DEBUG = cmdoptions$options$debug
+}
+
+if(is.null(cmdoptions$options$full)) {
+  FULL = Sys.getenv("FULL") == "TRUE"
+} else {
+  FULL = cmdoptions$options$full
+}
+
+if(DEBUG && FULL) {
+  stop("Setting both debug and full run modes at once is invalid")
+}
+
+if(length(cmdoptions$args) == 0) {
+  StanModel = 'base'
+} else {
+  StanModel = cmdoptions$args[1]
+}
+ 
 print(sprintf("Running %s",StanModel))
+if(DEBUG) {
+  print("Running in DEBUG mode")
+} else if (FULL) {
+  print("Running in FULL mode")
+}
 
 ## Reading all data
 d=readRDS('data/COVID-19-up-to-date.rds')
+
+## Ensure that output directories exist
+dir.create("results/", showWarnings = FALSE, recursive = TRUE)
+dir.create("figures/", showWarnings = FALSE, recursive = TRUE)
+dir.create("web/", showWarnings = FALSE, recursive = TRUE)
 
 ## get IFR and population from same file
 ifr.by.country = read.csv("data/popt_ifr.csv")
@@ -61,7 +97,6 @@ covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$l
 
 forecast = 0
 
-DEBUG = FALSE
 N2 = 90 # increase if you need more forecast
 
 dates = list()
@@ -197,9 +232,9 @@ m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 
 if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
+} else if (FULL) {
+  fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
 } else { 
-  # uncomment the line below for a full run to replicate results and comment the second line below 
-  # fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
   fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
 }  
 
@@ -232,7 +267,9 @@ ggsave(sprintf("results/%s-final-rt.png",filename),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'))
 system(paste0("Rscript make-table.r results/",filename,'-stanfit.Rdata'))
-# verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
-#if(verify_result != 0){
-#  stop("Verification of web output failed!")
-#}
+verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
+if(verify_result != 0){
+  stop("Verification of web output failed!")
+}
+system("Rscript web-fix-fonts.r")
+
