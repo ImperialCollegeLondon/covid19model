@@ -33,6 +33,7 @@ COPY *.r ./
 RUN mkdir results
 RUN mkdir figures
 RUN mkdir web
-RUN chmod -R a+rwx results figures web
+RUN touch Rplots.pdf
+RUN chmod -R a+rwx results figures web Rplots.pdf
 
 CMD Rscript base.r base
