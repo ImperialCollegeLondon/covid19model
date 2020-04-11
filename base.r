@@ -272,4 +272,3 @@ if(verify_result != 0){
   stop("Verification of web output failed!")
 }
 system("Rscript web-fix-fonts.r")
-
