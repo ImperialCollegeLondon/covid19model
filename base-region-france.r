@@ -22,11 +22,26 @@ for(Country in active_countries){
   region_to_country_map[[Country]] <- Country
 }
 
+## Argument parsing configures model name and run length
+## DEBUG: Runs a very short model approx 1 minute.
+DEBUG = FALSE
+FULL_RUN = FALSE
 args = commandArgs(trailingOnly=TRUE)
+print(args)
 if(length(args) == 0) {
   args = 'base'
 } 
 StanModel = args[1]
+if(length(args) >1){
+  for (arg in args) {
+    if (arg=="DEBUG" || arg=="-g" || arg=="dbg"){
+      DEBUG=TRUE
+    }
+    if (arg=="FULL_RUN" || arg=="-f" || arg=="full"){
+      FULL_RUN = TRUE
+    }
+  }
+}
 
 print(sprintf("Running %s",StanModel))
 
@@ -75,7 +90,6 @@ covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$l
 #   }
 # }
 forecast = 0
-DEBUG = TRUE
 N2 = 90 # increase if you need more forecast
 
 dates = list()
@@ -215,9 +229,11 @@ m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 
 if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
+} else if (FULL_RUN){
+  fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
+
 } else { 
   # uncomment the line below for a full run to replicate results and comment the second line below 
-  # fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
   fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
 }  
 
