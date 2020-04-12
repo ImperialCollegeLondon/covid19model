@@ -34,6 +34,12 @@ verify_web_output <- function(){
         if (! file.exists(path)) {
           stop(sprintf("Missing web output during verification: %s", path))
         }
+        
+        # Fix wrong fonts
+        x <- readLines(path)
+        y <- gsub( "Aerial", "Arial, Helvetica, sans-serif", x )
+        y <- gsub( "Arimo", "Arial, Helvetica, sans-serif", x )
+        cat(y, file=path, sep="\n")
       }
     }
     
