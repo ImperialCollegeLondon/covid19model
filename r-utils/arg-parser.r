@@ -45,5 +45,6 @@ base_arg_parse <- function (){
 			FULL=FULL,
 			StanModel=StanModel 
 		)
+	return(parsedargs)
 }
 

@@ -15,6 +15,7 @@ library(svglite)
 library(ggplot2)
 
 source("utils/geom-stepribbon.r")
+source("r-utils/read-covariates.r")
 #---------------------------------------------------------------------------
 make_three_pannel_plot <- function(){
   
@@ -30,20 +31,7 @@ make_three_pannel_plot <- function(){
   
   load(paste0("results/", filename2))
   print(sprintf("loading: %s",paste0("results/",filename2)))
-  covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
-  names_covariates = c('Schools + Universities','Self-isolating if ill', 'Public events', 
-                       'Lockdown', 'Social distancing encouraged')
-  covariates <- covariates %>%
-    filter((Type %in% names_covariates))
-  covariates <- covariates[,c(1,2,4)]
-  covariates <- spread(covariates, Type, Date.effective)
-  names(covariates) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
-  covariates <- covariates[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
-  covariates$schools_universities <- as.Date(covariates$schools_universities, format = "%d.%m.%Y")
-  covariates$lockdown <- as.Date(covariates$lockdown, format = "%d.%m.%Y")
-  covariates$public_events <- as.Date(covariates$public_events, format = "%d.%m.%Y")
-  covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
-  covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
+  covariates <- covariates_read('data/interventions.csv')
   
   for(i in 1:14){
     print(i)
