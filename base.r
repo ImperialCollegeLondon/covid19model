@@ -5,7 +5,6 @@ library(gdata)
 library(dplyr)
 library(tidyr)
 library(EnvStats)
-library(optparse)
 
 countries <- c(
   "Denmark",
@@ -25,42 +24,11 @@ countries <- c(
 )
 
 # Commandline options and parsing
-parser <- OptionParser()
-parser <- add_option(parser, c("-D", "--debug"), action="store_true",
-                     help="Perform a debug run of the model")
-parser <- add_option(parser, c("-F", "--full"), action="store_true",
-                     help="Perform a full run of the model")
-cmdoptions <- parse_args(parser, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
-
-# Default run parameters for the model
-if(is.null(cmdoptions$options$debug)) {
-  DEBUG = Sys.getenv("DEBUG") == "TRUE"
-} else {
-  DEBUG = cmdoptions$options$debug
-}
-
-if(is.null(cmdoptions$options$full)) {
-  FULL = Sys.getenv("FULL") == "TRUE"
-} else {
-  FULL = cmdoptions$options$full
-}
-
-if(DEBUG && FULL) {
-  stop("Setting both debug and full run modes at once is invalid")
-}
-
-if(length(cmdoptions$args) == 0) {
-  StanModel = 'base'
-} else {
-  StanModel = cmdoptions$args[1]
-}
- 
-print(sprintf("Running %s",StanModel))
-if(DEBUG) {
-  print("Running in DEBUG mode")
-} else if (FULL) {
-  print("Running in FULL mode")
-}
+source("r-utils/arg-parser.r")
+parsedargs <- base_arg_parse()
+DEBUG <- parsedargs[["DEBUG"]]
+FULL <- parsedargs[["FULL"]]
+StanModel <- parsedargs[["StanModel"]]
 
 ## Reading all data
 d=readRDS('data/COVID-19-up-to-date.rds')
