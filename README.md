@@ -46,7 +46,18 @@ package manager please see `environment.yml` for a full list of dependencies.
 
 There are two ways to run our code:-
 * Open the rstudio project covid19model.Rproj file in rstudio and run/source base.r file
-* To run from commandline please enter the cloned directory and type 'Rscript base.r base' in terminal
+* To run from commandline please enter the cloned directory and type `Rscript base.r base` in terminal
+
+Please note to not make you wait for long we have by default set run sampling to a short period. For proper estimates please run it in FULL mode either by setting the flag `--full` or the environment variable `FULL=TRUE`. This will run sampling for 4000 iterations with 2000 warmups and 4 chains.
+
+## Run mode settings 
+Three different run modes are supported:
+
+* DEBUG which can either be enabled by setting the flag `--debug` when running the base.r file as such: 
+  * `Rscript base.r base --debug` or by setting the environment variable `DEBUG` to `TRUE`.
+* DEFAULT which will run if neither full nor debug are set. Please note that for proper estimates FULL should always be set.
+* FULL which must always be used if you want to obtain reliable results and can be enabled by setting the flag `--full` on the command line: 
+  * `Rscript base.r base --full` or by setting the environment variable `FULL` to `TRUE`. 
 
 # Results 
 * The results are stored in two folders results and figures.
@@ -54,5 +65,4 @@ There are two ways to run our code:-
 * Figures have the images with daily cases, daily death and Rt for all countries.
 
 ## Notice
- * Please note to not make you wait for long we have by default run sampling for short period. For proper estimates please uncomment the line 202 and comment out line 203. This will run sampling for 4000 iterations with 2000 warmups and 4 chains.
  * Python code is right now not updated and won't work. Python code is good for only version 1 model and data.
