@@ -38,7 +38,7 @@ verify_web_output <- function(){
         # Fix wrong fonts
         x <- readLines(path)
         y <- gsub( "Aerial", "Arial, Helvetica, sans-serif", x )
-        y <- gsub( "Arimo", "Arial, Helvetica, sans-serif", x )
+        y <- gsub( "Arimo", "Arial, Helvetica, sans-serif", y )
         cat(y, file=path, sep="\n")
       }
     }
