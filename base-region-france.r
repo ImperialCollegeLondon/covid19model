@@ -6,6 +6,10 @@ library(dplyr)
 library(tidyr)
 library(EnvStats)
 
+source("r-utils/arg-parser.r")
+source("r-utils/read-covariates.r")
+
+
 regions <- c(
   "Provence-Alpes-Côte d'Azur"
 )
@@ -22,28 +26,11 @@ for(Country in active_countries){
   region_to_country_map[[Country]] <- Country
 }
 
-## Argument parsing configures model name and run length
-## DEBUG: Runs a very short model approx 1 minute.
-DEBUG = FALSE
-FULL_RUN = FALSE
-args = commandArgs(trailingOnly=TRUE)
-print(args)
-if(length(args) == 0) {
-  args = 'base'
-} 
-StanModel = args[1]
-if(length(args) >1){
-  for (arg in args) {
-    if (arg=="DEBUG" || arg=="-g" || arg=="dbg"){
-      DEBUG=TRUE
-    }
-    if (arg=="FULL_RUN" || arg=="-f" || arg=="full"){
-      FULL_RUN = TRUE
-    }
-  }
-}
-
-print(sprintf("Running %s",StanModel))
+# Commandline options and parsing
+parsedargs <- base_arg_parse()
+DEBUG <- parsedargs[["DEBUG"]]
+FULL <- parsedargs[["FULL"]]
+StanModel <- parsedargs[["StanModel"]]
 
 ## Reading data from region file and world data
 data_files <- c(
@@ -58,37 +45,9 @@ ifr.by.country$country = as.character(ifr.by.country[,2])
 ifr.by.country$country[ifr.by.country$country == "United Kingdom"] = "United_Kingdom"
 
 serial.interval = read.csv("data/serial_interval.csv")
-covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
-names_covariates = c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
-covariates <- covariates %>%
-  filter((Type %in% names_covariates))
-covariates <- covariates[,c(1,2,4)]
-covariates <- spread(covariates, Type, Date.effective)
-names(covariates) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
-covariates <- covariates[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
-covariates$schools_universities <- as.Date(covariates$schools_universities, format = "%d.%m.%Y")
-covariates$lockdown <- as.Date(covariates$lockdown, format = "%d.%m.%Y")
-covariates$public_events <- as.Date(covariates$public_events, format = "%d.%m.%Y")
-covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
-covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
-## using covariates as dates we want
-covariates$schools_universities[covariates$schools_universities > covariates$lockdown] <- covariates$lockdown[covariates$schools_universities > covariates$lockdown]
-covariates$public_events[covariates$public_events > covariates$lockdown] <- covariates$lockdown[covariates$public_events > covariates$lockdown]
-covariates$social_distancing_encouraged[covariates$social_distancing_encouraged > covariates$lockdown] <- covariates$lockdown[covariates$social_distancing_encouraged > covariates$lockdown]
-covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$lockdown] <- covariates$lockdown[covariates$self_isolating_if_ill > covariates$lockdown]
-# Todo duplicate data directly at this stage for regions without a full set.
-# for (Region in names(region_to_country_map)){
-#   if (length(covariates$Country[covariates$Country==Region])==0)
-#   {
-#     temp <- covariates[covariates$Country==region_to_country_map[[Region]],]
-#     temp$Country = Region
-#     browser()
-#     for (i in 1:length(temp)){
-#       covariates[i] <- c(covariates[i],temp[i])
-#     }
-#     browser()
-#   }
-# }
+
+covariates <- covariates_read('data/interventions.csv')
+
 forecast = 0
 N2 = 90 # increase if you need more forecast
 
