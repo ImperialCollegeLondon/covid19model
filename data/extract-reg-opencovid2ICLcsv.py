@@ -8,10 +8,13 @@ extract-reg-opencovid2ICLcsv.py <opencovid csv file>  <maille_code to extract>
 import sys
 import pandas as pd
 from datetime import datetime
+import re
+
+import pdb
 
 # Module wide variables
 data_dir = 'data/'
-popreg = {
+pop_per_region = {
     "REG-93": 5059473,
 }
 
@@ -28,7 +31,7 @@ def dt_to_dec(dt):
                       float((year_end - year_start).total_seconds()))
 
 
-def convert_opencovidfr_to_ICL_model(srcReg, population_region):
+def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region):
     """
     FUnction that convertsfrom the tabular headers of opencovid19-fr to those
     needed by the covid19 model.
@@ -69,13 +72,28 @@ def convert_opencovidfr_to_ICL_model(srcReg, population_region):
     dst['countryterritoryCode'] = srcReg['maille_code'].values
 
     # valeurs 2020
-    dst['popData2018'] = population_region
+    dst['popData2018'] = [pop_per_region[regId] for regId in dst['geoId']]
 
     dst["t"] = dst["dateRep"].apply(lambda v: dt_to_dec(v))
 
     # et pour finir on re-sérialise la date sous un autre format
     dst['dateRep'] = dst['dateRep'].apply(lambda x: x.strftime('%d/%m/%Y'))
     return dst
+
+
+def find_active_regions(src, reg):
+
+    # Extraire les IDs de regions qui match reg
+    available_region_list = src["maille_code"].unique()
+    re_expression = re.compile(reg)
+    active_regions = []  # Les regions a ajoutees au fichier
+    for region in available_region_list:
+        if re_expression.search(region):
+            active_regions.append(region)
+
+    print(f"{reg} pattern matched the following {len(active_regions)} IDs:")
+    print(active_regions)
+    return active_regions
 
 
 def process_from_cmd():
@@ -92,25 +110,29 @@ def process_from_cmd():
     fic = sys.argv[1]
     reg = sys.argv[2]
 
+
     # TODO get population data for all regions and departments
     # look at https://github.com/scrouzet/covid19-incrementality
 
     src = pd.read_csv(fic)
 
-    # filtrage sur maille_code
-    srcReg = src.loc[lambda df: df.maille_code == reg, :]
+    active_regions = find_active_regions(src, reg)
 
-    # notre intérêt est sur la colonne décès, on supprime donc les lignes où cette
-    # valeur n'est pas connue
+    # filtrage sur maille_code dans "active_regions"
+    srcReg = src.loc[
+        lambda df: [code in active_regions for code in df.maille_code], :]
+
+    # notre intérêt est sur la colonne décès, on supprime donc les lignes où
+    # cette valeur n'est pas connue
     srcReg = srcReg.dropna(how='all', subset=["deces"])
     print(reg + " : " + str(srcReg.shape[0]) + " lignes")
     # Nous avons besoins de remplir les cas_confirmes manquant avec des 0
     srcReg["cas_confirmes"] = srcReg["cas_confirmes"].fillna(0)
 
-    # Attn il y a des doublons - on les élimines, celui qui reste est indéterminé
+    # Il y a des doublons - on les élimines, celui qui reste est indéterminé
     srcReg = srcReg.drop_duplicates(subset=["date", "maille_code"])
 
-    dst = convert_opencovidfr_to_ICL_model(srcReg, popreg[reg])
+    dst = convert_opencovidfr_to_ICL_model(srcReg, pop_per_region)
 
     # et voilà
     dst.to_csv(data_dir + reg + '.csv', index=False)
