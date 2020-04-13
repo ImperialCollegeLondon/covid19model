@@ -1,21 +1,17 @@
 library(tidyr)
 library(dplyr)
-library(rstan)
 library(data.table)
 library(lubridate)
 library(gdata)
 library(EnvStats)
-library(matrixStats)
 library(scales)
 library(gridExtra)
-library(ggpubr)
 library(bayesplot)
 library(cowplot)
 library(svglite)
 library(ggplot2)
 
 source("utils/geom-stepribbon.r")
-source("utils/read-covariates.r")
 #---------------------------------------------------------------------------
 make_three_pannel_plot <- function(){
   
@@ -31,7 +27,9 @@ make_three_pannel_plot <- function(){
   
   load(paste0("results/", filename2))
   print(sprintf("loading: %s",paste0("results/",filename2)))
-  covariates <- covariates_read('data/interventions.csv')
+  out = rstan::extract(fit)
+  prediction = out$prediction
+  estimated.deaths = out$E_deaths
   
   for(i in 1:14){
     print(i)
@@ -39,29 +37,29 @@ make_three_pannel_plot <- function(){
     country <- countries[[i]]
     
     predicted_cases <- colMeans(prediction[,1:N,i])
-    predicted_cases_li <- colQuantiles(prediction[,1:N,i], probs=.025)
-    predicted_cases_ui <- colQuantiles(prediction[,1:N,i], probs=.975)
-    predicted_cases_li2 <- colQuantiles(prediction[,1:N,i], probs=.25)
-    predicted_cases_ui2 <- colQuantiles(prediction[,1:N,i], probs=.75)
+    predicted_cases_li <- matrixStats::colQuantiles(prediction[,1:N,i], probs=.025)
+    predicted_cases_ui <- matrixStats::colQuantiles(prediction[,1:N,i], probs=.975)
+    predicted_cases_li2 <- matrixStats::colQuantiles(prediction[,1:N,i], probs=.25)
+    predicted_cases_ui2 <- matrixStats::colQuantiles(prediction[,1:N,i], probs=.75)
     
     
     estimated_deaths <- colMeans(estimated.deaths[,1:N,i])
-    estimated_deaths_li <- colQuantiles(estimated.deaths[,1:N,i], probs=.025)
-    estimated_deaths_ui <- colQuantiles(estimated.deaths[,1:N,i], probs=.975)
-    estimated_deaths_li2 <- colQuantiles(estimated.deaths[,1:N,i], probs=.25)
-    estimated_deaths_ui2 <- colQuantiles(estimated.deaths[,1:N,i], probs=.75)
+    estimated_deaths_li <- matrixStats::colQuantiles(estimated.deaths[,1:N,i], probs=.025)
+    estimated_deaths_ui <- matrixStats::colQuantiles(estimated.deaths[,1:N,i], probs=.975)
+    estimated_deaths_li2 <- matrixStats::colQuantiles(estimated.deaths[,1:N,i], probs=.25)
+    estimated_deaths_ui2 <- matrixStats::colQuantiles(estimated.deaths[,1:N,i], probs=.75)
     
     rt <- colMeans(out$Rt_adj[,1:N,i])
-    rt_li <- colQuantiles(out$Rt_adj[,1:N,i],probs=.025)
-    rt_ui <- colQuantiles(out$Rt_adj[,1:N,i],probs=.975)
-    rt_li2 <- colQuantiles(out$Rt_adj[,1:N,i],probs=.25)
-    rt_ui2 <- colQuantiles(out$Rt_adj[,1:N,i],probs=.75)
+    rt_li <- matrixStats::colQuantiles(out$Rt_adj[,1:N,i],probs=.025)
+    rt_ui <- matrixStats::colQuantiles(out$Rt_adj[,1:N,i],probs=.975)
+    rt_li2 <- matrixStats::colQuantiles(out$Rt_adj[,1:N,i],probs=.25)
+    rt_ui2 <- matrixStats::colQuantiles(out$Rt_adj[,1:N,i],probs=.75)
     
     
     # delete these 2 lines
     covariates_country <- covariates[which(covariates$Country == country), 2:6] 
-    covariates_country_long <- gather(covariates_country, key = "key", 
-                                      value = "value")
+    covariates_country_long <- tidyr::gather(covariates_country, key = "key", 
+                                             value = "value")
     covariates_country_long$x <- rep(NULL, length(covariates_country_long$key))
     un_dates <- unique(covariates_country_long$value)
     
@@ -145,7 +143,7 @@ make_plots <- function(data_country, covariates_country_long,
     scale_fill_manual(name = "", labels = c("50%", "95%"),
                       values = c(alpha("deepskyblue4", 0.55), 
                                  alpha("deepskyblue4", 0.45))) + 
-    theme_pubr(base_family="sans") + 
+    ggpubr::theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "None") + ggtitle(country) +
     guides(fill=guide_legend(ncol=1))
@@ -175,7 +173,7 @@ make_plots <- function(data_country, covariates_country_long,
                                  alpha("deepskyblue4", 0.45))) + 
     ylab("Daily number of deaths\n") + 
     xlab("") +
-    theme_pubr(base_family="sans") + 
+    ggpubr::theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "None") + 
     guides(fill=guide_legend(ncol=1))
@@ -223,7 +221,7 @@ make_plots <- function(data_country, covariates_country_long,
                  limits = c(data_country$time[1], 
                             data_country$time[length(data_country$time)])) + 
     scale_y_continuous(expand = expansion(mult=c(0,0.1))) + 
-    theme_pubr(base_family="sans") + 
+    ggpubr::theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="right")
   if (country == 'United Kingdom')
