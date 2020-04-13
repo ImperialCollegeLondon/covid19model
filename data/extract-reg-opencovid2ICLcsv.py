@@ -14,6 +14,9 @@ import pdb
 
 # Module wide variables
 data_dir = 'data/'
+
+# TODO get population data for all regions and departments
+# look at https://github.com/scrouzet/covid19-incrementality
 pop_per_region = {
     "REG-93": 5059473,
 }
@@ -109,10 +112,6 @@ def process_from_cmd():
 
     fic = sys.argv[1]
     reg = sys.argv[2]
-
-
-    # TODO get population data for all regions and departments
-    # look at https://github.com/scrouzet/covid19-incrementality
 
     src = pd.read_csv(fic)
 
