@@ -5,7 +5,11 @@ library(gdata)
 library(dplyr)
 library(tidyr)
 library(EnvStats)
-library(optparse)
+
+# provide functions for pre and post processing
+source("r-utils/arg-parser.r")
+source("r-utils/read-covariates.r")
+
 
 countries <- c(
   "Denmark",
@@ -25,42 +29,10 @@ countries <- c(
 )
 
 # Commandline options and parsing
-parser <- OptionParser()
-parser <- add_option(parser, c("-D", "--debug"), action="store_true",
-                     help="Perform a debug run of the model")
-parser <- add_option(parser, c("-F", "--full"), action="store_true",
-                     help="Perform a full run of the model")
-cmdoptions <- parse_args(parser, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
-
-# Default run parameters for the model
-if(is.null(cmdoptions$options$debug)) {
-  DEBUG = Sys.getenv("DEBUG") == "TRUE"
-} else {
-  DEBUG = cmdoptions$options$debug
-}
-
-if(is.null(cmdoptions$options$full)) {
-  FULL = Sys.getenv("FULL") == "TRUE"
-} else {
-  FULL = cmdoptions$options$full
-}
-
-if(DEBUG && FULL) {
-  stop("Setting both debug and full run modes at once is invalid")
-}
-
-if(length(cmdoptions$args) == 0) {
-  StanModel = 'base'
-} else {
-  StanModel = cmdoptions$args[1]
-}
- 
-print(sprintf("Running %s",StanModel))
-if(DEBUG) {
-  print("Running in DEBUG mode")
-} else if (FULL) {
-  print("Running in FULL mode")
-}
+parsedargs <- base_arg_parse()
+DEBUG <- parsedargs[["DEBUG"]]
+FULL <- parsedargs[["FULL"]]
+StanModel <- parsedargs[["StanModel"]]
 
 ## Reading all data
 d=readRDS('data/COVID-19-up-to-date.rds')
@@ -76,24 +48,8 @@ ifr.by.country$country = as.character(ifr.by.country[,2])
 ifr.by.country$country[ifr.by.country$country == "United Kingdom"] = "United_Kingdom"
 
 serial.interval = read.csv("data/serial_interval.csv")
-covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
-names_covariates = c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
-covariates <- covariates %>%
-  filter((Type %in% names_covariates))
-covariates <- covariates[,c(1,2,4)]
-covariates <- spread(covariates, Type, Date.effective)
-names(covariates) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
-covariates <- covariates[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
-covariates$schools_universities <- as.Date(covariates$schools_universities, format = "%d.%m.%Y")
-covariates$lockdown <- as.Date(covariates$lockdown, format = "%d.%m.%Y")
-covariates$public_events <- as.Date(covariates$public_events, format = "%d.%m.%Y")
-covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
-covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
-## using covariates as dates we want
-covariates$schools_universities[covariates$schools_universities > covariates$lockdown] <- covariates$lockdown[covariates$schools_universities > covariates$lockdown]
-covariates$public_events[covariates$public_events > covariates$lockdown] <- covariates$lockdown[covariates$public_events > covariates$lockdown]
-covariates$social_distancing_encouraged[covariates$social_distancing_encouraged > covariates$lockdown] <- covariates$lockdown[covariates$social_distancing_encouraged > covariates$lockdown]
-covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$lockdown] <- covariates$lockdown[covariates$self_isolating_if_ill > covariates$lockdown]
+
+covariates <- covariates_read('data/interventions.csv')
 
 forecast = 0
 
