@@ -86,7 +86,8 @@ if len(sys.argv) != 3:
 fic = sys.argv[1]
 reg = sys.argv[2]
 
-# TODO…
+# TODO get population data for all regions and departments
+# look at https://github.com/scrouzet/covid19-incrementality
 popreg = {
     "REG-93": 5059473,
 }
@@ -100,13 +101,13 @@ srcReg = src.loc[lambda df: df.maille_code == reg, :]
 # valeur n'est pas connue
 srcReg = srcReg.dropna(how='all', subset=["deces"])
 print(reg + " : " + str(srcReg.shape[0]) + " lignes")
+# Nous avons besoins de remplir les cas_confirmes manquant avec des 0
+srcReg["cas_confirmes"] = srcReg["cas_confirmes"].fillna(0)
 
 # Attn il y a des doublons - on les élimines, celui qui reste est indéterminé
-# ATTN ne fonctionne que si on est MONO région
-srcReg = srcReg.drop_duplicates(subset=["date"])
-
+srcReg = srcReg.drop_duplicates(subset=["date", "maille_code"])
 
 dst = convert_opencovidfr_to_ICL_model(srcReg, popreg[reg])
 
 # et voilà
-dst.to_csv(reg,index=False)
+dst.to_csv(data_dir + reg + '.csv', index=False)
