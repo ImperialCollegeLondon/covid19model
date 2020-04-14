@@ -46,6 +46,13 @@ def df_department_table_to_region(row, source_table, target_table):
         target_table.loc[row["region_code"], age] += \
             source_table.loc[row["departement_code"], age]
 
+def add_names_to_age_tables(
+    age_table, codes_to_names, name_field="", code_field="code"):
+    age_table["name"] = 0
+    for row in age_table.index:
+        name = codes_to_names[(codes_to_names[code_field]==row)][name_field]
+        age_table.loc[row, "name"] = name.iloc[0]
+
 def new_age_table(index=[]):
     return pd.DataFrame(
         0,
@@ -80,6 +87,7 @@ def department_to_region(departement_age_table):
     src.apply(lambda x: df_department_table_to_region(
         x, departement_age_table, region_age_table),
         axis=1)
+    region_age_table["total"] = region_age_table.sum(axis=1)
     region_age_table["fra_code"] = region_age_table.index
     region_age_table["fra_code"] = \
         region_age_table["fra_code"].map('REG-{:02d}'.format)
@@ -90,6 +98,26 @@ def main():
     
     departement_age_table = process_department_data(datafile_departement)
     region_age_table = department_to_region(departement_age_table)
+
+    check_sum = (departement_age_table.sum()==region_age_table.sum()
+    ).drop("fra_code")
+    if not check_sum.all():
+        raise ArithmeticError(
+            "Region and departement total populations do not match."
+            + " Check failed"
+        )
+    datafile_region =  datadir + region_to_departement_csv
+    codes_to_names = pd.read_csv(datafile_region, sep=";")
+    add_names_to_age_tables(
+        region_age_table, codes_to_names,
+        name_field="region", code_field="region_code")
+    add_names_to_age_tables(
+        departement_age_table, codes_to_names,
+        name_field="departement", code_field="departement_code")
+
+    age_table = region_age_table.append(
+        departement_age_table, ignore_index=True)
+    print(age_table)
     pdb.set_trace()
     return len(sys.argv)
 
