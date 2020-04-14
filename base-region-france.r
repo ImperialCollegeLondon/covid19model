@@ -34,8 +34,8 @@ StanModel <- parsedargs[["StanModel"]]
 
 ## Reading data from region file and world data
 data_files <- c(
-  "data/COVID-19-up-to-date.rds",
-  "data/REG-93.rds"
+  # "data/COVID-19-up-to-date.rds",
+  "data/all-france.rds"
 )
 d <- do.call('rbind', lapply(data_files, readRDS))
 

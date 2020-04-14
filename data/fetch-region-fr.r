@@ -23,11 +23,11 @@ library(utils)
 # })
 
 
-d <- read.csv("data/REG-93.csv", stringsAsFactors = FALSE)
+d <- read.csv("data/all-france.csv", stringsAsFactors = FALSE)
 d$t <- lubridate::decimal_date(as.Date(d$dateRep, format = "%d/%m/%Y"))
 d <- d[order(d$'countriesAndTerritories', d$t, decreasing = FALSE), ]
 names(d)[names(d) == "countriesAndTerritories"] <- "Countries.and.territories"
 names(d)[names(d) == "deaths"] <- "Deaths"
 names(d)[names(d) == "cases"] <- "Cases"
 names(d)[names(d) == "dateRep"] <- "DateRep"
-saveRDS(d, "data/REG-93.rds")
+saveRDS(d, "data/all-france.rds")

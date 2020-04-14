@@ -7,7 +7,6 @@ extract-reg-opencovid2ICLcsv.py <opencovid csv file>  <maille_code to extract>
 
 import sys
 import re
-from path import Path
 from datetime import datetime
 
 import pandas as pd
@@ -16,7 +15,7 @@ import numpy as np
 import pdb
 
 # Module wide variables
-data_dir = Path('data/')
+data_dir = 'data/'
 
 
 # Population processed for:
@@ -59,7 +58,7 @@ def calculate_daily_change(df, region_id, cumulated_field, field):
     for i, deaths in enumerate(reg_deaths):
         if i>0 and deaths < reg_deaths[i-1]:
             reg_deaths[i] = reg_deaths[i-1]
-    reg_deaths = reg_deaths-[0, *reg_deaths[:-1]]
+    reg_deaths = reg_deaths - [0, *reg_deaths[:-1]]
     df.loc[reg_logicind, field] = reg_deaths
 
 
@@ -96,8 +95,8 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
     dst['month'] = 1
     dst['year'] = 2020
 
-    dst['cumulated_cases'] = srcReg['cas_confirmes'].values
 
+    dst['cumulated_cases'] = srcReg['cas_confirmes'].values
     # avec ou sans les ehpads ?
     dst['cumulated_deaths'] = srcReg['deces'].values
 
@@ -137,7 +136,7 @@ def find_active_regions(src, reg):
             if re_expression.search(region):
                 active_regions.append(region)
 
-    print(f"{reg} pattern matched the following {len(active_regions)} IDs:")
+    print("{} pattern matched the following {} IDs:".format(reg,len(active_regions)))
     print(active_regions)
     return active_regions
 
@@ -181,7 +180,13 @@ def process_from_cmd():
     dst = convert_opencovidfr_to_ICL_model(srcReg)
 
     # et voilà
-    dst.to_csv(data_dir + reg + '.csv', index=False)
+    dst.to_csv(
+        data_dir + reg + '.csv', index=False, columns=[
+            "dateRep","day","month","year","cases","deaths",
+            "countriesAndTerritories","geoId","countryterritoryCode",
+            "popData2018"
+        ]
+        )
 
 
 if __name__ == "__main__":
