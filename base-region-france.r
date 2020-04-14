@@ -6,8 +6,8 @@ library(dplyr)
 library(tidyr)
 library(EnvStats)
 
-source("r-utils/arg-parser.r")
-source("r-utils/read-covariates.r")
+source("utils/arg-parser.r")
+source("utils/read-covariates.r")
 
 
 regions <- c(
