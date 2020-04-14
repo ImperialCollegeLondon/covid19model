@@ -6,10 +6,12 @@ extract-reg-opencovid2ICLcsv.py <opencovid csv file>  <maille_code to extract>
 """
 
 import sys
-import pandas as pd
-from datetime import datetime
-from path import Path
 import re
+from path import Path
+from datetime import datetime
+
+import pandas as pd
+import numpy as np
 
 import pdb
 
@@ -20,15 +22,22 @@ data_dir = Path('data/')
 # Population processed for:
 #  Gets data from INSEE via https://github.com/scrouzet/covid19-incrementality
 def read_pop_region(
-    pop_file_region=data_dir + 'FRA/french_population_age_regional.csv'
+    pop_file_region=None
 ):
+    if pop_file_region is None:
+        pop_file_region = data_dir + 'FRA/french_population_age_regional.csv'
     pop_fra_df = pd.read_csv(pop_file_region)
     pop_per_region = {}
     for ind in pop_fra_df.index:
         pop_per_region[pop_fra_df.loc[ind,"fra_code"]] = pop_fra_df.loc[ind,"total"]
     return  pop_per_region
 
-pop_per_region = read_pop_region()
+try:
+    pop_regions = read_pop_region()
+except FileNotFoundError as pop_file_err:
+    pop_regions = {}
+    print("Population .csv file not found is the direction to dir data correct?")
+    print("Please set data_dir and run `pop_regions = read_pop_region()`")
 
 def dt_to_dec(dt):
     """Convert a datetime to decimal year.
@@ -41,8 +50,20 @@ def dt_to_dec(dt):
     return dt.year + ((dt - year_start).total_seconds() /
                       float((year_end - year_start).total_seconds()))
 
+def calculate_daily_change(df, region_id, cumulated_field, field):
+    """calculates the interval change in field cumulated_field and stores it in
+    field.
+    """
+    reg_logicind = df["geoId"] == region_id
+    reg_deaths = np.array(df.loc[reg_logicind, cumulated_field])
+    for i, deaths in enumerate(reg_deaths):
+        if i>0 and deaths < reg_deaths[i-1]:
+            reg_deaths[i] = reg_deaths[i-1]
+    reg_deaths = reg_deaths-[0, *reg_deaths[:-1]]
+    df.loc[reg_logicind, field] = reg_deaths
 
-def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region):
+
+def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
     """
     FUnction that convertsfrom the tabular headers of opencovid19-fr to those
     needed by the covid19 model.
@@ -61,6 +82,8 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region):
     :param      population_region:  The population of the region.
     :type       population_region:  double
     """
+    if pop_per_region is None:
+        pop_per_region = pop_regions
     dst = pd.DataFrame()
     # mapping attributs src -> dst
 
@@ -89,18 +112,30 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region):
 
     # et pour finir on re-sérialise la date sous un autre format
     dst['dateRep'] = dst['dateRep'].apply(lambda x: x.strftime('%d/%m/%Y'))
-    return dst
+    
+    # Need to compute the new deaths per day as required by the format
+    dst.sort_values("t", inplace=True)
+    active_regions = dst["geoId"].unique()
+    dst["deaths"] = 0
+    for region in active_regions:
+        calculate_daily_change(dst, region, "cumulated_deaths", "deaths")
+        calculate_daily_change(dst, region, "cumulated_cases", "cases")
+
+    return dst.drop(["cumulated_deaths", "cumulated_cases"], axis=1)
 
 
 def find_active_regions(src, reg):
 
     # Extraire les IDs de regions qui match reg
     available_region_list = src["maille_code"].unique()
-    re_expression = re.compile(reg)
-    active_regions = []  # Les regions a ajoutees au fichier
-    for region in available_region_list:
-        if re_expression.search(region):
-            active_regions.append(region)
+    if reg == "all-france":
+        active_regions = [a for a in available_region_list if a in pop_regions]
+    else:
+        re_expression = re.compile(reg)
+        active_regions = []  # Les regions a ajoutees au fichier
+        for region in available_region_list:
+            if re_expression.search(region):
+                active_regions.append(region)
 
     print(f"{reg} pattern matched the following {len(active_regions)} IDs:")
     print(active_regions)
@@ -121,6 +156,7 @@ def clean_region_data(src, active_regions):
     # Il y a des doublons - on les élimines, celui qui reste est le dernier
     srcReg = srcReg.drop_duplicates(
         subset=["date", "maille_code"], keep='last')
+    return srcReg
 
 def process_from_cmd():
 
@@ -142,7 +178,7 @@ def process_from_cmd():
     srcReg = clean_region_data(src, active_regions)
     print(reg + " : " + str(srcReg.shape[0]) + " lignes")
 
-    dst = convert_opencovidfr_to_ICL_model(srcReg, pop_per_region)
+    dst = convert_opencovidfr_to_ICL_model(srcReg)
 
     # et voilà
     dst.to_csv(data_dir + reg + '.csv', index=False)
