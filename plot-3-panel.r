@@ -15,7 +15,7 @@ library(svglite)
 library(ggplot2)
 
 source("utils/geom-stepribbon.r")
-source("r-utils/read-covariates.r")
+source("utils/read-covariates.r")
 #---------------------------------------------------------------------------
 make_three_pannel_plot <- function(){
   print("Making three panel plots...")

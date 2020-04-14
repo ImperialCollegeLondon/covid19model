@@ -7,8 +7,8 @@ library(tidyr)
 library(EnvStats)
 
 # provide functions for pre and post processing
-source("r-utils/arg-parser.r")
-source("r-utils/read-covariates.r")
+source("utils/arg-parser.r")
+source("utils/read-covariates.r")
 
 
 countries <- c(
@@ -31,7 +31,7 @@ countries <- c(
 # Commandline options and parsing
 parsedargs <- base_arg_parse()
 DEBUG <- parsedargs[["DEBUG"]]
-FULL <- parsedargs[["FULL"]]
+FULL_RUN <- parsedargs[["FULL"]]
 StanModel <- parsedargs[["StanModel"]]
 
 ## Reading all data
