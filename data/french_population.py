@@ -154,16 +154,17 @@ def process_age_tables_france(
 
     # Create population groups for EHPAD, hospital, France
     ehpad_table = process_EHPAD()
-    list_add_names = ["HOSPITAL", "FRANCE"]
+    list_add_names = ["HOSPITAL", "France"]
     hospital_table = new_age_table(index=list_add_names)
     hospital_table["total"] = 0
-    hospital_table.loc["FRANCE"] = \
+    hospital_table.loc["France"] = \
         departement_age_table.sum().drop(["fra_code","name"])
     hospital_table.loc["HOSPITAL"] = (
-        hospital_table.loc["FRANCE"].sub(ehpad_table.loc["EHPAD"].drop(["fra_code","name"]))
+        hospital_table.loc["France"].sub(ehpad_table.loc["EHPAD"].drop(["fra_code","name"]))
     )
     hospital_table["name"] = list_add_names
     hospital_table["fra_code"] = list_add_names
+    hospital_table.loc["France", "fra_code"] = "FRA"
 
     ehpad_table = ehpad_table.append(hospital_table)
     # Append all tables together
