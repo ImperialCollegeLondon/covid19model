@@ -73,10 +73,10 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region):
     dst['month'] = 1
     dst['year'] = 2020
 
-    dst['cases'] = srcReg['cas_confirmes'].values
+    dst['cumulated_cases'] = srcReg['cas_confirmes'].values
 
     # avec ou sans les ehpads ?
-    dst['deaths'] = srcReg['deces'].values
+    dst['cumulated_deaths'] = srcReg['deces'].values
 
     dst['countriesAndTerritories'] = srcReg['maille_nom'].values
     dst['geoId'] = srcReg['maille_code'].values
@@ -107,6 +107,21 @@ def find_active_regions(src, reg):
     return active_regions
 
 
+def clean_region_data(src, active_regions):
+    # filtrage sur maille_code dans "active_regions"
+    srcReg = src.loc[
+        lambda df: [code in active_regions for code in df.maille_code], :]
+
+    # notre intérêt est sur la colonne décès, on supprime donc les lignes où
+    # cette valeur n'est pas connue
+    srcReg = srcReg.dropna(how='all', subset=["deces"])
+    # Nous avons besoins de remplir les cas_confirmes manquant avec des 0
+    srcReg["cas_confirmes"] = srcReg["cas_confirmes"].fillna(0)
+
+    # Il y a des doublons - on les élimines, celui qui reste est le dernier
+    srcReg = srcReg.drop_duplicates(
+        subset=["date", "maille_code"], keep='last')
+
 def process_from_cmd():
 
     if len(sys.argv) != 3:
@@ -124,20 +139,8 @@ def process_from_cmd():
     src = pd.read_csv(fic)
 
     active_regions = find_active_regions(src, reg)
-
-    # filtrage sur maille_code dans "active_regions"
-    srcReg = src.loc[
-        lambda df: [code in active_regions for code in df.maille_code], :]
-
-    # notre intérêt est sur la colonne décès, on supprime donc les lignes où
-    # cette valeur n'est pas connue
-    srcReg = srcReg.dropna(how='all', subset=["deces"])
+    srcReg = clean_region_data(src, active_regions)
     print(reg + " : " + str(srcReg.shape[0]) + " lignes")
-    # Nous avons besoins de remplir les cas_confirmes manquant avec des 0
-    srcReg["cas_confirmes"] = srcReg["cas_confirmes"].fillna(0)
-
-    # Il y a des doublons - on les élimines, celui qui reste est indéterminé
-    srcReg = srcReg.drop_duplicates(subset=["date", "maille_code"])
 
     dst = convert_opencovidfr_to_ICL_model(srcReg, pop_per_region)
 
