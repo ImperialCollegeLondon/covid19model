@@ -8,19 +8,27 @@ extract-reg-opencovid2ICLcsv.py <opencovid csv file>  <maille_code to extract>
 import sys
 import pandas as pd
 from datetime import datetime
+from path import Path
 import re
 
 import pdb
 
 # Module wide variables
-data_dir = 'data/'
+data_dir = Path('data/')
 
-# TODO get population data for all regions and departments
-# look at https://github.com/scrouzet/covid19-incrementality
-pop_per_region = {
-    "REG-93": 5059473,
-}
 
+# Population processed for:
+#  Gets data from INSEE via https://github.com/scrouzet/covid19-incrementality
+def read_pop_region(
+    pop_file_region=data_dir + 'FRA/french_population_age_regional.csv'
+):
+    pop_fra_df = pd.read_csv(pop_file_region)
+    pop_per_region = {}
+    for ind in pop_fra_df.index:
+        pop_per_region[pop_fra_df.loc[ind,"fra_code"]] = pop_fra_df.loc[ind,"total"]
+    return  pop_per_region
+
+pop_per_region = read_pop_region()
 
 def dt_to_dec(dt):
     """Convert a datetime to decimal year.
