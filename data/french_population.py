@@ -78,7 +78,10 @@ def process_department_data(datafile_departement):
 
     return age_table
 
-def department_to_region(departement_age_table):
+def department_to_region(
+    departement_age_table,
+    datafile_region=datadir + region_to_departement_csv,
+):
     datafile_region =  datadir + region_to_departement_csv
     src = pd.read_csv(datafile_region, sep=";")
     src.set_index(["departement_code"])
@@ -93,12 +96,48 @@ def department_to_region(departement_age_table):
         region_age_table["fra_code"].map('REG-{:02d}'.format)
     return region_age_table
 
-def main():
-    datafile_departement = datadir + departement_csv
-    
-    departement_age_table = process_department_data(datafile_departement)
-    region_age_table = department_to_region(departement_age_table)
+def process_EHPAD(ehpad_file='data/FRA/EHPA_residents.xlsx'):
+    """ data_test.ipynb
+    """
+    population_EHPAD = pd.read_excel(
+        ehpad_file,
+        usecols="A:F",
+        skiprows=range(0,5),
+        nrows=11,
+        sheet_name="T1"
+    )
+    population_EHPAD.rename(columns={ 
+        population_EHPAD.columns[0]: "age",
+        population_EHPAD.columns[-1]: "Total"
+    }, inplace = True)
 
+    EHPAD_age_map = {
+        "60-69": [0, 1],  # Assumes that no one one in the below 65 cat is below 60
+        "70-79": [2, 3],
+        "80+": [4, 5, 6, 7],
+    }
+
+    EHPAD_age_table = new_age_table(index=["EHPAD"])
+    for age in EHPAD_age_map:
+        for row in EHPAD_age_map[age]:
+            EHPAD_age_table.loc["EHPAD",age] += \
+                population_EHPAD.loc[row, "Total"]
+
+    EHPAD_age_table["total"] = EHPAD_age_table.sum(axis=1)
+    EHPAD_age_table["name"] = "EHPAD"
+    EHPAD_age_table["fra_code"] = "EHPAD"
+
+    return EHPAD_age_table
+
+def process_age_tables_france(
+    datafile_departement=datadir + departement_csv,
+    datafile_region=datadir + region_to_departement_csv,
+):
+    # Process department and region data
+    departement_age_table = process_department_data(datafile_departement)
+    region_age_table = department_to_region(
+        departement_age_table, datafile_region)
+    # Check that all departments are accounted for in a region
     check_sum = (departement_age_table.sum()==region_age_table.sum()
     ).drop("fra_code")
     if not check_sum.all():
@@ -106,7 +145,7 @@ def main():
             "Region and departement total populations do not match."
             + " Check failed"
         )
-    datafile_region =  datadir + region_to_departement_csv
+    # Add names to regions and departement files
     codes_to_names = pd.read_csv(datafile_region, sep=";")
     add_names_to_age_tables(
         region_age_table, codes_to_names,
@@ -117,8 +156,29 @@ def main():
 
     age_table = region_age_table.append(
         departement_age_table, ignore_index=True)
+
+    # Create population groups for EHPAD, hospital, France
+    ehpad_table = process_EHPAD()
+    list_add_names = ["HOSPITAL", "FRANCE"]
+    hospital_table = new_age_table(index=list_add_names)
+    hospital_table["total"] = 0
+    hospital_table.loc["FRANCE"] = \
+        departement_age_table.sum().drop(["fra_code","name"])
+    hospital_table.loc["HOSPITAL"] = (
+        hospital_table.loc["FRANCE"].sub(ehpad_table.loc["EHPAD"].drop(["fra_code","name"]))
+    )
+    hospital_table["name"] = list_add_names
+    hospital_table["fra_code"] = list_add_names
+
+    ehpad_table = ehpad_table.append(hospital_table)
+    # Append all tables together
+    age_table = age_table.append(ehpad_table, ignore_index=False)
+    return age_table
+
+def main():
+    age_table = process_age_tables_france()
     print(age_table)
-    pdb.set_trace()
+    
     return len(sys.argv)
 
 
