@@ -9,8 +9,6 @@ Generates: `ages-french-regions.csv` a file with stratified age ranges:
 
 import sys
 import pandas as pd
-import pdb
-import traceback
 from path import Path
 
 # Step 1 Load population data from "population-fra-INSEE-departement.csv"
@@ -64,9 +62,6 @@ def process_department_data(datafile_departement):
     src = pd.read_csv(datafile_departement, sep=";")
     # Select last non estimated year of data
     src = src.loc[lambda df: df.year == 2019]
-    for field in src:
-        print(f"{field} has the following unique elements:")
-        print(src[field].unique())
 
     age_table = new_age_table(index=src["departement_code"].unique())
     
@@ -173,19 +168,33 @@ def process_age_tables_france(
     ehpad_table = ehpad_table.append(hospital_table)
     # Append all tables together
     age_table = age_table.append(ehpad_table, ignore_index=False)
+    print(
+        f"Processed {len(departement_age_table)} departements, "
+        + f"{len(region_age_table)} regions and "
+        + f"{len(ehpad_table)} reporting groups"
+    )
     return age_table
 
 def main():
     age_table = process_age_tables_france()
     print(age_table)
     
-    return len(sys.argv)
+    try:
+        output_file = sys.argv[1]
+    except IndexError as identifier:
+        output_file = 'data/FRA/french_population_age_regional.csv'
+    
+    age_table.to_csv(output_file, index=False,
+        columns=["name", "fra_code", *[age for age in age_map], "total"]
+    )
+    print(
+        "Tabular data of french population ages by deparetement, region,"
+        + f" and death reporting category written to {output_file}"
+    )
+    return 0
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        traceback.print_exc()
-        pdb.post_mortem()
+    main()
+
     
