@@ -10,6 +10,7 @@ Generates: `ages-french-regions.csv` a file with stratified age ranges:
 import sys
 import pandas as pd
 import pdb
+import traceback
 from path import Path
 
 # Step 1 Load population data from "population-fra-INSEE-departement.csv"
@@ -40,37 +41,63 @@ def df_source_2_table(row, target_table):
     new_row = row["departement_code"]
     target_table[new_col][new_row] += row["population"]
 
+def df_department_table_to_region(row, source_table, target_table):
+    for age in target_table:
+        target_table.loc[row["region_code"], age] += \
+            source_table.loc[row["departement_code"], age]
+
+def new_age_table(index=[]):
+    return pd.DataFrame(
+        0,
+        index=index,
+        columns=[key for key in age_map]
+    )
 
 def process_department_data(datafile_departement):
     src = pd.read_csv(datafile_departement, sep=";")
     # Select last non estimated year of data
-    src = src.loc[lambda df: df.year == 2018]
+    src = src.loc[lambda df: df.year == 2019]
     for field in src:
         print(f"{field} has the following unique elements:")
         print(src[field].unique())
 
-    age_table = pd.DataFrame(
-        0,
-        index=src["departement_code"].unique(),
-        columns=[key for key in age_map]
-    )
+    age_table = new_age_table(index=src["departement_code"].unique())
+    
     src.apply(lambda x: df_source_2_table(x, age_table), axis=1)
 
     age_table["total"] = age_table.sum(axis=1)
     age_table["fra_code"] = age_table.index
-    age_table["fra_code"].map('DEP-{}')
+    age_table["fra_code"] = age_table["fra_code"].map('DEP-{}'.format)
 
     return age_table
 
+def department_to_region(departement_age_table):
+    datafile_region =  datadir + region_to_departement_csv
+    src = pd.read_csv(datafile_region, sep=";")
+    src.set_index(["departement_code"])
+    region_age_table = new_age_table(src["region_code"].unique())
+
+    src.apply(lambda x: df_department_table_to_region(
+        x, departement_age_table, region_age_table),
+        axis=1)
+    region_age_table["fra_code"] = region_age_table.index
+    region_age_table["fra_code"] = \
+        region_age_table["fra_code"].map('REG-{:02d}'.format)
+    return region_age_table
 
 def main():
     datafile_departement = datadir + departement_csv
     
-    age_table_department = process_department_data(datafile_departement)
-
+    departement_age_table = process_department_data(datafile_departement)
+    region_age_table = department_to_region(departement_age_table)
     pdb.set_trace()
     return len(sys.argv)
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        traceback.print_exc()
+        pdb.post_mortem()
+    
