@@ -19,4 +19,4 @@ jobs:
         # The connection string for the storage account
         connection_string: ${{ secrets.ImperialStorageConnectionString }}
         # extra arguments that can be passed to `az storage blob upload-batch`. Useful for passing flags like `--pattern` or `--destination-path`
-        extra_args: -d covidmodels --pattern *.csv
+        extra_args: --pattern *.csv
