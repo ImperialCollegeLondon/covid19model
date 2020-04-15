@@ -45,7 +45,7 @@ make_three_pannel_plot <- function(){
   covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
   covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
   
-  for(i in 1:14){
+  for(i in 1:length(countries)){
     print(i)
     N <- length(dates[[i]])
     country <- countries[[i]]
@@ -234,7 +234,7 @@ make_plots <- function(data_country, covariates_country_long,
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b"), 
                  limits = c(data_country$time[1], 
                             data_country$time[length(data_country$time)])) + 
-    scale_y_continuous(expand = expansion(mult=c(0,0.1))) + 
+    scale_y_continuous(expand = expand_scale(mult=c(0,0.1))) + 
     theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="right")
