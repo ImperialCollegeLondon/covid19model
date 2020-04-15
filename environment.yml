@@ -6,6 +6,9 @@ dependencies:
   - r-lubridate
   - r-gdata
   - r-ggpubr
+  - r-tidyr
+  - r-dplyr
   - r-rstan
+  - r-optparse
 channels:
   - conda-forge
