@@ -17,6 +17,6 @@ jobs:
         # The name of the storage account container these assets will be uploaded to
         container_name: msfticlblock
         # The connection string for the storage account
-        connection_string: ${{ secrets.BlobStorageConnectionTokenPublic }}
+        connection_string: ${{ secrets.BlobStorageConnectionStringPublic }}
         # extra arguments that can be passed to `az storage blob upload-batch`. Useful for passing flags like `--pattern` or `--destination-path`
         extra_args: -d covidmodels --pattern *.csv
