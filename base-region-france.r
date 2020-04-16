@@ -6,27 +6,25 @@ library(dplyr)
 library(tidyr)
 library(EnvStats)
 
-# provide functions for pre and post processing
-source("utils/arg-parser.r")
-source("utils/read-covariates.r")
+source("r-utils/arg-parser.r")
+source("r-utils/read-covariates.r")
 
 
-countries <- c(
-  "Denmark",
-  "Italy",
-  "Germany",
-  "Spain",
-  "United_Kingdom",
-  "France",
-  "Norway",
-  "Belgium",
-  "Austria", 
-  "Sweden",
-  "Switzerland",
-  "Greece",
-  "Portugal",
-  "Netherlands"
+regions <- c(
+  "Provence-Alpes-Côte d'Azur"
 )
+
+active_countries <- c(
+  "France"
+)
+
+region_to_country_map = list()
+for(Region in regions){
+  region_to_country_map[[Region]] <- "France"
+}
+for(Country in active_countries){
+  region_to_country_map[[Country]] <- Country
+}
 
 # Commandline options and parsing
 parsedargs <- base_arg_parse()
@@ -34,13 +32,12 @@ DEBUG <- parsedargs[["DEBUG"]]
 FULL <- parsedargs[["FULL"]]
 StanModel <- parsedargs[["StanModel"]]
 
-## Reading all data
-d=readRDS('data/COVID-19-up-to-date.rds')
-
-## Ensure that output directories exist
-dir.create("results/", showWarnings = FALSE, recursive = TRUE)
-dir.create("figures/", showWarnings = FALSE, recursive = TRUE)
-dir.create("web/", showWarnings = FALSE, recursive = TRUE)
+## Reading data from region file and world data
+data_files <- c(
+  "data/COVID-19-up-to-date.rds",
+  "data/REG-93.rds"
+)
+d <- do.call('rbind', lapply(data_files, readRDS))
 
 ## get IFR and population from same file
 ifr.by.country = read.csv("data/popt_ifr.csv")
@@ -52,12 +49,11 @@ serial.interval = read.csv("data/serial_interval.csv")
 covariates <- covariates_read('data/interventions.csv')
 
 forecast = 0
-
 N2 = 90 # increase if you need more forecast
 
 dates = list()
 reported_cases = list()
-stan_data = list(M=length(countries),N=NULL,covariate1=NULL,covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,covariate6=NULL,deaths=NULL,f=NULL,
+stan_data = list(M=length(names(region_to_country_map)),N=NULL,covariate1=NULL,covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,covariate6=NULL,deaths=NULL,f=NULL,
                  N0=6,cases=NULL,SI=serial.interval$fit[1:N2],
                  EpidemicStart = NULL, pop = NULL) # N0 = 6 to make it consistent with Rayleigh
 deaths_by_country = list()
@@ -70,23 +66,26 @@ x2 = rgammaAlt(1e7,mean2,cv2) # onset-to-death distribution
 
 ecdf.saved = ecdf(x1+x2)
 
-for(Country in countries) {
+for(Region in names(region_to_country_map))
+{
+  Country = region_to_country_map[[Region]]
+  print(sprintf("Region: %s in country: %s ",Region,Country))
   IFR=ifr.by.country$ifr[ifr.by.country$country == Country]
   
   covariates1 <- covariates[covariates$Country == Country, c(2,3,4,5,6)]
   
   d1_pop = ifr.by.country[ifr.by.country$country==Country,]
-  d1=d[d$Countries.and.territories==Country,c(1,5,6,7)]
+  d1=d[d$Countries.and.territories==Region,c(1,5,6,7)]
   d1$date = as.Date(d1$DateRep,format='%d/%m/%Y')
   d1$t = decimal_date(d1$date) 
   d1=d1[order(d1$t),]
   
   date_min <- dmy('31/12/2019') 
   if (as.Date(d1$DateRep[1], format='%d/%m/%Y') > as.Date(date_min, format='%d/%m/%Y')){
-    print(paste(Country,'In padding'))
+    print(paste(Region,'In padding'))
     pad_days <- as.Date(d1$DateRep[1], format='%d/%m/%Y') - date_min
     pad_dates <- date_min + days(1:pad_days[[1]]-1)
-    padded_data <- data.frame("Countries.and.territories" = rep(Country, pad_days),
+    padded_data <- data.frame("Countries.and.territories" = rep(Region, pad_days),
                               "DateRep" = format(pad_dates, '%d/%m/%Y'),
                               "t" = decimal_date(as.Date(pad_dates,format='%d/%m/%Y')),
                               "date" = as.Date(pad_dates,format='%d/%m/%Y'),
@@ -111,13 +110,13 @@ for(Country in countries) {
     d1[covariate] <- (as.Date(d1$DateRep, format='%d/%m/%Y') >= as.Date(covariates1[1,covariate]))*1  # should this be > or >=?
   }
   
-  dates[[Country]] = d1$date
+  dates[[Region]] = d1$date
   # hazard estimation
   N = length(d1$Cases)
-  print(sprintf("%s has %d days of data",Country,N))
+  print(sprintf("%s has %d days of data",Region,N))
   forecast = N2 - N
   if(forecast < 0) {
-    print(sprintf("%s: %d", Country, N))
+    print(sprintf("%s: %d", Region, N))
     print("ERROR!!!! increasing N2")
     N2 = N
     forecast = N2 - N
@@ -132,10 +131,10 @@ for(Country in countries) {
     f[i] = (convolution(i+.5) - convolution(i-.5)) 
   }
   
-  reported_cases[[Country]] = as.vector(as.numeric(d1$Cases))
+  reported_cases[[Region]] = as.vector(as.numeric(d1$Cases))
   deaths=c(as.vector(as.numeric(d1$Deaths)),rep(-1,forecast))
   cases=c(as.vector(as.numeric(d1$Cases)),rep(-1,forecast))
-  deaths_by_country[[Country]] = as.vector(as.numeric(d1$Deaths))
+  deaths_by_country[[Region]] = as.vector(as.numeric(d1$Deaths))
   covariates2 <- as.data.frame(d1[, colnames(covariates1)])
   # x=1:(N+forecast)
   covariates2[N:(N+forecast),] <- covariates2[N,]
@@ -160,6 +159,7 @@ for(Country in countries) {
   }
 }
 
+
 # create the `any intervention` covariate
 stan_data$covariate4 = 1*as.data.frame((stan_data$covariate1+
                                           stan_data$covariate2+
@@ -168,7 +168,7 @@ stan_data$covariate4 = 1*as.data.frame((stan_data$covariate1+
                                           stan_data$covariate6) >= 1)
 
 if(DEBUG) {
-  for(i in 1:length(countries)) {
+  for(i in 1:length(region_to_country_map)) {
     write.csv(
       data.frame(date=dates[[i]],
                  `school closure`=stan_data$covariate1[1:stan_data$N[i],i],
@@ -177,7 +177,7 @@ if(DEBUG) {
                  `government makes any intervention`=stan_data$covariate4[1:stan_data$N[i],i],
                  `lockdown`=stan_data$covariate5[1:stan_data$N[i],i],
                  `social distancing encouraged`=stan_data$covariate6[1:stan_data$N[i],i]),
-      file=sprintf("results/%s-check-dates.csv",countries[i]),row.names=F)
+      file=sprintf("results/%s-check-dates.csv",names(region_to_country_map)[i]),row.names=F)
   }
 }
 
@@ -188,11 +188,18 @@ m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 
 if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
-} else if (FULL) {
+} else if (FULL_RUN){
   fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
+
 } else { 
+  # uncomment the line below for a full run to replicate results and comment the second line below 
   fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
-}
+}  
+
+out = rstan::extract(fit)
+prediction = out$prediction
+estimated.deaths = out$E_deaths
+estimated.deaths.cf = out$E_deaths0
 
 JOBID = Sys.getenv("PBS_JOBID")
 if(JOBID == "")
@@ -201,21 +208,21 @@ print(sprintf("Jobid = %s",JOBID))
 
 save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 
-save(fit, dates, reported_cases, deaths_by_country, countries, covariates,
-     stan_data,
-     file = paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
+countries <- names(region_to_country_map)
+save(fit,prediction,dates,reported_cases,deaths_by_country,countries,region_to_country_map,estimated.deaths,
+     estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
+library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)
 system(paste0("Rscript covariate-size-effects.r ", filename,'-stanfit.Rdata'))
-out = rstan::extract(fit)
 mu = (as.matrix(out$mu))
 colnames(mu) = countries
-g = bayesplot::mcmc_intervals(mu,prob = .9)
-ggplot2::ggsave(sprintf("results/%s-mu.png",filename),g,width=4,height=6)
+g = (mcmc_intervals(mu,prob = .9))
+ggsave(sprintf("results/%s-mu.png",filename),g,width=4,height=6)
 tmp = lapply(1:length(countries), function(i) (out$Rt_adj[,stan_data$N[i],i]))
 Rt_adj = do.call(cbind,tmp)
 colnames(Rt_adj) = countries
-g = bayesplot::mcmc_intervals(Rt_adj,prob = .9)
+g = (mcmc_intervals(Rt_adj,prob = .9))
 ggsave(sprintf("results/%s-final-rt.png",filename),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'))

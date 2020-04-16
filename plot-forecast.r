@@ -21,6 +21,9 @@ make_forecast_plot <- function(){
   filename <- args[1]
   
   load(paste0("results/", filename))
+  out = rstan::extract(fit)
+  prediction = out$prediction
+  estimated.deaths = out$E_deaths
   
   for(i in 1:length(countries)){
     N <- length(dates[[i]])
