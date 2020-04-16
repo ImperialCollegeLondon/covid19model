@@ -8,6 +8,8 @@ base_arg_parse <- function (){
 	                     help="Perform a debug run of the model")
 	parser <- add_option(parser, c("-F", "--full"), action="store_true",
 	                     help="Perform a full run of the model")
+	parser <- add_option(parser, c("--nosubdir"), action="store_true",
+	                     help="Do not create subdirectories for generated data.")
 	cmdoptions <- parse_args(parser, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
 
 	# Default run parameters for the model
@@ -21,6 +23,12 @@ base_arg_parse <- function (){
 	  FULL = Sys.getenv("FULL") == "TRUE"
 	} else {
 	  FULL = cmdoptions$options$full
+	}
+
+		
+	new_sub_folder = "TRUE"
+	if(!is.null(cmdoptions$options$nosubdir)){
+		new_sub_folder = !cmdoptions$options$nosubdir
 	}
 
 	if(DEBUG && FULL) {
@@ -43,7 +51,8 @@ base_arg_parse <- function (){
 	parsedargs <- c(
 			DEBUG=DEBUG,
 			FULL=FULL,
-			StanModel=StanModel 
+			StanModel=StanModel,
+			new_sub_folder=new_sub_folder 
 		)
 	return(parsedargs)
 }

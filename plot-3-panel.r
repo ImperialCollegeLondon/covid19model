@@ -283,7 +283,7 @@ make_plots <- function(data_country, covariates_country_long,
             p3_mobile, base_height = 4, base_asp = 1.1)
   
   p <- plot_grid(p1, p2, p3, ncol = 3, rel_widths = c(1, 1, 2))
-  save_plot(filename = paste0("figures/", country, "_three_pannel_", filename2, ".png"), 
+  save_plot(filename = paste0("figures/", filename2, "-", country, "_three_pannel_", ".png"), 
             p, base_width = 14)
 }
 

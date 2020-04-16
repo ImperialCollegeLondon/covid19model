@@ -45,7 +45,29 @@ parsedargs <- base_arg_parse()
 DEBUG <- parsedargs[["DEBUG"]]
 FULL_RUN <- parsedargs[["FULL"]]
 StanModel <- parsedargs[["StanModel"]]
+new_sub_folder <- parsedargs[["new_sub_folder"]]
 
+JOBID = Sys.getenv("PBS_JOBID")
+if(JOBID == "")
+  JOBID = as.character(abs(round(rnorm(1) * 1000000)))
+print(sprintf("Jobid = %s",JOBID))
+fullstr <- ""
+if (FULL_RUN){
+  fullstr <- "fullrun"
+} else if (DEBUG) {
+  fullstr <- "debug"
+}
+
+run_name <- paste0(StanModel,'-',fullstr,'-', format(Sys.time(), '%Y%m%dT%H%M%S'),'-',JOBID)
+if (new_sub_folder){
+  result_folders <- c(
+      "results", "figures"
+    )
+  for (fold in result_folders){
+    dir.create(paste0(fold ,'/', run_name))
+  }
+  run_name <- paste0(run_name ,'/', run_name)
+}
 ## Reading data from region file and world data
 data_files <- c(
   # "data/COVID-19-up-to-date.rds",
@@ -215,30 +237,24 @@ prediction = out$prediction
 estimated.deaths = out$E_deaths
 estimated.deaths.cf = out$E_deaths0
 
-JOBID = Sys.getenv("PBS_JOBID")
-if(JOBID == "")
-  JOBID = as.character(abs(round(rnorm(1) * 1000000)))
-print(sprintf("Jobid = %s",JOBID))
-
-save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
+save.image(paste0('results/',run_name,'.Rdata'))
 
 countries <- names(region_to_country_map)
 save(fit,prediction,dates,reported_cases,deaths_by_country,countries,region_to_country_map,estimated.deaths,
-     estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
+     estimated.deaths.cf,out,covariates,file=paste0('results/',run_name,'-stanfit.Rdata'))
 
 library(bayesplot)
-filename <- paste0(StanModel,'-',JOBID)
-system(paste0("Rscript covariate-size-effects.r ", filename,'-stanfit.Rdata'))
+system(paste0("Rscript covariate-size-effects.r ", run_name,'-stanfit.Rdata'))
 mu = (as.matrix(out$mu))
 colnames(mu) = countries
 g = (mcmc_intervals(mu,prob = .9))
-ggsave(sprintf("results/%s-mu.png",filename),g,width=4,height=6)
+ggsave(sprintf("results/%s-mu.png",run_name),g,width=4,height=6)
 tmp = lapply(1:length(countries), function(i) (out$Rt_adj[,stan_data$N[i],i]))
 Rt_adj = do.call(cbind,tmp)
 colnames(Rt_adj) = countries
 g = (mcmc_intervals(Rt_adj,prob = .9))
-ggsave(sprintf("results/%s-final-rt.png",filename),g,width=4,height=6)
-system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'))
-system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'))
-system(paste0("Rscript make-table.r results/",filename,'-stanfit.Rdata'))
+ggsave(sprintf("results/%s-final-rt.png",run_name),g,width=4,height=6)
+system(paste0("Rscript plot-3-panel.r ", run_name,'-stanfit.Rdata'))
+system(paste0("Rscript plot-forecast.r ",run_name,'-stanfit.Rdata'))
+system(paste0("Rscript make-table.r results/",run_name,'-stanfit.Rdata'))
 

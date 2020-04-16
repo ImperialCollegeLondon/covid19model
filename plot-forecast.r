@@ -132,7 +132,7 @@ make_single_plot <- function(data_country, data_country_forecast, filename, coun
              color="black")
   print(p)
   
-  ggsave(file= paste0("figures/", country, "_forecast_", filename, ".png"), 
+  ggsave(file= paste0("figures/", filename,'-', country, "_forecast_",  ".png"), 
          p, width = 10)
   
   # Produce plots for Website
