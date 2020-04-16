@@ -25,7 +25,7 @@ make_forecast_plot <- function(){
   prediction = out$prediction
   estimated.deaths = out$E_deaths
   
-  for(i in 1:14){
+  for(i in 1:length(countries)){
     N <- length(dates[[i]])
     N2 <- N + 7
     country <- countries[[i]]

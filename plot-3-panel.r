@@ -31,7 +31,7 @@ make_three_pannel_plot <- function(){
   prediction = out$prediction
   estimated.deaths = out$E_deaths
   
-  for(i in 1:14){
+  for(i in 1:length(countries)){
     print(i)
     N <- length(dates[[i]])
     country <- countries[[i]]
