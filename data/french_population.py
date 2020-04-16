@@ -119,8 +119,8 @@ def process_EHPAD(ehpad_file='data/FRA/EHPA_residents.xlsx'):
                 population_EHPAD.loc[row, "Total"]
 
     EHPAD_age_table["total"] = EHPAD_age_table.sum(axis=1)
-    EHPAD_age_table["name"] = "EHPAD"
-    EHPAD_age_table["fra_code"] = "EHPAD"
+    EHPAD_age_table["name"] = "France-EHPAD"
+    EHPAD_age_table["fra_code"] = "FRA-EHPAD"
 
     return EHPAD_age_table
 
@@ -154,17 +154,18 @@ def process_age_tables_france(
 
     # Create population groups for EHPAD, hospital, France
     ehpad_table = process_EHPAD()
-    list_add_names = ["HOSPITAL", "France"]
+    list_add_names = ["France-hopitaux", "France"]
     hospital_table = new_age_table(index=list_add_names)
     hospital_table["total"] = 0
     hospital_table.loc["France"] = \
-        departement_age_table.sum().drop(["fra_code","name"])
-    hospital_table.loc["HOSPITAL"] = (
+        departement_age_table.sum().drop(["fra_code", "name"])
+    hospital_table.loc["France-hopitaux"] = (
         hospital_table.loc["France"].sub(ehpad_table.loc["EHPAD"].drop(["fra_code","name"]))
     )
     hospital_table["name"] = list_add_names
     hospital_table["fra_code"] = list_add_names
     hospital_table.loc["France", "fra_code"] = "FRA"
+    hospital_table.loc["France-hopitaux", "fra_code"] = "FRA-HOP"
 
     ehpad_table = ehpad_table.append(hospital_table)
     # Append all tables together

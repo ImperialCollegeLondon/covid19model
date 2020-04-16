@@ -16,7 +16,9 @@ import pdb
 
 # Module wide variables
 data_dir = 'data/'
-
+special_regions = [
+    "FRA-EHPAD", "FRA-HOP",
+]
 
 # Population processed for:
 #  Gets data from INSEE via https://github.com/scrouzet/covid19-incrementality
@@ -61,6 +63,23 @@ def calculate_daily_change(df, region_id, cumulated_field, field):
     reg_deaths = reg_deaths - [0, *reg_deaths[:-1]]
     df.loc[reg_logicind, field] = reg_deaths
 
+def prepare_special_regions(srcReg):
+    # Re-add france, rename france as hopitaux
+    # Define EHPAD as death with ehpad deaths
+    df_to_add_france = pd.DataFrame(srcReg[srcReg['maille_nom'] == "France"])
+    df_to_add_france["deces"] = df_to_add_france.loc[:, "deces"].add(
+        df_to_add_france.loc[:, "deces_ehpad"])
+
+    df_to_add_ehpad = pd.DataFrame(srcReg[srcReg['maille_nom'] == "France"])
+    df_to_add_ehpad["deces"] = df_to_add_ehpad["deces_ehpad"]
+    df_to_add_ehpad["maille_nom"] = "France-EHPAD"
+    df_to_add_ehpad["maille_code"] = "FRA-EHPAD"
+
+    srcReg.loc[srcReg['maille_nom'] == "France",'maille_code'] = "FRA-HOP"
+    srcReg.loc[srcReg['maille_nom'] == "France",'maille_nom'] = "France-hopitaux"
+
+    df_to_add = df_to_add_france.append(df_to_add_ehpad)
+    return srcReg.append(df_to_add)
 
 def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
     """
@@ -84,8 +103,10 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
     if pop_per_region is None:
         pop_per_region = pop_regions
     dst = pd.DataFrame()
-    # mapping attributs src -> dst
 
+    # Prepare special regions : France, Hopital, EHPAD
+    srcReg = prepare_special_regions(srcReg)
+    # mapping attributs src -> dst
     dst['dateRep'] = srcReg['date'].values
     # conversion vers des vraies dates
     dst['dateRep'] = dst['dateRep'].apply(pd.to_datetime, format="%Y-%m-%d")
@@ -94,7 +115,6 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
     dst['day'] = 1
     dst['month'] = 1
     dst['year'] = 2020
-
 
     dst['cumulated_cases'] = srcReg['cas_confirmes'].values
     # avec ou sans les ehpads ?
@@ -126,7 +146,7 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
 def find_active_regions(src, reg):
 
     # Extraire les IDs de regions qui match reg
-    available_region_list = src["maille_code"].unique()
+    available_region_list = np.append(src["maille_code"].unique(), special_regions)
     if reg == "all-france":
         active_regions = [a for a in available_region_list if a in pop_regions]
     else:
@@ -151,10 +171,15 @@ def clean_region_data(src, active_regions):
     srcReg = srcReg.dropna(how='all', subset=["deces"])
     # Nous avons besoins de remplir les cas_confirmes manquant avec des 0
     srcReg["cas_confirmes"] = srcReg["cas_confirmes"].fillna(0)
-
-    # Il y a des doublons - on les élimines, celui qui reste est le dernier
+    # Il y a des doublons - on les élimines, on conserve celui qui a de
+    # preferences les deces avec ehpad
+    srcReg.sort_values(
+        ["date", "maille_code", "deces", "deces_ehpad"],
+        ascending=True, na_position="last")
     srcReg = srcReg.drop_duplicates(
-        subset=["date", "maille_code"], keep='last')
+        subset=["date", "maille_code"], keep='first')
+    # Nous avons besoins de remplir les cas_confirmes manquant avec des 0
+    srcReg["deces_ehpad"] = srcReg["deces_ehpad"].fillna(0)
     return srcReg
 
 def process_from_cmd():
@@ -175,9 +200,9 @@ def process_from_cmd():
 
     active_regions = find_active_regions(src, reg)
     srcReg = clean_region_data(src, active_regions)
-    print(reg + " : " + str(srcReg.shape[0]) + " lignes")
 
     dst = convert_opencovidfr_to_ICL_model(srcReg)
+    print(reg + " : " + str(dst.shape[0]) + " lignes")
 
     # et voilà
     dst.to_csv(

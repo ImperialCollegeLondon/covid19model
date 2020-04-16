@@ -17,15 +17,15 @@ regions <- c(
   "Centre-Val de Loire",
   "Corse",
   "Grand Est",
-  "Guadeloupe",
   "Hauts-de-France",
-  "Martinique",
   "Normandie",
   "Nouvelle-Aquitaine",
   "Occitanie",
   "Pays de la Loire",
   "Provence-Alpes-Côte d'Azur",
-  "Île-de-France"
+  "Île-de-France",
+  "France-hopitaux",
+  "France-EHPAD"
 )
 
 active_countries <- c(
