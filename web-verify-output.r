@@ -16,6 +16,14 @@ countries <- c(
   "Portugal",
   "Netherlands"
 )
+
+web_fix_fonts <- function(path){
+  x <- readLines(path)
+  y <- gsub( "Aerial", "Arial, Helvetica, sans-serif", x )
+  y <- gsub( "Arimo", "Arial, Helvetica, sans-serif", y )
+  cat(y, file=path, sep="\n")
+}
+
 verify_web_output <- function(){
   plot_names <- c("deaths", "forecast", "infections", "rt")
   plot_versions <- c("mobile", "desktop")
@@ -34,6 +42,9 @@ verify_web_output <- function(){
         if (! file.exists(path)) {
           stop(sprintf("Missing web output during verification: %s", path))
         }
+        
+        # Fix wrong fonts
+        web_fix_fonts(path)
       }
     }
     
@@ -43,7 +54,10 @@ verify_web_output <- function(){
     date_results[[country]] = latest_date
     
   }
-  
+
+  # Fix fonts for covariate change estimates
+  web_fix_fonts("web/figures/desktop/covars-alpha-reduction.svg")
+  web_fix_fonts("web/figures/mobile/covars-alpha-reduction.svg")
   
   dir.create("web/data/", showWarnings = FALSE, recursive = TRUE)
   write_json(date_results, "web/data/latest-updates.json", auto_unbox=TRUE)
