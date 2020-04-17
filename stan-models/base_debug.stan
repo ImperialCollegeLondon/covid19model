@@ -17,6 +17,11 @@ data {
   real SI[N2]; // fixed pre-calculated SI using emprical data from Neil
 }
 
+transformed data {
+  vector[6] alpha_test;
+  alpha_test = rep_vector(1.0, 6);
+}
+
 parameters {
   real<lower=0> mu[M]; // intercept for Rt
   real<lower=0> alpha_hier[6]; // sudo parameter for the hier term for alpha
@@ -33,6 +38,8 @@ transformed parameters {
     matrix[N2, M] E_deaths  = rep_matrix(0,N2,M);
     matrix[N2, M] Rt = rep_matrix(0,N2,M);
     matrix[N2, M] Rt_adj = Rt;
+    vector[N2] Rt_test = rep_vector(0,N2);
+    vector[M] mu_test = rep_vector(1.0,M);
     
     {
       matrix[N2,M] cumm_sum = rep_matrix(0,N2,M);
@@ -49,6 +56,15 @@ transformed parameters {
           covariate3[,m] * (-alpha[3]) + covariate4[,m] * (-alpha[4]) + covariate5[,m] * (-alpha[5]) + 
           covariate6[,m] * (-alpha[6]) );
           Rt_adj[1:N0,m] = Rt[1:N0,m];
+          
+        // Debug
+        Rt_test = mu_test[m] * exp( covariate1[,m] * (-alpha_test[1]) + covariate2[,m] * (-alpha_test[2]) +
+          covariate3[,m] * (-alpha_test[3]) + covariate4[,m] * (-alpha_test[4]) + covariate5[,m] * (-alpha_test[5]) + 
+          covariate6[,m] * (-alpha_test[6]) );
+        print(Rt_test[30:60]);
+        // Debug
+
+
         for (i in (N0+1):N2) {
           real convolution=0;
           for(j in 1:(i-1)) {

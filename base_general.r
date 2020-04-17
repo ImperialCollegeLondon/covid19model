@@ -225,13 +225,34 @@ if(DEBUG) {
   }
 }
 
+
+# Combine covariates to an array of design matrices X
+stan_data$P <- 6
+stopifnot(dim(stan_data$covariate1) == c(stan_data$N2, stan_data$M))
+stan_data$X <- array(c(stan_data$covariate1, 
+                       stan_data$covariate2, 
+                       stan_data$covariate3, 
+                       unname(as.matrix(stan_data$covariate4)), 
+                       stan_data$covariate5, 
+                       stan_data$covariate6), 
+                     dim = c( stan_data$N2 , stan_data$M , stan_data$P ))
+stan_data$X <- aperm(stan_data$X, c(2,1,3))
+stopifnot(all(stan_data$covariate1 == t(stan_data$X[,,1])))
+stan_data$covariate1 <- 
+  stan_data$covariate2 <-
+  stan_data$covariate3 <-
+  stan_data$covariate4 <-
+  stan_data$covariate5 <-
+  stan_data$covariate6 <- NULL
+
+
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 
 
 if(DEBUG) {
-  fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
+  fit = sampling(m,data=stan_data,iter=40, warmup=20, chains=2, seed = 4711)
 } else if (FULL) {
   fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
 } else { 

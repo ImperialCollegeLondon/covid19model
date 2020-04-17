@@ -1,17 +1,13 @@
 data {
   int <lower=1> M; // number of countries
+  int <lower=1> P; // number of covariates
   int <lower=1> N0; // number of days for which to impute infections
   int<lower=1> N[M]; // days of observed data for country m. each entry must be <= N2
   int<lower=1> N2; // days of observed data + # of days to forecast
   int cases[N2,M]; // reported cases
   int deaths[N2, M]; // reported deaths -- the rows with i > N contain -1 and should be ignored
   matrix[N2, M] f; // h * s
-  matrix[N2, M] covariate1;
-  matrix[N2, M] covariate2;
-  matrix[N2, M] covariate3;
-  matrix[N2, M] covariate4;
-  matrix[N2, M] covariate5;
-  matrix[N2, M] covariate6;
+  matrix[N2, P] X[M];
   int EpidemicStart[M];
   real pop[M];
   real SI[N2]; // fixed pre-calculated SI using emprical data from Neil
@@ -19,7 +15,7 @@ data {
 
 parameters {
   real<lower=0> mu[M]; // intercept for Rt
-  real<lower=0> alpha_hier[6]; // sudo parameter for the hier term for alpha
+  real<lower=0> alpha_hier[P]; // sudo parameter for the hier term for alpha
   real<lower=0> kappa;
   real<lower=0> y[M];
   real<lower=0> phi;
@@ -28,7 +24,7 @@ parameters {
 }
 
 transformed parameters {
-    real alpha[6];
+    vector[P] alpha;
     matrix[N2, M] prediction = rep_matrix(0,N2,M);
     matrix[N2, M] E_deaths  = rep_matrix(0,N2,M);
     matrix[N2, M] Rt = rep_matrix(0,N2,M);
@@ -36,7 +32,7 @@ transformed parameters {
     
     {
       matrix[N2,M] cumm_sum = rep_matrix(0,N2,M);
-      for(i in 1:6){
+      for(i in 1:P){
         alpha[i] = alpha_hier[i] - ( log(1.05) / 6.0 );
       }
       for (m in 1:M){
@@ -45,9 +41,7 @@ transformed parameters {
         }
         prediction[1:N0,m] = rep_vector(y[m],N0); // learn the number of cases in the first N0 days
         
-        Rt[,m] = mu[m] * exp( covariate1[,m] * (-alpha[1]) + covariate2[,m] * (-alpha[2]) +
-          covariate3[,m] * (-alpha[3]) + covariate4[,m] * (-alpha[4]) + covariate5[,m] * (-alpha[5]) + 
-          covariate6[,m] * (-alpha[6]) );
+        Rt[,m] = mu[m] * exp(-X[m] * alpha);
           Rt_adj[1:N0,m] = Rt[1:N0,m];
         for (i in (N0+1):N2) {
           real convolution=0;
