@@ -41,7 +41,9 @@ x_lim[2] <- x_lim[2] + 0.05 * x_range
 layer_vertical_line <- if (0 > x_lim[1] && 0 < x_lim[2]) {
   vline_0(color = "gray90", size = 0.5)
 } else {
-  geom_ignore()
+  geom_blank(
+    mapping = NULL, data = NULL,
+    show.legend = FALSE, inherit.aes = FALSE)
 }
 args_outer <- list(mapping = aes_(x = ~ll, xend = ~hh, y = ~parameter, 
                                   yend = ~parameter)) #, color = bayesplot::get_color("mid"))
