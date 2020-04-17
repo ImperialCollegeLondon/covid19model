@@ -1,7 +1,9 @@
 # install.packages("devtools")
 # devtools::install_github("jgabry/posterior")
-# install_github("stan-dev/cmdstanr")
+# devtools::install_github("stan-dev/cmdstanr")
 # cmdstanr::install_cmdstan(release_url = "https://github.com/stan-dev/cmdstan/releases/download/2.23-candidate/cmdstan-2.23-rc1.tar.gz", cores = 4)
+# install.packages(c("devtools", "data.table", "lubridate", "gdata", "dplyr", "tidyr", "EnvStats", "optparse", "rstan"))
+
 library(cmdstanr)
 library(data.table)
 library(lubridate)
@@ -232,7 +234,7 @@ if(DEBUG) {
 model <- cmdstan_model(paste0('stan-models/',StanModel,'.stan'), threads = TRUE)
 
 # this should probably be an option
-set_num_threads(4)
+set_num_threads(8)
 
 if(DEBUG) {
   cmdstanrfit = model$sample(data=stan_data,num_warmup = 20, num_samples = 20, num_chains = 2, num_cores = 2)
@@ -255,7 +257,7 @@ print(sprintf("Jobid = %s",JOBID))
 
 save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 
-save(fittprediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
+save(fit, prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
 library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)
