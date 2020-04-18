@@ -13,6 +13,21 @@ data {
   real SI[N2]; // fixed pre-calculated SI using emprical data from Neil
 }
 
+transformed data {
+  vector[N2] SI_rev; // SI in reverse order
+  vector[N2] f_rev[M]; // f in reversed order
+  
+  for(i in 1:N2)
+    SI_rev[i] = SI[N2-i+1];
+    
+  for(m in 1:M){
+    for(i in 1:N2) {
+     f_rev[m, i] = f[N2-i+1,m];
+    }
+  }
+}
+
+
 parameters {
   real<lower=0> mu[M]; // intercept for Rt
   real<lower=0> alpha_hier[P]; // sudo parameter for the hier term for alpha
@@ -36,18 +51,25 @@ transformed parameters {
         alpha[i] = alpha_hier[i] - ( log(1.05) / 6.0 );
       }
       for (m in 1:M){
+        /*
         for (i in 2:N0){
           cumm_sum[i,m] = cumm_sum[i-1,m] + y[m]; 
         }
+        */
         prediction[1:N0,m] = rep_vector(y[m],N0); // learn the number of cases in the first N0 days
+        cumm_sum[2:N0,m] = cumulative_sum(prediction[2:N0,m]);
         
         Rt[,m] = mu[m] * exp(-X[m] * alpha);
           Rt_adj[1:N0,m] = Rt[1:N0,m];
         for (i in (N0+1):N2) {
+          /*
           real convolution=0;
           for(j in 1:(i-1)) {
             convolution += prediction[j, m] * SI[i-j];
           }
+          */
+          real convolution = dot_product(sub_col(prediction, 1, m, i-1), tail(SI_rev, i-1));
+          
           cumm_sum[i,m] = cumm_sum[i-1,m] + prediction[i-1,m];
           Rt_adj[i,m] = ((pop[m]-cumm_sum[i,m]) / pop[m]) * Rt[i,m];
           prediction[i, m] = Rt_adj[i,m] * convolution;
@@ -55,9 +77,10 @@ transformed parameters {
         
         E_deaths[1, m]= 1e-15 * prediction[1,m];
         for (i in 2:N2){
-          for(j in 1:(i-1)){
-            E_deaths[i,m] += prediction[j,m] * f[i-j,m] * ifr_noise[m];
-          }
+          //for(j in 1:(i-1)){
+          //  E_deaths[i,m_slice] += prediction[j,m_slice] * f[i-j,m] * ifr_noise[m];
+          //}
+          E_deaths[i,m] = ifr_noise[m] * dot_product(sub_col(prediction, 1, m, i), tail(f_rev[m], i));
         }
       }
     }
