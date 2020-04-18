@@ -77,10 +77,10 @@ transformed parameters {
         
         E_deaths[1, m]= 1e-15 * prediction[1,m];
         for (i in 2:N2){
-          for(j in 1:(i-1)){
-            E_deaths[i,m] += prediction[j,m] * f[i-j,m] * ifr_noise[m];
-          }
-          // E_deaths[i,m] = ifr_noise[m] * dot_product(sub_col(prediction, 1, m, i), tail(f_rev[m], i));          
+          // for(j in 1:(i-1)){
+          //   E_deaths[i,m] += prediction[j,m] * f[i-j,m] * ifr_noise[m];
+          // }
+          E_deaths[i,m] = ifr_noise[m] * dot_product(sub_col(prediction, 1, m, i-1), tail(f_rev[m], i-1));
         }
       }
     }
