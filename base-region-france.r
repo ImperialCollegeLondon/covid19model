@@ -64,15 +64,26 @@ serial.interval = read.csv("data/serial_interval.csv")
 
 covariates <- covariates_read('data/interventions.csv')
 
-minimum_forecast = 7  # does not work yet
 forecast = 0
-N2 = 120 # increase if you need more forecast
+N2 = 120 # increase if you need more forecast Max is 100 at the moment
 
 dates = list()
 reported_cases = list()
-stan_data = list(M=length(names(region_to_country_map)),N=NULL,covariate1=NULL,covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,covariate6=NULL,deaths=NULL,f=NULL,
-                 N0=6,cases=NULL,SI=serial.interval$fit[1:N2],
-                 EpidemicStart = NULL, pop = NULL) # N0 = 6 to make it consistent with Rayleigh
+# Pads serial interval with 0 if N2 is greater than the length of the serial
+# interval array
+if (N2 > length(serial.interval$fit)) {
+  pad_serial.interval <- data.frame(
+    "X"=(length(serial.interval$fit)+1):N2,
+    "fit"=rep(0.0, max(N2-length(serial.interval$fit), 0 ))
+  )
+  serial.interval = rbind(serial.interval, pad_serial.interval)
+}
+stan_data = list(
+  M=length(names(region_to_country_map)),N=NULL,covariate1=NULL,
+  covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,
+  covariate6=NULL,deaths=NULL,f=NULL,N0=6,cases=NULL,
+  SI=serial.interval$fit[1:N2],
+  EpidemicStart = NULL, pop = NULL) # N0 = 6 to make it consistent with Rayleigh
 deaths_by_country = list()
 
 # various distributions required for modeling
