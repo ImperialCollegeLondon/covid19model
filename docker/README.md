@@ -5,12 +5,13 @@ manually setup or install any dependencies. The Docker file contains the latest 
 
 ### Running on Linux or MacOS
 ```
-docker run --rm -v $(pwd)/results:/var/model/results -v $(pwd)/figures:/var/model/figures harrisonzhu5080/covid19model:latest
+docker build -f docker/Dockerfile -t covid19model:latest .
+docker run --rm -v $(pwd)/results:/var/model/results -v $(pwd)/figures:/var/model/figures covid19model:latest
 ```
 
 ### Running on Windows using PowerShell
 ```
-docker run --rm -v ${pwd}/results:/var/model/results -v ${pwd}/figures:/var/model/figures harrisonzhu5080/covid19model:latest
+docker run --rm -v ${pwd}/results:/var/model/results -v ${pwd}/figures:/var/model/figures covid19model:latest
 ```
 
 ### Settings
@@ -30,24 +31,24 @@ If you want to run your own changes in the Docker image above the whole work dir
 
 ### Linux or MacOS
 ```
-docker run --rm -v $(pwd):/var/model harrisonzhu5080/covid19model:latest
+docker run --rm -v $(pwd):/var/model covid19model:latest
 ```
 
 Other files in the directory can also be run, using:
 
 ```
-docker run --rm -v $(pwd):/var/model harrisonzhu5080/covid19model:latest Rscript <filename>
+docker run --rm -v $(pwd):/var/model covid19model:latest Rscript <filename>
 ```
 
 ### Windows using PowerShell
 ```
-docker run --rm -v ${pwd}:/var/model harrisonzhu5080/covid19model:latest
+docker run --rm -v ${pwd}:/var/model covid19model:latest
 ```
 
 Other files in the directory can also be run, using:
 
 ```
-docker run --rm -v ${pwd}:/var/model harrisonzhu5080/covid19model:latest Rscript <filename>
+docker run --rm -v ${pwd}:/var/model covid19model:latest Rscript <filename>
 ```
 
 [Docker]: https://www.docker.com/
