@@ -9,42 +9,8 @@ library(EnvStats)
 source("utils/arg-parser.r")
 source("utils/read-covariates.r")
 
-
-regions <- c(
-  "Auvergne-Rhône-Alpes",
-  "Bourgogne-Franche-Comté",
-  "Bretagne",
-  "Centre-Val de Loire",
-  "Corse",
-  "Grand Est",
-  "Hauts-de-France",
-  "Normandie",
-  "Nouvelle-Aquitaine",
-  "Occitanie",
-  "Pays de la Loire",
-  "Provence-Alpes-Côte d'Azur",
-  "Île-de-France",
-  "France-hopitaux",
-  "France-OC19",
-  "France-EHPAD"
-)
-
-active_countries <- c(
-  "Denmark",
-  "Italy",
-  "Germany",
-  "Spain",
-  "United_Kingdom",
-  "France",
-  "Norway",
-  "Belgium",
-  "Austria", 
-  "Sweden",
-  "Switzerland",
-  "Greece",
-  "Portugal",
-  "Netherlands"
-)
+regions <- scan("active-regions.cfg", what="", sep="\n")
+active_countries <- scan("active-countries.cfg", what="", sep="\n")
 
 region_to_country_map = list()
 for(Region in regions){
@@ -126,6 +92,10 @@ for(Region in names(region_to_country_map))
   
   d1_pop = ifr.by.country[ifr.by.country$country==Country,]
   d1=d[d$Countries.and.territories==Region,c(1,5,6,7)]
+  if(length(d1) == 0){
+    stop(sprintf(
+      "Region %s in country %s had no data (d1 length(d1)==0)", region, Country))
+  }
   d1$date = as.Date(d1$DateRep,format='%d/%m/%Y')
   d1$t = decimal_date(d1$date) 
   d1=d1[order(d1$t),]
