@@ -31,6 +31,8 @@ make_three_pannel_plot <- function(){
   prediction = out$prediction
   estimated.deaths = out$E_deaths
   
+  all_data <- data.frame()
+  intervention_data <- data.frame()
   for(i in 1:length(countries)){
     print(i)
     N <- length(dates[[i]])
@@ -104,6 +106,9 @@ make_three_pannel_plot <- function(){
                                "rt_max" = rt_ui,
                                "rt_min2" = rt_li2,
                                "rt_max2" = rt_ui2)
+
+    all_data <- rbind(all_data, data_country)
+    intervention_data <- rbind(intervention_data, covariates_country_long)
     
     make_plots(data_country = data_country, 
                covariates_country_long = covariates_country_long,
@@ -112,6 +117,8 @@ make_three_pannel_plot <- function(){
                percent_pop = percent_pop)
     
   }
+  write.csv(all_data, paste0("results/", "base-plot.csv"))
+  write.csv(intervention_data, paste0("results/", "base-intervention.csv"))
 }
 
 #---------------------------------------------------------------------------
