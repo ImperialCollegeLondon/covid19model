@@ -14,7 +14,8 @@ countries <- c(
   "Switzerland",
   "Greece",
   "Portugal",
-  "Netherlands"
+  "Netherlands",
+  "Japan"
 )
 
 web_fix_fonts <- function(path){
