@@ -64,9 +64,9 @@ serial.interval = read.csv("data/serial_interval.csv")
 
 covariates <- covariates_read('data/interventions.csv')
 
-minimum_forecast = 7
+minimum_forecast = 7  # does not work yet
 forecast = 0
-N2 = 90 # increase if you need more forecast
+N2 = 120 # increase if you need more forecast
 
 dates = list()
 reported_cases = list()
