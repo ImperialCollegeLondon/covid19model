@@ -57,7 +57,7 @@ jobs:
     # work around this with conda run
     - name: Run short debug simulation
       run: |
-        conda run --name covid19model Rscript base.r base --debug
+        conda run --name covid19model Rscript base.r base
       env:
         DEBUG: "TRUE"
 
