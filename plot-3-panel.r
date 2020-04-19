@@ -15,9 +15,10 @@ library(svglite)
 library(ggplot2)
 
 source("utils/geom-stepribbon.r")
+source("utils/read-covariates.r")
 #---------------------------------------------------------------------------
 make_three_pannel_plot <- function(){
-  
+  print("Making three panel plots...")
   args <- commandArgs(trailingOnly = TRUE)
   
   if (length(args)==1){
@@ -30,27 +31,21 @@ make_three_pannel_plot <- function(){
   
   load(paste0("results/", filename2))
   print(sprintf("loading: %s",paste0("results/",filename2)))
-  covariates = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
-  names_covariates = c('Schools + Universities','Self-isolating if ill', 'Public events', 
-                       'Lockdown', 'Social distancing encouraged')
-  covariates <- covariates %>%
-    filter((Type %in% names_covariates))
-  covariates <- covariates[,c(1,2,4)]
-  covariates <- spread(covariates, Type, Date.effective)
-  names(covariates) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
-  covariates <- covariates[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
-  covariates$schools_universities <- as.Date(covariates$schools_universities, format = "%d.%m.%Y")
-  covariates$lockdown <- as.Date(covariates$lockdown, format = "%d.%m.%Y")
-  covariates$public_events <- as.Date(covariates$public_events, format = "%d.%m.%Y")
-  covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
-  covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
+  covariates <- covariates_read('data/interventions.csv')
   
-  all_data <- data.frame()
-  intervention_data <- data.frame()
-  for(i in 1:length(countries)){
+  tryCatch({
+    print(region_to_country_map)
+  },error=function(e){
+    for(country in countries){
+      region_to_country_map[[country]] <- country
+    }
+  })
+
+  for(i in 1:length(region_to_country_map)){
     print(i)
     N <- length(dates[[i]])
-    country <- countries[[i]]
+    Region <- names(region_to_country_map)[i]
+    country <- region_to_country_map[[Region]]
     
     predicted_cases <- colMeans(prediction[,1:N,i])
     predicted_cases_li <- colQuantiles(prediction[,1:N,i], probs=.025)
@@ -127,12 +122,13 @@ make_three_pannel_plot <- function(){
     make_plots(data_country = data_country, 
                covariates_country_long = covariates_country_long,
                filename2 = filename2,
-               country = country,
+               country = Region,
                percent_pop = percent_pop)
     
   }
   write.csv(all_data, paste0("results/", "base-plot.csv"))
   write.csv(intervention_data, paste0("results/", "base-intervention.csv"))
+  print("Three panel plots complete.")
 }
 
 #---------------------------------------------------------------------------
@@ -292,7 +288,7 @@ make_plots <- function(data_country, covariates_country_long,
             p3_mobile, base_height = 4, base_asp = 1.1)
   
   p <- plot_grid(p1, p2, p3, ncol = 3, rel_widths = c(1, 1, 2))
-  save_plot(filename = paste0("figures/", country, "_three_pannel_", filename2, ".png"), 
+  save_plot(filename = paste0("figures/", filename2, "-", country, "_three_pannel_", ".png"), 
             p, base_width = 14)
 }
 

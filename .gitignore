@@ -48,6 +48,8 @@ results/*.pdf
 results/*.png
 figures/*.png
 figures/*.pdf
+results/base*
+figures/base*
 Rplots.pdf
 web/*
 results/*.csv
