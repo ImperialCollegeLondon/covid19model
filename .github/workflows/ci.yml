@@ -31,13 +31,6 @@ jobs:
       run: |
         docker run --rm --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest 
 
-    - name: Push image to GitHub packages
-      if: github.event_name == 'push'
-      run: |
-        IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/covid19model:latest"
-        docker tag covid19model:latest $IMAGE
-        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-        docker push $IMAGE
 
   conda:
     runs-on: ${{ matrix.os }}
