@@ -208,7 +208,7 @@ if(DEBUG) {
                  `government makes any intervention`=stan_data$covariate4[1:stan_data$N[i],i],
                  `lockdown`=stan_data$covariate5[1:stan_data$N[i],i],
                  `social distancing encouraged`=stan_data$covariate6[1:stan_data$N[i],i]),
-      file=sprintf("results/%s-check-dates.csv",names(region_to_country_map)[i]),row.names=F)
+      file=sprintf("results/%s%s-check-dates.csv",run_name, names(region_to_country_map)[i]),row.names=F)
   }
 }
 
@@ -251,5 +251,5 @@ g = (mcmc_intervals(Rt_adj,prob = .9))
 ggsave(sprintf("results/%s-final-rt.png",run_name),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", run_name,'-stanfit.Rdata'))
 system(paste0("Rscript plot-forecast.r ",run_name,'-stanfit.Rdata'))
-system(paste0("Rscript make-table.r results/",run_name,'-stanfit.Rdata'))
+system(paste0("Rscript make-table.r ",run_name,'-stanfit.Rdata'))
 

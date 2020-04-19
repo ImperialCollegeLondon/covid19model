@@ -37,7 +37,7 @@ x_lim[2] <- x_lim[2] + 0.05 * x_range
 layer_vertical_line <- if (0 > x_lim[1] && 0 < x_lim[2]) {
   bayesplot::vline_0(color = "gray90", size = 0.5)
 } else {
-  bayesplot::geom_blank(
+  geom_blank(
     mapping = NULL, data = NULL,
     show.legend = FALSE, inherit.aes = FALSE)
 }
@@ -72,7 +72,7 @@ p = ggplot(data) +ggpubr::theme_pubr() +  geom_point(aes(x=m,y=parameter,colour=
   theme(plot.margin = margin(0, 2, 0, .5, "cm"))
 #+ guides(fill=guide_legend(nrow=2))
 p    
-ggsave(filename = "results/covars-alpha-reduction.png",
+ggsave(filename = paste0("results/", filename, "covars-alpha-reduction.png"),
        p,height=4,width=8)
 dir.create("web/figures/desktop/", showWarnings = FALSE, recursive = TRUE)
 dir.create("web/figures/mobile/", showWarnings = FALSE, recursive = TRUE)

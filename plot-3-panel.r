@@ -39,6 +39,8 @@ make_three_pannel_plot <- function(){
     }
   })
 
+  all_data <- data.frame()
+  intervention_data <- data.frame()
   for(i in 1:length(region_to_country_map)){
     print(i)
     N <- length(dates[[i]])
@@ -124,8 +126,8 @@ make_three_pannel_plot <- function(){
                percent_pop = percent_pop)
     
   }
-  write.csv(all_data, paste0("results/", "base-plot.csv"))
-  write.csv(intervention_data, paste0("results/", "base-intervention.csv"))
+  write.csv(all_data, paste0("results/", filename2, "base-plot.csv"))
+  write.csv(intervention_data, paste0("results/", filename2, "base-intervention.csv"))
   print("Three panel plots complete.")
 }
 
