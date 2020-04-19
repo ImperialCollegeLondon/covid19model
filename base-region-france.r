@@ -9,8 +9,8 @@ library(EnvStats)
 source("utils/arg-parser.r")
 source("utils/read-covariates.r")
 
-regions <- scan("active-regions.cfg", what="", sep="\n")
-active_countries <- scan("active-countries.cfg", what="", sep="\n")
+regions <- read_country_file("active-regions.cfg")
+active_countries <- read_country_file("active-countries.cfg")
 
 region_to_country_map = list()
 for(Region in regions){
@@ -104,14 +104,13 @@ for(Region in names(region_to_country_map))
   
   d1_pop = ifr.by.country[ifr.by.country$country==Country,]
   d1=d[d$Countries.and.territories==Region,c(1,5,6,7)]
-  if(length(d1) == 0){
-    stop(sprintf(
-      "Region %s in country %s had no data (d1 length(d1)==0)", region, Country))
-  }
   d1$date = as.Date(d1$DateRep,format='%d/%m/%Y')
   d1$t = decimal_date(d1$date) 
   d1=d1[order(d1$t),]
-  
+  if(length(d1$date) == 0){
+    stop(sprintf(
+      "Region %s in country %s had no data (d1 length(d1)==0)", region, Country))
+  }
   date_min <- dmy('31/12/2019') 
   if (as.Date(d1$DateRep[1], format='%d/%m/%Y') > as.Date(date_min, format='%d/%m/%Y')){
     print(paste(Region,'In padding'))
@@ -147,10 +146,10 @@ for(Region in names(region_to_country_map))
   N = length(d1$Cases)
   print(sprintf("%s has %d days of data",Region,N))
   forecast = N2 - N
-  if(forecast < minimum_forecast) {
+  if(forecast < 0) {
     print(sprintf("%s: %d", Country, N))
     print("ERROR!!!! increasing N2 to have at least 7 days")
-    N2 = N + minimum_forecast
+    N2 = N
     forecast = N2 - N
   }
   

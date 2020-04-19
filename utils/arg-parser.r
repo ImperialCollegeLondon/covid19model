@@ -57,3 +57,11 @@ base_arg_parse <- function (){
 	return(parsedargs)
 }
 
+read_country_file <- function (filename){
+	countries <- scan(filename, what="", sep="\n")
+	for (i in 1:length(countries)){
+		countries[i] = trimws(countries[i])
+	}
+	
+	return(countries)
+}
