@@ -1,8 +1,11 @@
 library(matrixStats)
 args <- commandArgs(trailingOnly = TRUE)
 filename <- args[1]
-print(sprintf("Running %s",filename))
-load(filename)
+load(paste0("results/",filename))
+print(sprintf("loading: %s",paste0("results/",filename)))
+out = rstan::extract(fit)
+prediction = out$prediction
+estimated.deaths = out$E_deaths
 
 df_pop= read.csv("data/popt_ifr.csv", stringsAsFactors = FALSE)
 df_pop$country[df_pop$country == "United Kingdom"] = "United_Kingdom"

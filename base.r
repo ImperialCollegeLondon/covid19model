@@ -51,13 +51,20 @@ serial.interval = read.csv("data/serial_interval.csv")
 
 covariates <- covariates_read('data/interventions.csv')
 
-minimum_forecast = 7  # does not work yet
 forecast = 0
-
-N2 = 120 # increase if you need longer modelling
+N2 = 120 # increase if you need more forecast
 
 dates = list()
 reported_cases = list()
+# Pads serial interval with 0 if N2 is greater than the length of the serial
+# interval array
+if (N2 > length(serial.interval$fit)) {
+  pad_serial.interval <- data.frame(
+    "X"=(length(serial.interval$fit)+1):N2,
+    "fit"=rep(0.0, max(N2-length(serial.interval$fit), 0 ))
+  )
+  serial.interval = rbind(serial.interval, pad_serial.interval)
+}
 stan_data = list(M=length(countries),N=NULL,covariate1=NULL,covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,covariate6=NULL,deaths=NULL,f=NULL,
                  N0=6,cases=NULL,SI=serial.interval$fit[1:N2],
                  EpidemicStart = NULL, pop = NULL) # N0 = 6 to make it consistent with Rayleigh
@@ -117,10 +124,10 @@ for(Country in countries) {
   N = length(d1$Cases)
   print(sprintf("%s has %d days of data",Country,N))
   forecast = N2 - N
-  if(forecast < minimum_forecast) {
+  if(forecast < 0) {
     print(sprintf("%s: %d", Country, N))
     print("ERROR!!!! increasing N2 to have at least 7 days")
-    N2 = N + minimum_forecast
+    N2 = N
     forecast = N2 - N
   }
   
@@ -193,12 +200,7 @@ if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
 } else { 
   fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
-}  
-
-out = rstan::extract(fit)
-prediction = out$prediction
-estimated.deaths = out$E_deaths
-estimated.deaths.cf = out$E_deaths0
+}
 
 JOBID = Sys.getenv("PBS_JOBID")
 if(JOBID == "")
@@ -207,20 +209,23 @@ print(sprintf("Jobid = %s",JOBID))
 
 save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 
-save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
+save(fit, dates, reported_cases, deaths_by_country, countries, covariates,
+     stan_data,
+     file = paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
-library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)
 system(paste0("Rscript covariate-size-effects.r ", filename,'-stanfit.Rdata'))
+out = rstan::extract(fit)
 mu = (as.matrix(out$mu))
 colnames(mu) = countries
-g = (mcmc_intervals(mu,prob = .9))
-ggsave(sprintf("results/%s-mu.png",filename),g,width=4,height=6)
+g = bayesplot::mcmc_intervals(mu,prob = .9)
+ggplot2::ggsave(sprintf("results/%s-mu.png",filename),g,width=4,height=6)
 tmp = lapply(1:length(countries), function(i) (out$Rt_adj[,stan_data$N[i],i]))
 Rt_adj = do.call(cbind,tmp)
 colnames(Rt_adj) = countries
-g = (mcmc_intervals(Rt_adj,prob = .9))
+g = bayesplot::mcmc_intervals(Rt_adj,prob = .9)
 ggsave(sprintf("results/%s-final-rt.png",filename),g,width=4,height=6)
 system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'))
 system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'))
 system(paste0("Rscript make-table.r results/",filename,'-stanfit.Rdata'))
+
