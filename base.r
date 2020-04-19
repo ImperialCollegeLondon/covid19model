@@ -97,7 +97,7 @@ covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$l
 
 forecast = 0
 
-N2 = 90 # increase if you need more forecast
+N2 = 120 # increase if you need more forecast
 
 dates = list()
 reported_cases = list()
