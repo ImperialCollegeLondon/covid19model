@@ -25,11 +25,25 @@ regions <- c(
   "Provence-Alpes-Côte d'Azur",
   "Île-de-France",
   "France-hopitaux",
+  "France-OC19",
   "France-EHPAD"
 )
 
 active_countries <- c(
-  "France"
+  "Denmark",
+  "Italy",
+  "Germany",
+  "Spain",
+  "United_Kingdom",
+  "France",
+  "Norway",
+  "Belgium",
+  "Austria", 
+  "Sweden",
+  "Switzerland",
+  "Greece",
+  "Portugal",
+  "Netherlands"
 )
 
 region_to_country_map = list()
@@ -70,7 +84,7 @@ if (new_sub_folder){
 }
 ## Reading data from region file and world data
 data_files <- c(
-  # "data/COVID-19-up-to-date.rds",
+  "data/COVID-19-up-to-date.rds",
   "data/all-france.rds"
 )
 d <- do.call('rbind', lapply(data_files, readRDS))

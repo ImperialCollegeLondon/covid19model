@@ -69,14 +69,15 @@ def prepare_special_regions(srcReg):
     df_to_add_france = pd.DataFrame(srcReg[srcReg['maille_nom'] == "France"])
     df_to_add_france["deces"] = df_to_add_france.loc[:, "deces"].add(
         df_to_add_france.loc[:, "deces_ehpad"])
+    df_to_add_france["maille_nom"] = "France-OC19"
 
     df_to_add_ehpad = pd.DataFrame(srcReg[srcReg['maille_nom'] == "France"])
     df_to_add_ehpad["deces"] = df_to_add_ehpad["deces_ehpad"]
     df_to_add_ehpad["maille_nom"] = "France-EHPAD"
     df_to_add_ehpad["maille_code"] = "FRA-EHPAD"
 
-    srcReg.loc[srcReg['maille_nom'] == "France",'maille_code'] = "FRA-HOP"
-    srcReg.loc[srcReg['maille_nom'] == "France",'maille_nom'] = "France-hopitaux"
+    srcReg.loc[srcReg['maille_nom'] == "France", 'maille_code'] = "FRA-HOP"
+    srcReg.loc[srcReg['maille_nom'] == "France", 'maille_nom'] = "France-hopitaux"
 
     df_to_add = df_to_add_france.append(df_to_add_ehpad)
     return srcReg.append(df_to_add)
@@ -131,7 +132,7 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
 
     # et pour finir on re-sérialise la date sous un autre format
     dst['dateRep'] = dst['dateRep'].apply(lambda x: x.strftime('%d/%m/%Y'))
-    
+
     # Need to compute the new deaths per day as required by the format
     dst.sort_values("t", inplace=True)
     active_regions = dst["geoId"].unique()
