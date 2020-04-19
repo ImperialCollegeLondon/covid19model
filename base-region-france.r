@@ -64,6 +64,7 @@ serial.interval = read.csv("data/serial_interval.csv")
 
 covariates <- covariates_read('data/interventions.csv')
 
+minimum_forecast = 7
 forecast = 0
 N2 = 90 # increase if you need more forecast
 
@@ -135,10 +136,10 @@ for(Region in names(region_to_country_map))
   N = length(d1$Cases)
   print(sprintf("%s has %d days of data",Region,N))
   forecast = N2 - N
-  if(forecast < 0) {
-    print(sprintf("%s: %d", Region, N))
-    print("ERROR!!!! increasing N2")
-    N2 = N
+  if(forecast < minimum_forecast) {
+    print(sprintf("%s: %d", Country, N))
+    print("ERROR!!!! increasing N2 to have at least 7 days")
+    N2 = N + minimum_forecast
     forecast = N2 - N
   }
   
