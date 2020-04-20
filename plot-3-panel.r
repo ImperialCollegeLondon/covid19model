@@ -31,13 +31,12 @@ make_three_pannel_plot <- function(){
   prediction = out$prediction
   estimated.deaths = out$E_deaths
   
-  tryCatch({
-    print(region_to_country_map)
-  },error=function(e){
+  if (!exists("region_to_country_map", inherits = FALSE)){
+    print("region_to_country_map did not exist creating it")
     for(country in countries){
       region_to_country_map[[country]] <- country
     }
-  })
+  }
 
   all_data <- data.frame()
   intervention_data <- data.frame()
@@ -87,9 +86,12 @@ make_three_pannel_plot <- function(){
     covariates_country_long$value <- as_date(covariates_country_long$value) 
     covariates_country_long$country <- rep(country, 
                                            length(covariates_country_long$value))
+    covariates_country_long$region <- rep(Region, 
+                                           length(covariates_country_long$value))
     
     data_country <- data.frame("time" = as_date(as.character(dates[[i]])),
                                "country" = rep(country, length(dates[[i]])),
+                               "region" = rep(Region, length(dates[[i]])),
                                "reported_cases" = reported_cases[[i]], 
                                "reported_cases_c" = cumsum(reported_cases[[i]]), 
                                "predicted_cases_c" = cumsum(predicted_cases),
