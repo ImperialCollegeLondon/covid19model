@@ -23,6 +23,7 @@ make_forecast_plot <- function(){
   forecast_length <- 7
 
   load(paste0("results/", filename))
+  filename = gsub("(.*)stanfit.Rdata$", "\\1", filename)
   out = rstan::extract(fit)
   prediction = out$prediction
   estimated.deaths = out$E_deaths

@@ -106,7 +106,8 @@ plot_intervals <- function(run_name, extracted_fit, countries, dates){
   colnames(Rt_adj) = countries
   g = (bayesplot::mcmc_intervals(Rt_adj,prob = .9))
   ggsave(sprintf("results/%s-final-rt.png",run_name),g,width=4,height=6)
-
+  write.csv(Rt_adj, sprintf("results/%s-final-Rt.csv",run_name))
+  write.csv(mu, sprintf("results/%s-final-mu.csv",run_name))
 }
 
 process_stanfit_file <- function (file_name) {

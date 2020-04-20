@@ -27,6 +27,7 @@ make_three_pannel_plot <- function(){
   
   load(paste0("results/", filename2))
   print(sprintf("loading: %s",paste0("results/",filename2)))
+  filename2 = gsub("(.*)stanfit.Rdata$", "\\1", filename2)
   out = rstan::extract(fit)
   prediction = out$prediction
   estimated.deaths = out$E_deaths

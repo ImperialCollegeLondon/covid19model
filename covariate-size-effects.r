@@ -4,6 +4,7 @@ args <- commandArgs(trailingOnly = TRUE)
 filename <- args[1]
 
 load(paste0("results/", filename))
+filename = gsub("(.*)stanfit.Rdata$", "\\1", filename)
 out <- rstan::extract(fit)
 
 alpha = data.frame(as.matrix(out$alpha))
@@ -71,9 +72,10 @@ p = ggplot(data) +ggpubr::theme_pubr() +  geom_point(aes(x=m,y=parameter,colour=
   #geom_vline(xintercept=0,colour="darkgray") + 
   theme(plot.margin = margin(0, 2, 0, .5, "cm"))
 #+ guides(fill=guide_legend(nrow=2))
-p    
+
 ggsave(filename = paste0("results/", filename, "covars-alpha-reduction.png"),
        p,height=4,width=8)
+write.csv(data, paste0("results/", filename, "covars-alpha-reduction.csv"))
 dir.create("web/figures/desktop/", showWarnings = FALSE, recursive = TRUE)
 dir.create("web/figures/mobile/", showWarnings = FALSE, recursive = TRUE)
 cowplot::save_plot(filename = paste0("web/figures/desktop/",  "covars-alpha-reduction.svg"), 
