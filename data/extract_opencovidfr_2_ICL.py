@@ -120,7 +120,7 @@ def convert_opencovidfr_to_ICL_model(srcReg, pop_per_region=None):
     dst['cumulated_cases'] = srcReg['cas_confirmes'].values
     # avec ou sans les ehpads ?
     dst['cumulated_deaths'] = srcReg['deces'].values
-
+    dst['continentExp'] = "Europe"
     dst['countriesAndTerritories'] = srcReg['maille_nom'].values
     dst['geoId'] = srcReg['maille_code'].values
     dst['countryterritoryCode'] = srcReg['maille_code'].values
@@ -208,11 +208,11 @@ def process_from_cmd():
     # et voilà
     dst.to_csv(
         data_dir + reg + '.csv', index=False, columns=[
-            "dateRep","day","month","year","cases","deaths",
-            "countriesAndTerritories","geoId","countryterritoryCode",
-            "popData2018"
+            "dateRep", "day", "month", "year", "cases", "deaths",
+            "geoId", "continentExp", "countryterritoryCode",
+            "popData2018", "countriesAndTerritories"
         ]
-        )
+    )
 
 
 if __name__ == "__main__":
