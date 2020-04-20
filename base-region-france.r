@@ -8,6 +8,7 @@ library(EnvStats)
 
 source("utils/arg-parser.r")
 source("utils/read-covariates.r")
+source("utils/ifr-tools.r")
 
 regions <- read_country_file("active-regions.cfg")
 active_countries <- read_country_file("active-countries.cfg")
@@ -56,12 +57,9 @@ data_files <- c(
 d <- do.call('rbind', lapply(data_files, readRDS))
 
 ## get IFR and population from same file
-ifr.by.country = read.csv("data/popt_ifr.csv")
-ifr.by.country$country = as.character(ifr.by.country[,2])
-ifr.by.country$country[ifr.by.country$country == "United Kingdom"] = "United_Kingdom"
 
 serial.interval = read.csv("data/serial_interval.csv")
-
+ifr.by.country <- return_ifr()
 covariates <- covariates_read('data/interventions.csv')
 
 forecast = 0
@@ -87,10 +85,12 @@ stan_data = list(
 deaths_by_country = list()
 
 # various distributions required for modeling
-mean1 = 5.1; cv1 = 0.86; # infection to onset
-mean2 = 18.8; cv2 = 0.45 # onset to death
-x1 = rgammaAlt(1e7,mean1,cv1) # infection-to-onset distribution
-x2 = rgammaAlt(1e7,mean2,cv2) # onset-to-death distribution
+infection_to_onset <- c("mean"=5.1, "deviation"=0.86)
+onset_to_death <- c("mean"=18.8, "deviation"=0.45)
+# infection-to-onset distribution
+x1 = rgammaAlt(1e7,infection_to_onset["mean"], infection_to_onset["deviation"])
+# onset-to-death distribution
+x2 = rgammaAlt(1e7,onset_to_death["mean"], onset_to_death["deviation"])
 
 ecdf.saved = ecdf(x1+x2)
 
@@ -176,6 +176,7 @@ for(Region in names(region_to_country_map))
   stan_data$covariate1 = cbind(stan_data$covariate1,covariates2[,1])
   stan_data$covariate2 = cbind(stan_data$covariate2,covariates2[,2])
   stan_data$covariate3 = cbind(stan_data$covariate3,covariates2[,3])
+  # stan_data$covariate4 is an "any" covariates marker calculated below
   stan_data$covariate4 = cbind(stan_data$covariate4,covariates2[,4])
   stan_data$covariate5 = cbind(stan_data$covariate5,covariates2[,4])
   stan_data$covariate6 = cbind(stan_data$covariate6,covariates2[,5])
@@ -220,11 +221,13 @@ m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
 } else if (FULL_RUN){
-  fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
+  fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,
+    control = list(adapt_delta = 0.95, max_treedepth = 10))
 
 } else { 
   # uncomment the line below for a full run to replicate results and comment the second line below 
-  fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
+  fit = sampling(m,data=stan_data,iter=200,warmup=100,chains=4,thin=4,
+    control = list(adapt_delta = 0.95, max_treedepth = 10))
 }  
 
 out = rstan::extract(fit)
