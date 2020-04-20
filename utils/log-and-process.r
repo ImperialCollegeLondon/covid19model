@@ -96,12 +96,12 @@ plot_intervals <- function(run_name, extracted_fit, countries, dates){
   mu = (as.matrix(extracted_fit$mu))
   colnames(mu) = countries
   g = (bayesplot::mcmc_intervals(mu,prob = .9))
-  ggsave(smessagef("results/%s-mu.png",run_name),g,width=4,height=6)
+  ggsave(sprintf("results/%s-mu.png",run_name),g,width=4,height=6)
   tmp = lapply(1:length(dates), function(i) (extracted_fit$Rt_adj[,length(dates[[i]]),i]))
   Rt_adj = do.call(cbind,tmp)
   colnames(Rt_adj) = countries
   g = (bayesplot::mcmc_intervals(Rt_adj,prob = .9))
-  ggsave(smessagef("results/%s-final-rt.png",run_name),g,width=4,height=6)
+  ggsave(sprintf("results/%s-final-rt.png",run_name),g,width=4,height=6)
 
 }
 
