@@ -24,6 +24,7 @@ sd2$covariate1 <-
 sm1 <- rstan::stan(file = "stan-models/base.stan", data = sd1, chains = 0)
 sm2 <- rstan::stan(file = "stan-models/base_general.stan", data = sd2, chains = 0)
 sm3 <- rstan::stan(file = "stan-models/base_general_speed.stan", data = sd2, chains = 0)
+sm4 <- rstan::stan(file = "stan-models/base_general_speed2.stan", data = sd2, chains = 0)
 
 # Mean parameter from previous runs to use as test
 test_params <- list(mu = c(3.83, 3.47, 4.65, 4.48, 3.97, 4.69, 3.49, 5.76, 4.01, 3.07, 3.53, 2.28, 3.45, 3.47),
@@ -39,3 +40,7 @@ upars <- unconstrain_pars(sm1, test_params)
 log_prob(sm1, upars)
 log_prob(sm2, upars)
 log_prob(sm3, upars)
+log_prob(sm4, upars)
+
+speed3 <- rstan::stan(file = "stan-models/base_general_speed.stan", data = sd2, chains = 1, warmup = 100, iter = 200, seed = 4711)
+speed4 <- rstan::stan(file = "stan-models/base_general_speed2.stan", data = sd2, chains = 1, warmup = 100, iter = 200, seed = 4711)
