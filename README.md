@@ -1,4 +1,4 @@
-# covid19model
+# covid19model - The French local forecasting version
 
 ![CI status](https://github.com/payoto/covid19model/workflows/CI/badge.svg)
 
@@ -8,12 +8,17 @@ The modifications to the code are made:
 
 - To make it more modular and facilitate reuse.
 - To handle additional data streams beyond the ECDC.
+- To validate the stability of the predictions with time.
 
 This code is part of the [data against covid-19](https://opencovid19.fr/)
 citizens' initiative for open data and open source code around the COVID-19
 pandemic.
 
-Looking to contribute? Check the [projects page](https://github.com/payoto/covid19model/projects)!
+Looking to contribute? Check the contributing section below on ways you can help
+and then go to our [projects page](https://github.com/payoto/covid19model/projects)!
+
+Simulation results for analysis are in our [sister repository](https://github.com/payoto/covid19model-fr-regions-results).
+
 
 ## Motivation for regional predictions
 
@@ -94,6 +99,57 @@ The separation between the hospital and EHPAD data is done, permit an
 acceptable fit on the French data despite the change in data reporting half-way
 through the period.
 
+## Contributing
+
+There are 3 ways to contribute:
+
+- Running the code (it's expensive! 10-20h of runtime on 4 core desktop machine);
+- Analysing forecasting accuracy;
+- Develop the software itself, improve useability, modelling accuracy and
+data handling.
+
+### Running the code
+
+- Check the todo items in the [run projects page](https://github.com/payoto/covid19model/projects/2);
+- Setup your environement: docker and conda are supported.
+- Test your setup `Rscript base-region-france.r --debug`: this should run
+without errors.
+- Run the model `Rscript base-region-france.r --full`: this takes HOURS.
+- Upload the `.csv` files generated in `results/base-full-yyyymmddTHHMMSS-JOBID/` to
+[the result repository](https://github.com/payoto/covid19model-fr-regions-results).
+
+If you have previously run the code and wish to reprocess some data to the
+latest formats, run command:
+
+```sh
+  Rscript reprocess-stanfit.r --all
+```
+
+For more options on reprocessing your data:
+
+```sh
+  Rscript reprocess-stanfit.r --help
+```
+
+### Analysis of results
+
+While model and feature development on the model is welcome you can also
+contribute by analysing the results in detail. To do that we are in the process
+of making results available.
+To analyse model performance:
+
+- Fork the repository;
+- Check the todo items in the [analysis projects page](https://github.com/payoto/covid19model/projects/2);
+- Download the result `.csv` files from
+[the result repository](https://github.com/payoto/covid19model-fr-regions-results).
+- Suggest a new analysis, preferably as a jupyter notebook.
+
+### To develop the code
+
+- Fork the repository;
+- Check the todo items in the [development projects page](https://github.com/payoto/covid19model/projects/1);
+- Submit a pull request against the more appropriate branch, depending on what you have added.
+
 ## Organisation
 
 Much of the discussion is done in the data against covid-19 slack that you can [join here](https://opencovid19.fr/). If you are not part of it feel free to
@@ -111,17 +167,9 @@ community that is actively developing this `covid19model`.
 - [`modularisation`](https://github.com/payoto/covid19model/tree/modularisation) development branch of features which can be useful to
 other community projects.
 
-### Contributing
-
-To contribute:
-
-- Fork the repository;
-- Check the todo items in the [projects page](https://github.com/payoto/covid19model/projects);
-- Submit a pull request against the more appropriate branch, depending on what you are trying to do.
-
 ## References
 
 - Original ICL report:
 
 Seth Flaxman, Swapnil Mishra, Axel Gandy et al. Estimating the number of infections and the impact of nonpharmaceutical interventions on COVID-19 in 11 European countries. Imperial College London (30-03-2020)
-doi: https://doi.org/10.25561/77731
+doi: <https://doi.org/10.25561/77731>
