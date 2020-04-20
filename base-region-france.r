@@ -9,6 +9,7 @@ library(EnvStats)
 source("utils/arg-parser.r")
 source("utils/read-covariates.r")
 source("utils/ifr-tools.r")
+source("utils/log-and-process.r")
 
 regions <- read_country_file("active-regions.cfg")
 active_countries <- read_country_file("active-countries.cfg")
@@ -93,6 +94,9 @@ x1 = rgammaAlt(1e7,infection_to_onset["mean"], infection_to_onset["deviation"])
 x2 = rgammaAlt(1e7,onset_to_death["mean"], onset_to_death["deviation"])
 
 ecdf.saved = ecdf(x1+x2)
+
+log_simulation_inputs(run_name, region_to_country_map,  ifr.by.country,
+  infection_to_onset, onset_to_death)
 
 for(Region in names(region_to_country_map))
 {
@@ -238,21 +242,10 @@ estimated.deaths.cf = out$E_deaths0
 save.image(paste0('results/',run_name,'.Rdata'))
 
 countries <- names(region_to_country_map)
-save(fit,prediction,dates,reported_cases,deaths_by_country,countries,region_to_country_map,estimated.deaths,
-     estimated.deaths.cf,out,covariates,file=paste0('results/',run_name,'-stanfit.Rdata'))
+save(
+  fit, prediction, dates,reported_cases,deaths_by_country,countries,
+  region_to_country_map, estimated.deaths, estimated.deaths.cf, 
+  out,covariates,infection_to_onset, onset_to_death,
+  file=paste0('results/',run_name,'-stanfit.Rdata'))
 
-library(bayesplot)
-system(paste0("Rscript covariate-size-effects.r ", run_name,'-stanfit.Rdata'))
-mu = (as.matrix(out$mu))
-colnames(mu) = countries
-g = (mcmc_intervals(mu,prob = .9))
-ggsave(sprintf("results/%s-mu.png",run_name),g,width=4,height=6)
-tmp = lapply(1:length(countries), function(i) (out$Rt_adj[,stan_data$N[i],i]))
-Rt_adj = do.call(cbind,tmp)
-colnames(Rt_adj) = countries
-g = (mcmc_intervals(Rt_adj,prob = .9))
-ggsave(sprintf("results/%s-final-rt.png",run_name),g,width=4,height=6)
-system(paste0("Rscript plot-3-panel.r ", run_name,'-stanfit.Rdata'))
-system(paste0("Rscript plot-forecast.r ",run_name,'-stanfit.Rdata'))
-system(paste0("Rscript make-table.r ",run_name,'-stanfit.Rdata'))
-
+postprocess_simulation(run_name, out, countries, dates)
