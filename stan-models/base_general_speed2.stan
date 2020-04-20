@@ -1,3 +1,92 @@
+functions {
+  // calculates for a given country the model outputs as column
+  // vectors. These are saved as an array with the outputs of (1)
+  // E_deaths, (2) prediction, (3) Rt, (4) R_adj
+  vector[] country_model(real mu_local,
+                         vector alpha,
+                         real y_local,
+                         real ifr_noise_local,
+                         int N0,
+                         int N2,
+                         matrix X_local,
+                         vector SI_rev,
+                         real pop_local,
+                         vector f_rev_local
+                         ) {
+    vector[N2] prediction = rep_vector(0.0, N2);
+    vector[N2] E_deaths = rep_vector(0.0, N2);
+    vector[N2] Rt = rep_vector(0.0, N2);
+    vector[N2] Rt_adj = rep_vector(0.0, N2);
+    vector[N2] cumm_sum = rep_vector(0.0, N2);
+    
+    // learn the number of cases in the first N0 days
+    prediction[1:N0] = rep_vector(y_local, N0); 
+    cumm_sum[2:N0] = cumulative_sum(prediction[2:N0]);
+    
+    Rt = mu_local * exp( - X_local * alpha );
+    Rt_adj[1:N0] = Rt[1:N0];
+    
+    for (i in (N0+1):N2) {
+      real convolution = dot_product(head(prediction, i-1), tail(SI_rev, i-1));
+      
+      cumm_sum[i] = cumm_sum[i-1] + prediction[i-1];
+      Rt_adj[i] = ((pop_local-cumm_sum[i]) / pop_local) * Rt[i];
+      prediction[i] = Rt_adj[i] * convolution;
+    }
+
+    E_deaths[1]= 1e-15 * prediction[1];
+    for (i in 2:N2) {
+      E_deaths[i] = ifr_noise_local * dot_product(head(prediction, i-1), tail(f_rev_local, i-1));
+    }
+
+    return({ E_deaths, prediction, Rt, Rt_adj });
+}
+  
+  // this is the partial sum function which calculates for
+  // a subset of countries the log-lik contribution
+  // so it computes for the countries m= start...end the
+  // log lik
+  real country_lpdf(real[] mu_slice,
+                    int start, int end,
+                    vector alpha,
+                    real[] y,
+                    real phi,
+                    real[] ifr_noise,
+                    int[] N,
+                    int N0,
+                    int N2,
+                    matrix[] X,
+                    vector SI_rev,
+                    real[] pop,
+                    vector[] f_rev,
+                    int[,] deaths,
+                    int[] EpidemicStart
+                    ) {
+    // log-lik of this subset
+    real log_lik = 0.0;
+    
+    for (m in start:end) {
+      int m_slice = m - start + 1;
+      vector[N2] E_deaths = country_model(
+          mu_slice[m_slice],
+          alpha,
+          y[m],
+          ifr_noise[m],
+          N0,
+          N2,
+          X[m],
+          SI_rev,
+          pop[m],
+          f_rev[m])[1];
+      
+      log_lik += neg_binomial_2_lpmf(deaths[EpidemicStart[m]:N[m], m] |
+                                     E_deaths[EpidemicStart[m]:N[m]], phi );
+    }
+
+    return(log_lik);
+  }
+}
+
 data {
   int <lower=1> M; // number of countries
   int <lower=1> P; // number of covariates
@@ -40,51 +129,11 @@ parameters {
 
 transformed parameters {
     vector[P] alpha;
-    matrix[N2, M] prediction = rep_matrix(0,N2,M);
-    matrix[N2, M] E_deaths  = rep_matrix(0,N2,M);
-    matrix[N2, M] Rt = rep_matrix(0,N2,M);
-    matrix[N2, M] Rt_adj = Rt;
-    
-    {
-      matrix[N2,M] cumm_sum = rep_matrix(0,N2,M);
-      for(i in 1:P){
-        alpha[i] = alpha_hier[i] - ( log(1.05) / 6.0 );
-      }
-      for (m in 1:M){
-        /*
-        for (i in 2:N0){
-          cumm_sum[i,m] = cumm_sum[i-1,m] + y[m]; 
-        }
-        */
-        prediction[1:N0,m] = rep_vector(y[m],N0); // learn the number of cases in the first N0 days
-        cumm_sum[2:N0,m] = cumulative_sum(prediction[2:N0,m]);
-        
-        Rt[,m] = mu[m] * exp(-X[m] * alpha);
-          Rt_adj[1:N0,m] = Rt[1:N0,m];
-        for (i in (N0+1):N2) {
-          /*
-          real convolution=0;
-          for(j in 1:(i-1)) {
-            convolution += prediction[j, m] * SI[i-j];
-          }
-          */
-          real convolution = dot_product(sub_col(prediction, 1, m, i-1), tail(SI_rev, i-1));
-          
-          cumm_sum[i,m] = cumm_sum[i-1,m] + prediction[i-1,m];
-          Rt_adj[i,m] = ((pop[m]-cumm_sum[i,m]) / pop[m]) * Rt[i,m];
-          prediction[i, m] = Rt_adj[i,m] * convolution;
-        }
-        
-        E_deaths[1, m]= 1e-15 * prediction[1,m];
-        for (i in 2:N2){
-          // for(j in 1:(i-1)){
-          //   E_deaths[i,m] += prediction[j,m] * f[i-j,m] * ifr_noise[m];
-          // }
-          E_deaths[i,m] = ifr_noise[m] * dot_product(sub_col(prediction, 1, m, i-1), tail(f_rev[m], i-1));
-        }
-      }
+    for(i in 1:P){
+      alpha[i] = alpha_hier[i] - ( log(1.05) / 6.0 );
     }
 }
+
 model {
   tau ~ exponential(0.03);
   for (m in 1:M){
@@ -95,9 +144,52 @@ model {
   mu ~ normal(3.28, kappa); // citation: https://academic.oup.com/jtm/article/27/2/taaa021/5735319
   alpha_hier ~ gamma(.1667,1);
   ifr_noise ~ normal(1,0.1);
-  for(m in 1:M){
-    deaths[EpidemicStart[m]:N[m], m] ~ neg_binomial_2(E_deaths[EpidemicStart[m]:N[m], m], phi);
-   }
+  
+  // reduce_sum requires CmdStan >= 2.23 and samples parallel when
+  // STAN_THREADS=true is set in make/local
+  //
+  // the reduce_sum_static variant will always calculate the partial
+  // sums in the same way resulting in run-to-run exatly the same
+  // results whereas reduce_sum will dynamically according to system
+  // load perform calculations such that there can be run-to-run
+  // numerical differences.
+  
+  /*
+  target += reduce_sum_static(
+      country_lpdf, mu, 2,
+      alpha,
+      y,
+      ophi,
+      ifr_noise,
+      N,
+      N0,
+      N2,
+      X,
+      SI_rev,
+      pop,
+      f_rev,
+      deaths,
+      EpidemicStart
+                              );
+  */
+  
+  // this version runs with RStan. 
+  // Comment out if reduce_sum_static() is used above.
+  target += country_lpdf(
+      mu | 1, M,
+      alpha,
+      y,
+      phi,
+      ifr_noise,
+      N,
+      N0,
+      N2,
+      X,
+      SI_rev,
+      pop,
+      f_rev,
+      deaths,
+      EpidemicStart);
 }
 
 generated quantities {
