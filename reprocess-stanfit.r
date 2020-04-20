@@ -43,6 +43,8 @@ if(length(cmdoptions$args) > 0) {
     stanfit_files <- c()
 }
 
+print(stanfit_files)
+
 for (stanfit_file in stanfit_files) {
     process_stanfit_file(stanfit_file)
 }

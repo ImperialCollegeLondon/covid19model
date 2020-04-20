@@ -28,10 +28,10 @@ make_forecast_plot <- function(){
   estimated.deaths = out$E_deaths
 
   all_forecast_data <- data.frame()
-  for(i in 1:length(regions)){
+  for(i in 1:length(countries)){
     N <- length(dates[[i]])
     N2 <- N + forecast_length
-    region <- regions[[i]]
+    country <- countries[[i]]
     
     predicted_cases <- colMeans(prediction[,1:N,i])
     predicted_cases_li <- colQuantiles(prediction[,1:N,i], probs=.025)
@@ -50,7 +50,7 @@ make_forecast_plot <- function(){
     rt_ui <- colQuantiles(out$Rt_adj[,1:N2,i],probs=.975)
     
     data_country <- data.frame("time" = as_date(as.character(dates[[i]])),
-                               "region" = rep(region, length(dates[[i]])),
+                               "country" = rep(country, length(dates[[i]])),  # compatibility with 
                                #"country_population" = rep(country_population, length(dates[[i]])),
                                "reported_cases" = reported_cases[[i]], 
                                "reported_cases_c" = cumsum(reported_cases[[i]]), 
@@ -73,9 +73,9 @@ make_forecast_plot <- function(){
                                "rt_max" = rt_ui[1:N])
     
     times <- as_date(as.character(dates[[i]]))
-    times_forecast <- times[length(times)] + 0:7
+    times_forecast <- times[length(times)] + 0:forecast_length
     data_country_forecast <- data.frame("time" = times_forecast,
-                                        "country" = rep(region, forecast_length+1),
+                                        "country" = rep(country, forecast_length+1),
                                         "estimated_deaths_forecast" = estimated_deaths_forecast,
                                         "estimated_deaths_forecast_min" = estimated_deaths_li_forecast,
                                         "estimated_deaths_forecast_max"= estimated_deaths_ui_forecast,

@@ -1,6 +1,7 @@
 library(matrixStats)
 args <- commandArgs(trailingOnly = TRUE)
 filename <- args[1]
+forecast = 7
 load(paste0("results/",filename))
 print(sprintf("loading: %s",paste0("results/",filename)))
 out = rstan::extract(fit)
@@ -38,7 +39,6 @@ for(i in 1:length(countries)) {
   Country = countries[i]
   x = dates[[i]]
   N = length(x)
-  forecast = 7
   x  = c(x,x[length(x)]+1:forecast)
   padding <- len_dates - length(dates[[i]])
   y[[i]] = c(rep(0, padding),reported_cases[[i]], rep(NA, forecast))

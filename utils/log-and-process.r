@@ -60,9 +60,13 @@ reprocess_simulation <- function (run_name) {
 
   # Extract info from fit
   extracted_fit = rstan::extract(fit)
-  log_simulation_inputs(run_name, region_to_country_map, 
-    ifr.by.country,infection_to_onset, onset_to_death)
-  postprocess_simulation(run_name, extracted_fit, countries, dates)
+  if (is.null(extracted_fit)){
+    message("ERROR processing file, a fit could not be extracted, skipping")
+  } else {
+    log_simulation_inputs(run_name, region_to_country_map, 
+      ifr.by.country,infection_to_onset, onset_to_death)
+    postprocess_simulation(run_name, extracted_fit, countries, dates)
+  }
 
 }
 
