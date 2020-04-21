@@ -47,7 +47,11 @@ make_three_pannel_plot <- function(){
   
   all_data <- data.frame()
   intervention_data <- data.frame()
+<<<<<<< HEAD
   for(i in 1:14){
+=======
+  for(i in 1:length(countries)){
+>>>>>>> eaef0e1a56c534abf7e89b8ca7aa6c21841b9f57
     print(i)
     N <- length(dates[[i]])
     country <- countries[[i]]

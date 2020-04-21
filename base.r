@@ -271,5 +271,3 @@ verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'
 if(verify_result != 0){
   stop("Verification of web output failed!")
 }
-system("Rscript web-fix-fonts.r")
-
