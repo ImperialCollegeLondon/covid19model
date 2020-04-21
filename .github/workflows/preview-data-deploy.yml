@@ -1,0 +1,22 @@
+on:
+  push:
+    branches: 
+    - preview-data
+
+jobs:
+  build-and-deploy:
+    name: Deploy 
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Azure Blob Storage Upload
+      uses: bacongobbler/azure-blob-storage-upload@v1.0.0
+      with:
+        # The name of the directory you want to upload
+        source_dir: results
+        # The name of the storage account container these assets will be uploaded to
+        container_name: plots-preview
+        # The connection string for the storage account
+        connection_string: ${{ secrets.ImperialStorageConnectionString }}
+        # extra arguments that can be passed to `az storage blob upload-batch`. Useful for passing flags like `--pattern` or `--destination-path`
+        extra_args: --pattern *.csv
