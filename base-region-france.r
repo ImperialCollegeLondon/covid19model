@@ -102,6 +102,7 @@ ecdf.saved = ecdf(x1+x2)
 log_simulation_inputs(run_name, region_to_country_map,  ifr.by.country,
   infection_to_onset, onset_to_death)
 
+preprocess_error = FALSE
 for(Region in names(region_to_country_map))
 {
   Country = region_to_country_map[[Region]]
@@ -116,12 +117,13 @@ for(Region in names(region_to_country_map))
   d1$t = decimal_date(d1$date) 
   d1=d1[order(d1$t),]
   if(length(d1$date) == 0){
-    stop(sprintf(
-      "Region %s in country %s had no data (d1 length(d1)==0)", region, Country))
+    preprocess_error = TRUE
+    message(sprintf(
+      "ERROR: Region %s in country %s had no data (d1 length(d1)==0)", Region, Country))
+    next
   }
   date_min <- dmy('31/12/2019') 
   if (as.Date(d1$DateRep[1], format='%d/%m/%Y') > as.Date(date_min, format='%d/%m/%Y')){
-    print(paste(Region,'In padding'))
     pad_days <- as.Date(d1$DateRep[1], format='%d/%m/%Y') - date_min
     pad_dates <- date_min + days(1:pad_days[[1]]-1)
     padded_data <- data.frame("Countries.and.territories" = rep(Region, pad_days),
@@ -136,6 +138,13 @@ for(Region in names(region_to_country_map))
   }
   index = which(d1$Cases>0)[1]
   index1 = which(cumsum(d1$Deaths)>=10)[1] # also 5
+  if (is.na(index1)) {
+    preprocess_error = TRUE
+    message(sprintf(
+      "ERROR: Region %s in country %s has not reached 10 deaths on %s, it cannot be processed\nremove from 'active-countries.cfg' or 'active-regions.cfg'\n",
+      Region, Country, max_date))
+    next
+  }
   index2 = index1-30
  
   print(sprintf("First non-zero cases is on day %d, and 30 days before 10 deaths is day %d",index,index2))
@@ -199,6 +208,10 @@ for(Region in names(region_to_country_map))
   }
 }
 
+if(preprocess_error){
+  stop(sprintf(
+      "ERROR: There were errors during preprocessing, check for error messages."))
+}
 
 # create the `any intervention` covariate
 stan_data$covariate4 = 1*as.data.frame((stan_data$covariate1+
