@@ -1,10 +1,16 @@
 library(dplyr)
 library(tidyr)
 
+source("utils/arg-parser.r")
 
-covariates_read <- function (covariates_file){
+covariates_read <- function (covariates_file, max_date=""){
 
-    covariates <- read.csv(covariates_file, stringsAsFactors = FALSE)
+    covariates <- trim_data_to_date_range(
+        read.csv(covariates_file, stringsAsFactors = FALSE),
+        max_date, date_field="Date.effective",
+        format_field='%d.%m.%Y', format_max='%d/%m/%y'
+    )
+
     # Modify names for covariates
     names_covariates <- c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
     covariates <- covariates %>%
@@ -27,7 +33,8 @@ covariates_read <- function (covariates_file){
                                'lockdown', 
                                'social_distancing_encouraged'
                                )]
-    
+    # Any empty covariate is put at a very late data
+    covariates[is.na(covariates)] = format(Sys.Date()+3000, format="%d.%m.%Y")
     covariates <- covariates_preprocess_dates(covariates, covariate_dates)
 
     return(covariates)

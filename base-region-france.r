@@ -28,6 +28,7 @@ DEBUG <- parsedargs[["DEBUG"]]
 FULL_RUN <- parsedargs[["FULL"]]
 StanModel <- parsedargs[["StanModel"]]
 new_sub_folder <- parsedargs[["new_sub_folder"]]
+max_date <- parsedargs[["max_date"]]
 
 JOBID = Sys.getenv("PBS_JOBID")
 if(JOBID == "")
@@ -50,18 +51,21 @@ if (new_sub_folder){
   }
   run_name <- paste0(run_name ,'/', run_name)
 }
-## Reading data from region file and world data
+## Reading data from region file and world data and trimming it to max_date
 data_files <- c(
   "data/COVID-19-up-to-date.rds",
   "data/all-france.rds"
 )
-d <- do.call('rbind', lapply(data_files, readRDS))
+d <- trim_data_to_date_range(
+  do.call('rbind', lapply(data_files, readRDS)),
+  max_date  # optional arguments allow data customisation
+)
 
 ## get IFR and population from same file
 
 serial.interval = read.csv("data/serial_interval.csv")
 ifr.by.country <- return_ifr()
-covariates <- covariates_read('data/interventions.csv')
+covariates <- covariates_read('data/interventions.csv', max_date)
 
 forecast = 0
 N2 = 120 # increase if you need more forecast Max is 100 at the moment

@@ -10,6 +10,8 @@ base_arg_parse <- function (){
 	                     help="Perform a full run of the model")
 	parser <- add_option(parser, c("--nosubdir"), action="store_true",
 	                     help="Do not create subdirectories for generated data.")
+	parser <- add_option(parser, c("--maxdate"), default="",
+	                     help="Consider only data up to max date 'dd/mm/yy' format.")
 	cmdoptions <- parse_args(parser, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
 
 	# Default run parameters for the model
@@ -52,7 +54,8 @@ base_arg_parse <- function (){
 			DEBUG=DEBUG,
 			FULL=FULL,
 			StanModel=StanModel,
-			new_sub_folder=new_sub_folder 
+			new_sub_folder=new_sub_folder ,
+			max_date = cmdoptions$options$maxdate
 		)
 	return(parsedargs)
 }
@@ -64,4 +67,18 @@ read_country_file <- function (filename){
 	}
 	
 	return(countries)
+}
+
+trim_data_to_date_range <- function (data, max_date, date_field="DateRep", 
+	format_field='%d/%m/%Y', format_max='%d/%m/%y'){
+    
+	if (max_date == "" || is.null(max_date)){
+		return(data)
+	} else {
+
+		return (data[
+			as.Date(data[[date_field]], format=format_field) 
+				<= as.Date(max_date, format=format_max),
+			])
+	}
 }
