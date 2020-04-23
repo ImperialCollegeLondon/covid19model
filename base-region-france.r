@@ -60,7 +60,22 @@ d <- trim_data_to_date_range(
   do.call('rbind', lapply(data_files, readRDS)),
   max_date  # optional arguments allow data customisation
 )
-
+# Trim countries and regions that fail the number of death test.
+death_thresh_epi_start = 10
+keep_regions = logical(length = length(region_to_country_map))
+for(i in 1:length(region_to_country_map))
+{
+  Region <- names(region_to_country_map)[i]
+  Country = region_to_country_map[[Region]]  
+  d1=d[d$Countries.and.territories==Region,c(1,5,6,7)] 
+  keep_regions[i] = !is.na(which(cumsum(d1$Deaths)>=death_thresh_epi_start)[1]) # also 5
+  if (!keep_regions[i]) {
+    message(sprintf(
+      "WARNING: Region %s in country %s has not reached 10 deaths on %s, it cannot be processed\nautomatically removed from analysis\n",
+      Region, Country, max_date))
+  }
+}
+region_to_country_map <- region_to_country_map[keep_regions]
 ## get IFR and population from same file
 
 serial.interval = read.csv("data/serial_interval.csv")
@@ -137,7 +152,7 @@ for(Region in names(region_to_country_map))
     d1 <- bind_rows(padded_data, d1)
   }
   index = which(d1$Cases>0)[1]
-  index1 = which(cumsum(d1$Deaths)>=10)[1] # also 5
+  index1 = which(cumsum(d1$Deaths)>=death_thresh_epi_start)[1] # also 5
   if (is.na(index1)) {
     preprocess_error = TRUE
     message(sprintf(
