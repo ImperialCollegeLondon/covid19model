@@ -97,19 +97,10 @@ covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$l
 
 forecast = 0
 
-N2 = 120 # increase if you need more forecast
+N2 = 90 # increase if you need more forecast
 
 dates = list()
 reported_cases = list()
-# Pads serial interval with 0 if N2 is greater than the length of the serial
-# interval array
-if (N2 > length(serial.interval$fit)) {
-  pad_serial.interval <- data.frame(
-    "X"=(length(serial.interval$fit)+1):N2,
-    "fit"=rep(0.0, max(N2-length(serial.interval$fit), 0 ))
-  )
-  serial.interval = rbind(serial.interval, pad_serial.interval)
-}
 stan_data = list(M=length(countries),N=NULL,covariate1=NULL,covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,covariate6=NULL,deaths=NULL,f=NULL,
                  N0=6,cases=NULL,SI=serial.interval$fit[1:N2],
                  EpidemicStart = NULL, pop = NULL) # N0 = 6 to make it consistent with Rayleigh
@@ -234,13 +225,34 @@ if(DEBUG) {
   }
 }
 
+
+# Combine covariates to an array of design matrices X
+stan_data$P <- 6
+stopifnot(dim(stan_data$covariate1) == c(stan_data$N2, stan_data$M))
+stan_data$X <- array(c(stan_data$covariate1, 
+                       stan_data$covariate2, 
+                       stan_data$covariate3, 
+                       unname(as.matrix(stan_data$covariate4)), 
+                       stan_data$covariate5, 
+                       stan_data$covariate6), 
+                     dim = c( stan_data$N2 , stan_data$M , stan_data$P ))
+stan_data$X <- aperm(stan_data$X, c(2,1,3))
+stopifnot(all(stan_data$covariate1 == t(stan_data$X[,,1])))
+stan_data$covariate1 <- 
+  stan_data$covariate2 <-
+  stan_data$covariate3 <-
+  stan_data$covariate4 <-
+  stan_data$covariate5 <-
+  stan_data$covariate6 <- NULL
+
+
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 m = stan_model(paste0('stan-models/',StanModel,'.stan'))
 
 
 if(DEBUG) {
-  fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
+  fit = sampling(m,data=stan_data,iter=40, warmup=20, chains=2, seed = 4711)
 } else if (FULL) {
   fit = sampling(m,data=stan_data,iter=4000,warmup=2000,chains=4,thin=4,control = list(adapt_delta = 0.95, max_treedepth = 10))
 } else { 
@@ -263,13 +275,7 @@ save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.d
 
 library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)
-
-print("Generating covariate size effects plot")
-covariate_size_effects_error <- system(paste0("Rscript covariate-size-effects.r ", filename,'-stanfit.Rdata'),intern=FALSE)
-if(covariate_size_effects_error != 0){
-  stop(sprintf("Error while plotting covariate size effects! Code: %d", covariate_size_effects_error))
-}
-
+system(paste0("Rscript covariate-size-effects.r ", filename,'-stanfit.Rdata'))
 mu = (as.matrix(out$mu))
 colnames(mu) = countries
 g = (mcmc_intervals(mu,prob = .9))
@@ -279,26 +285,10 @@ Rt_adj = do.call(cbind,tmp)
 colnames(Rt_adj) = countries
 g = (mcmc_intervals(Rt_adj,prob = .9))
 ggsave(sprintf("results/%s-final-rt.png",filename),g,width=4,height=6)
-
-print("Generate 3-panel plots")
-plot_3_panel_error <- system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'),intern=FALSE)
-if(plot_3_panel_error != 0){
-  stop(sprintf("Generation of 3-panel plots failed! Code: %d", plot_3_panel_error))
-}
-
-print("Generate forecast plot")
-plot_forecast_error <- system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'),intern=FALSE)
-if(plot_forecast_error != 0) {
-  stop(sprintf("Generation of forecast plot failed! Code: %d", plot_forecast_error))
-}
-
-print("Make forecast table")
-make_table_error <- system(paste0("Rscript make-table.r results/",filename,'-stanfit.Rdata'),intern=FALSE)
-if(make_table_error != 0){
-  stop(sprintf("Generation of alpha covar table failed! Code: %d", make_table_error))
-}
-
-verify_result_error <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
-if(verify_result_error != 0){
-  stop(sprintf("Verification of web output failed! Code: %d", verify_result_error))
+system(paste0("Rscript plot-3-panel.r ", filename,'-stanfit.Rdata'))
+system(paste0("Rscript plot-forecast.r ",filename,'-stanfit.Rdata'))
+system(paste0("Rscript make-table.r results/",filename,'-stanfit.Rdata'))
+verify_result <- system(paste0("Rscript web-verify-output.r ", filename,'.Rdata'),intern=FALSE)
+if(verify_result != 0){
+  stop("Verification of web output failed!")
 }
