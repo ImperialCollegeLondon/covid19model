@@ -23,12 +23,21 @@ RUN install2.r --error --deps FALSE \
 	EnvStats BH ggplot2 isoband \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
+# Install python libs
+RUN apt-get install -y python3 python3-pip
+RUN pip3 install pandas numpy pyyaml scipy  
+#pystan 
+
+
 WORKDIR /var/model
 
 COPY data data/
 COPY stan-models stan-models/
 COPY utils utils/
 COPY *.r ./
+COPY *.sh ./
+COPY *.cfg ./
+COPY config config/
 
 RUN mkdir results
 RUN mkdir figures
@@ -36,4 +45,4 @@ RUN mkdir web
 RUN touch Rplots.pdf
 RUN chmod -R a+rwx results figures web Rplots.pdf
 
-CMD Rscript base.r base
+CMD /bin/bash run-france.sh

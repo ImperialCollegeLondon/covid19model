@@ -1,5 +1,5 @@
 library(matrixStats)
-library(lubridate)
+library(lubridate,warn.conflicts = FALSE)
 
 make_country_csvs <- function() {
   args <- commandArgs(trailingOnly = TRUE)

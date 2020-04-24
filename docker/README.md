@@ -3,6 +3,12 @@
 [Docker][] provides an alternative way to run the model without the need to
 manually setup or install any dependencies. The Docker file contains the latest version of the model and can be used to run it independently of the repo. 
 
+### Building and running locally France version
+```
+docker build .  -f docker/Dockerfile -t covid19model
+docker run covid19model
+```
+
 ### Running on Linux or MacOS
 ```
 docker run --rm -v $(pwd)/results:/var/model/results -v $(pwd)/figures:/var/model/figures harrisonzhu5080/covid19model:latest
