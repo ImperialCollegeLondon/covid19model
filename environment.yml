@@ -10,5 +10,7 @@ dependencies:
   - r-dplyr
   - r-rstan
   - r-optparse
+  - r-jsonlite
+  - r-svglite
 channels:
   - conda-forge
