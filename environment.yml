@@ -10,5 +10,6 @@ dependencies:
   - r-dplyr
   - r-rstan
   - r-optparse
+  - r-abind
 channels:
   - conda-forge
