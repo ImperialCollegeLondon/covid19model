@@ -96,6 +96,7 @@ save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.d
 dir.create("results/", showWarnings = FALSE, recursive = TRUE)
 dir.create("figures/", showWarnings = FALSE, recursive = TRUE)
 dir.create("web/", showWarnings = FALSE, recursive = TRUE)
+dir.create("web/data", showWarnings = FALSE, recursive = TRUE)
 
 library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)
