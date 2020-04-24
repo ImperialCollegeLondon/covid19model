@@ -28,6 +28,7 @@ DEBUG <- parsedargs[["DEBUG"]]
 FULL_RUN <- parsedargs[["FULL"]]
 StanModel <- parsedargs[["StanModel"]]
 new_sub_folder <- parsedargs[["new_sub_folder"]]
+max_date <- parsedargs[["max_date"]]
 
 JOBID = Sys.getenv("PBS_JOBID")
 if(JOBID == "")
@@ -50,18 +51,36 @@ if (new_sub_folder){
   }
   run_name <- paste0(run_name ,'/', run_name)
 }
-## Reading data from region file and world data
+## Reading data from region file and world data and trimming it to max_date
 data_files <- c(
   "data/COVID-19-up-to-date.rds",
   "data/all-france.rds"
 )
-d <- do.call('rbind', lapply(data_files, readRDS))
-
+d <- trim_data_to_date_range(
+  do.call('rbind', lapply(data_files, readRDS)),
+  max_date  # optional arguments allow data customisation
+)
+# Trim countries and regions that fail the number of death test.
+death_thresh_epi_start = 10
+keep_regions = logical(length = length(region_to_country_map))
+for(i in 1:length(region_to_country_map))
+{
+  Region <- names(region_to_country_map)[i]
+  Country = region_to_country_map[[Region]]  
+  d1=d[d$Countries.and.territories==Region,c(1,5,6,7)] 
+  keep_regions[i] = !is.na(which(cumsum(d1$Deaths)>=death_thresh_epi_start)[1]) # also 5
+  if (!keep_regions[i]) {
+    message(sprintf(
+      "WARNING: Region %s in country %s has not reached 10 deaths on %s, it cannot be processed\nautomatically removed from analysis\n",
+      Region, Country, max_date))
+  }
+}
+region_to_country_map <- region_to_country_map[keep_regions]
 ## get IFR and population from same file
 
 serial.interval = read.csv("data/serial_interval.csv")
 ifr.by.country <- return_ifr()
-covariates <- covariates_read('data/interventions.csv')
+covariates <- covariates_read('data/interventions.csv', max_date)
 
 forecast = 0
 N2 = 120 # increase if you need more forecast Max is 100 at the moment
@@ -98,6 +117,7 @@ ecdf.saved = ecdf(x1+x2)
 log_simulation_inputs(run_name, region_to_country_map,  ifr.by.country,
   infection_to_onset, onset_to_death)
 
+preprocess_error = FALSE
 for(Region in names(region_to_country_map))
 {
   Country = region_to_country_map[[Region]]
@@ -112,12 +132,13 @@ for(Region in names(region_to_country_map))
   d1$t = decimal_date(d1$date) 
   d1=d1[order(d1$t),]
   if(length(d1$date) == 0){
-    stop(sprintf(
-      "Region %s in country %s had no data (d1 length(d1)==0)", region, Country))
+    preprocess_error = TRUE
+    message(sprintf(
+      "ERROR: Region %s in country %s had no data (d1 length(d1)==0)", Region, Country))
+    next
   }
   date_min <- dmy('31/12/2019') 
   if (as.Date(d1$DateRep[1], format='%d/%m/%Y') > as.Date(date_min, format='%d/%m/%Y')){
-    print(paste(Region,'In padding'))
     pad_days <- as.Date(d1$DateRep[1], format='%d/%m/%Y') - date_min
     pad_dates <- date_min + days(1:pad_days[[1]]-1)
     padded_data <- data.frame("Countries.and.territories" = rep(Region, pad_days),
@@ -131,7 +152,14 @@ for(Region in names(region_to_country_map))
     d1 <- bind_rows(padded_data, d1)
   }
   index = which(d1$Cases>0)[1]
-  index1 = which(cumsum(d1$Deaths)>=10)[1] # also 5
+  index1 = which(cumsum(d1$Deaths)>=death_thresh_epi_start)[1] # also 5
+  if (is.na(index1)) {
+    preprocess_error = TRUE
+    message(sprintf(
+      "ERROR: Region %s in country %s has not reached 10 deaths on %s, it cannot be processed\nremove from 'active-countries.cfg' or 'active-regions.cfg'\n",
+      Region, Country, max_date))
+    next
+  }
   index2 = index1-30
  
   print(sprintf("First non-zero cases is on day %d, and 30 days before 10 deaths is day %d",index,index2))
@@ -195,6 +223,10 @@ for(Region in names(region_to_country_map))
   }
 }
 
+if(preprocess_error){
+  stop(sprintf(
+      "ERROR: There were errors during preprocessing, check for error messages."))
+}
 
 # create the `any intervention` covariate
 stan_data$covariate4 = 1*as.data.frame((stan_data$covariate1+
