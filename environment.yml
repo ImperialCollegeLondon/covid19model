@@ -11,5 +11,7 @@ dependencies:
   - r-rstan
   - r-optparse
   - r-abind
+  - r-svglite
+  - r-jsonlite
 channels:
   - conda-forge
