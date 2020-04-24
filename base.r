@@ -90,6 +90,7 @@ if(JOBID == "")
 print(sprintf("Jobid = %s",JOBID))
 
 countries <- countries$Regions
+save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,out,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
 ## Ensure that output directories exist
