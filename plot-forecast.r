@@ -21,7 +21,8 @@ make_forecast_plot <- function(){
   filename <- args[1]
   
   load(paste0("results/", filename))
-  
+  all_data <- data.frame()
+  all_data_forecast <- data.frame()
   for(i in 1:length(countries)){
     N <- length(dates[[i]])
     N2 <- N + 7
@@ -73,13 +74,15 @@ make_forecast_plot <- function(){
                                         "estimated_deaths_forecast" = estimated_deaths_forecast,
                                         "death_min_forecast" = estimated_deaths_li_forecast,
                                         "death_max_forecast"= estimated_deaths_ui_forecast)
-    
+    all_data <- rbind(all_data, data_country)
+    all_data_forecast <- rbind(all_data_forecast, data_country)
     make_single_plot(data_country = data_country, 
                      data_country_forecast = data_country_forecast,
                      filename = filename,
                      country = country)
-    
   }
+  write.csv(all_data, paste0("results/", "base-forecast-plot.csv"))
+  write.csv(all_data_forecast, paste0("results/", "forecast-plot.csv"))
 }
 
 make_single_plot <- function(data_country, data_country_forecast, filename, country){
