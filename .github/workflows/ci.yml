@@ -27,9 +27,9 @@ jobs:
       run: |
         docker build -f docker/Dockerfile -t covid19model:latest .
 
-    - name: Perform a short debug simulation run
+    - name: Perform a short debug simulation run incl. fetching from the ECDC
       run: |
-        docker run --rm --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest 
+        docker run --rm --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest Rscript web-fetch-and-run.r
 
     - name: Push image to GitHub packages
       if: github.event_name == 'push'
