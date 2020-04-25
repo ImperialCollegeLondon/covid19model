@@ -20,18 +20,24 @@ make_forecast_plot <- function(){
   
   args <- commandArgs(trailingOnly = TRUE)
   filename <- args[1]
-  forecast_length <- 7
-
+  forecast_plot <- 7
+  
   load(paste0("results/", filename))
   filename = gsub("(.*)stanfit.Rdata$", "\\1", filename)
   out = rstan::extract(fit)
   prediction = out$prediction
   estimated.deaths = out$E_deaths
 
+  # Calculate the longest possible forecast for the given data
+  Nmax = dim(out$Rt_adj)[2]
+  max_forecast = Nmax - max(unlist(lapply(dates, length)))
+  forecast_plot = min(max_forecast, forecast_plot)
+
   all_forecast_data <- data.frame()
   for(i in 1:length(countries)){
     N <- length(dates[[i]])
-    N2 <- N + forecast_length
+    N2 <- N + forecast_plot
+    forecast_long <- Nmax - N
     country <- countries[[i]]
     
     predicted_cases <- colMeans(prediction[,1:N,i])
@@ -42,13 +48,13 @@ make_forecast_plot <- function(){
     estimated_deaths_li <- colQuantiles(estimated.deaths[,1:N,i], probs=.025)
     estimated_deaths_ui <- colQuantiles(estimated.deaths[,1:N,i], probs=.975)
     
-    estimated_deaths_forecast <- colMeans(estimated.deaths[,1:N2,i])[N:N2]
-    estimated_deaths_li_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.025)[N:N2]
-    estimated_deaths_ui_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.975)[N:N2]
+    estimated_deaths_forecast <- colMeans(estimated.deaths[,1:Nmax,i])[N:Nmax]
+    estimated_deaths_li_forecast <- colQuantiles(estimated.deaths[,1:Nmax,i], probs=.025)[N:Nmax]
+    estimated_deaths_ui_forecast <- colQuantiles(estimated.deaths[,1:Nmax,i], probs=.975)[N:Nmax]
     
-    rt <- colMeans(out$Rt_adj[,1:N2,i])
-    rt_li <- colQuantiles(out$Rt_adj[,1:N2,i],probs=.025)
-    rt_ui <- colQuantiles(out$Rt_adj[,1:N2,i],probs=.975)
+    rt <- colMeans(out$Rt_adj[,1:Nmax,i])
+    rt_li <- colQuantiles(out$Rt_adj[,1:Nmax,i],probs=.025)
+    rt_ui <- colQuantiles(out$Rt_adj[,1:Nmax,i],probs=.975)
     
     data_country <- data.frame("time" = as_date(as.character(dates[[i]])),
                                "country" = rep(country, length(dates[[i]])),  # compatibility with 
@@ -74,19 +80,19 @@ make_forecast_plot <- function(){
                                "rt_max" = rt_ui[1:N])
     
     times <- as_date(as.character(dates[[i]]))
-    times_forecast <- times[length(times)] + 0:forecast_length
+    times_forecast <- times[length(times)] + 0:forecast_long
     data_country_forecast <- data.frame("time" = times_forecast,
-                                        "country" = rep(country, forecast_length+1),
+                                        "country" = rep(country, forecast_long+1),
                                         "estimated_deaths_forecast" = estimated_deaths_forecast,
                                         "estimated_deaths_forecast_min" = estimated_deaths_li_forecast,
                                         "estimated_deaths_forecast_max"= estimated_deaths_ui_forecast,
-                                        "rt" = rt[N:N2],
-                                        "rt_min" = rt_li[N:N2],
-                                        "rt_max" = rt_ui[N:N2])
+                                        "rt" = rt[N:Nmax],
+                                        "rt_min" = rt_li[N:Nmax],
+                                        "rt_max" = rt_ui[N:Nmax])
     
     all_forecast_data <- rbind(all_forecast_data, data_country_forecast)
     make_single_plot(data_country = data_country, 
-                     data_country_forecast = data_country_forecast,
+                     data_country_forecast = data_country_forecast[1:N2,],
                      filename = filename,
                      country = country)
     
@@ -95,7 +101,7 @@ make_forecast_plot <- function(){
 }
 
 make_single_plot <- function(data_country, data_country_forecast, filename, 
-  country, forecast_length){
+  country, forecast_plot){
   
   data_deaths <- data_country %>%
     select(time, deaths, estimated_deaths) %>%
