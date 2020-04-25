@@ -11,8 +11,16 @@ source("utils/read-covariates.r")
 source("utils/ifr-tools.r")
 source("utils/log-and-process.r")
 
-regions <- read_country_file("active-regions.cfg")
-active_countries <- read_country_file("active-countries.cfg")
+# Commandline options and parsing
+parsedargs <- base_arg_parse()
+DEBUG <- parsedargs[["DEBUG"]]
+FULL_RUN <- parsedargs[["FULL"]]
+StanModel <- parsedargs[["StanModel"]]
+new_sub_folder <- parsedargs[["new_sub_folder"]]
+max_date <- parsedargs[["max_date"]]
+
+regions <- read_country_file(parsedargs[["activeregions"]])
+active_countries <- read_country_file(parsedargs[["activecountries"]])
 
 region_to_country_map = list()
 for(Region in regions){
@@ -21,14 +29,6 @@ for(Region in regions){
 for(Country in active_countries){
   region_to_country_map[[Country]] <- Country
 }
-
-# Commandline options and parsing
-parsedargs <- base_arg_parse()
-DEBUG <- parsedargs[["DEBUG"]]
-FULL_RUN <- parsedargs[["FULL"]]
-StanModel <- parsedargs[["StanModel"]]
-new_sub_folder <- parsedargs[["new_sub_folder"]]
-max_date <- parsedargs[["max_date"]]
 
 JOBID = Sys.getenv("PBS_JOBID")
 if(JOBID == "")
