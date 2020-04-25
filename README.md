@@ -8,6 +8,10 @@ In this update, we first extended our model from version 2 to have 'partial-pool
 
 You can directly get csv files [here](https://mrc-ide.github.io/covid19estimates/#/download ) and new model description [here](https://arxiv.org/abs/2004.11342)
 
+## Notice
+ * Python code is right now not updated and won't work. Python code is good for only version 1 model and data.
+ * base_general.r and base_general.stan, base_general_speed.stan and  	base_general_speed2.stan are now valid models for only version2
+
 ## Version 2 Release
 In this update we extend our original [model](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-13-europe-npi-impact/)  to include (a) population saturation effects, (b) prior uncertainty on the infection fatality ratio and (c) a more balanced prior on intervention effects.  We also (d) included another 3 countries (Greece, the Netherlands and Portugal). The updated technical detail is available [here](https://github.com/ImperialCollegeLondon/covid19model/blob/master/Technical_description_of_Imperial_COVID_19_Model.pdf).
 
@@ -53,7 +57,7 @@ There are two ways to run our code:-
 * Open the rstudio project covid19model.Rproj file in rstudio and run/source base.r file
 * To run from commandline please enter the cloned directory and type `Rscript base.r base` in terminal
 
-Please note to not make you wait for long we have by default set run sampling to a short period. For proper estimates please run it in FULL mode either by setting the flag `--full` or the environment variable `FULL=TRUE`. This will run sampling for 4000 iterations with 2000 warmups and 4 chains.
+Please note to not make you wait for long we have by default set run sampling to a short period. For proper estimates please run it in FULL mode either by setting the flag `--full` or the environment variable `FULL=TRUE`. This will run sampling for 4000 iterations with 2000 warmups and 4 chains. The run time for 14 countries using new faster code is around 50 mins/1hr for the version 3 code.
 
 ## Run mode settings 
 Three different run modes are supported:
@@ -68,7 +72,3 @@ Three different run modes are supported:
 * The results are stored in two folders results and figures.
 * Results has the stored stan fits and data used for plotting
 * Figures have the images with daily cases, daily death and Rt for all countries.
-
-## Notice
- * Python code is right now not updated and won't work. Python code is good for only version 1 model and data.
- * base_general.r and base_general.stan, base_general_speed.stan and  	base_general_speed2.stan are now valid models for only version2
