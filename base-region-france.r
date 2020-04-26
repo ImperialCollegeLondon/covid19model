@@ -7,8 +7,9 @@ library(tidyr)
 library(EnvStats)
 
 source("utils/arg-parser.r")
-source("utils/read-covariates.r")
-source("utils/read-covariates-region.r")
+source("utils/read-interventions.r")
+source("utils/process-covariates.r")
+source("utils/process-covariates-region.r")
 source("utils/ifr-tools.r")
 source("utils/log-and-process.r")
 
