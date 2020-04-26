@@ -19,8 +19,9 @@ countries <- c(
 
 web_fix_fonts <- function(path){
   x <- readLines(path)
-  y <- gsub( "Aerial", "Arial, Helvetica, sans-serif", x )
-  y <- gsub( "Arimo", "Arial, Helvetica, sans-serif", y )
+  y <- gsub("Aerial", "Arial, Helvetica, sans-serif",x)
+  y <- gsub("Arimo", "Arial, Helvetica, sans-serif",y)
+  y <- gsub("DejaVu Sans", "Arial, Helvetica, sans-serif", y)
   cat(y, file=path, sep="\n")
 }
 
@@ -34,6 +35,7 @@ verify_web_output <- function(){
   
   date_results <- list()
   
+  print("Verifying plots and fixing fonts")
   for(country in countries) {
     for (plot_version in plot_versions) {
       for (plot_name in plot_names) {
@@ -59,8 +61,11 @@ verify_web_output <- function(){
   web_fix_fonts("web/figures/desktop/covars-alpha-reduction.svg")
   web_fix_fonts("web/figures/mobile/covars-alpha-reduction.svg")
   
+  print("Writing latest updates")
   dir.create("web/data/", showWarnings = FALSE, recursive = TRUE)
   write_json(date_results, "web/data/latest-updates.json", auto_unbox=TRUE)
 }
 
+print("Verifying web output")
 verify_web_output()
+print("Web verification successful")

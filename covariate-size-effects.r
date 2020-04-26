@@ -12,7 +12,7 @@ plot_labels <- c("School Closure",
                  "Self Isolation",
                  "Public Events",
                  "First Intervention",
-                 "Lockdown", 'Social distancing')
+                 "Lockdown", 'Social distancing \n encouraged')
 colnames(alpha) = plot_labels
 first.intervention = alpha[,c(1,2,3,5,6)] + alpha[,4]
 data1 = bayesplot::mcmc_intervals_data(first.intervention,prob=.95,transformation=function(x) 1-exp(-x),point_est="mean")

@@ -43,6 +43,6 @@ RUN mkdir results
 RUN mkdir figures
 RUN mkdir web
 RUN touch Rplots.pdf
-RUN chmod -R a+rwx results figures web Rplots.pdf
+RUN chmod -R a+rwx data results figures web Rplots.pdf
 
 CMD /bin/bash run-france.sh

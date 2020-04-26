@@ -19,7 +19,7 @@ for (date in dates){
   }
 }
 
-date_till_percentage = date_iso <- as.character(Sys.Date())
+date_till_percentage <- as.character(Sys.Date())
 
 cases <- vector("list", length = length(countries))
 total_cases <- vector("list", length = length(countries))

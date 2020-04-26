@@ -23,17 +23,7 @@ make_forecast_plot <- function(){
   forecast_plot <- 7
   
   load(paste0("results/", filename))
-  filename = gsub("(.*)stanfit.Rdata$", "\\1", filename)
-  out = rstan::extract(fit)
-  prediction = out$prediction
-  estimated.deaths = out$E_deaths
 
-  # Calculate the longest possible forecast for the given data
-  Nmax = dim(out$Rt_adj)[2]
-  max_forecast = Nmax - max(unlist(lapply(dates, length)))
-  forecast_plot = min(max_forecast, forecast_plot)
-
-  all_forecast_data <- data.frame()
   for(i in 1:length(countries)){
     N <- length(dates[[i]])
     N2 <- N + forecast_plot
@@ -89,15 +79,16 @@ make_forecast_plot <- function(){
                                         "rt" = rt[N:Nmax],
                                         "rt_min" = rt_li[N:Nmax],
                                         "rt_max" = rt_ui[N:Nmax])
-    
+
+    all_data <- rbind(all_data, data_country)
     all_forecast_data <- rbind(all_forecast_data, data_country_forecast)
     make_single_plot(data_country = data_country, 
                      data_country_forecast = data_country_forecast[1:N2,],
                      filename = filename,
                      country = country)
-    
   }
   write.csv(all_forecast_data, paste0("results/", filename, "forecast-data.csv"))
+  write.csv(all_data, paste0("results/", filename, "all-forecast-data.csv"))
 }
 
 make_single_plot <- function(data_country, data_country_forecast, filename, 
