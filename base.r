@@ -59,7 +59,7 @@ if(DEBUG) {
 countries <- read.csv('data/regions.csv', stringsAsFactors = FALSE)
 # Read deaths data for regions
 d <- read_obs_data(countries)
-# Read ifr 
+# Read ifr
 ifr.by.country <- read_ifr_data()
 
 # Read interventions
@@ -67,7 +67,7 @@ interventions <- read_interventions(countries)
 
 N2 <- 100 # increase if you need more forecast
 
-processed_data <- process_covariates(countries = countries, interventions = interventions, 
+processed_data <- process_covariates(countries = countries, interventions = interventions,
                                      d = d , ifr.by.country = ifr.by.country, N2 = N2)
 stan_data = processed_data$stan_data
 dates = processed_data$dates
@@ -82,9 +82,9 @@ if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
 } else if (FULL) {
   fit = sampling(m,data=stan_data,iter=1800,warmup=1000,chains=5,thin=1,control = list(adapt_delta = 0.95, max_treedepth = 15))
-} else { 
+} else {
   fit = sampling(m,data=stan_data,iter=1000,warmup=500,chains=4,thin=1,control = list(adapt_delta = 0.95, max_treedepth = 10))
-}   
+}
 
 out = rstan::extract(fit)
 prediction = out$prediction
