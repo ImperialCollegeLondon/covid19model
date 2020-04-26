@@ -46,6 +46,7 @@ make_three_pannel_plot <- function(){
   covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
   
   all_data <- data.frame()
+  all_data_out <- data.frame()
   intervention_data <- data.frame()
   for(i in 1:length(countries)){
     print(i)
@@ -120,8 +121,23 @@ make_three_pannel_plot <- function(){
                                "rt_max" = rt_ui,
                                "rt_min2" = rt_li2,
                                "rt_max2" = rt_ui2)
-
+    
+    colnames_csv <- c("time","country", "reported_cases", "reported_cases_c",  "predicted_cases_c", 
+                                      "predicted_min_c","predicted_max_c", "predicted_cases","predicted_min", "predicted_max",
+                                      "deaths", "deaths_c", "estimated_deaths_c", "death_min_c",  "death_max_c","estimated_deaths",
+                                      "death_min", "death_max","rt", "rt_min","rt_max")
+    data_country_out_temp <- data_country[,colnames_csv]
+    colnames(data_country_out_temp) <- c("time","country", "reported_cases", "reported_cases_cumulative",  "predicted_infections_mean_cumulative", 
+                                    "predicted_infections_lower_CI_95_cumulative","predicted_infections_higher_CI_95_cumulative", 
+                                    "predicted_infections_mean","predicted_infections_lower_CI_95", "predicted_infections_higher_CI_95_cumulative",
+                                    "reported_deaths", "reported_deaths_cumulative", "estimated_deaths_mean_cumulative", 
+                                    "estimated_deaths_lower_CI_95_cumulative",  "estimated_deaths_higher_CI_95_cumulative",
+                                    "estimated_deaths_mean", "estimated_deaths_lower_CI_95", "estimated_deaths_higher_CI_95",
+                                    "mean_time_varying_reproduction_number_R(t)", "time_varying_reproduction_number_R(t)_lower_CI_95",
+                                    "time_varying_reproduction_number_R(t)_higher_CI_95")
+    
     all_data <- rbind(all_data, data_country)
+    all_data_out <- rbind(all_data_out, data_country_out_temp)
     intervention_data <- rbind(intervention_data, covariates_country_long)
     
     make_plots(data_country = data_country, 
@@ -133,6 +149,7 @@ make_three_pannel_plot <- function(){
   }
   write.csv(all_data, paste0("results/", "base-plot.csv"))
   write.csv(intervention_data, paste0("results/", "base-intervention.csv"))
+  write.csv(all_data_out, paste0("web/data/", "results.csv"))
 }
 
 #---------------------------------------------------------------------------
@@ -204,7 +221,7 @@ make_plots <- function(data_country, covariates_country_long,
                    "Public events banned",
                    "School closure",
                    "Self isolation",
-                   "Social distancing")
+                   "Social distancing \n encouraged")
   
   # Plotting interventions
   data_rt_95 <- data.frame(data_country$time, 
