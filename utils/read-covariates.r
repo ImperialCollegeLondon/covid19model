@@ -3,99 +3,99 @@ library(tidyr)
 
 source("utils/arg-parser.r")
 
-covariates_read <- function (covariates_file, max_date=""){
+read_interventions <- function (interventions_file, max_date=""){
 
-    covariates <- trim_data_to_date_range(
-        read.csv(covariates_file, stringsAsFactors = FALSE),
+    interventions <- trim_data_to_date_range(
+        read.csv(interventions_file, stringsAsFactors = FALSE),
         max_date, date_field="Date.effective",
         format_field='%d.%m.%Y', format_max='%d/%m/%y'
     )
 
-    # Modify names for covariates
-    names_covariates <- c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
-    covariates <- covariates %>%
-      filter((Type %in% names_covariates))
-    covariates <- covariates[,c(1,2,4)]
-    covariates <- spread(covariates, Type, Date.effective)
-    covariate_dates <- c(
+    # Modify names for interventions
+    names_interventions <- c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
+    interventions <- interventions %>%
+      filter((Type %in% names_interventions))
+    interventions <- interventions[,c(1,2,4)]
+    interventions <- spread(interventions, Type, Date.effective)
+    intervention_dates <- c(
         'lockdown',
         'public_events',
         'schools_universities',
         'self_isolating_if_ill',
         'social_distancing_encouraged'
      )
-    names(covariates) <- c('Country', covariate_dates)
-    # Reorder covariates
-    covariates <- covariates[c('Country',
+    names(interventions) <- c('Country', intervention_dates)
+    # Reorder interventions
+    interventions <- interventions[c('Country',
                                'schools_universities', 
                                'self_isolating_if_ill', 
                                'public_events', 
                                'lockdown', 
                                'social_distancing_encouraged'
                                )]
-    # Any empty covariate is put at a very late data
-    covariates[is.na(covariates)] = format(Sys.Date()+3000, format="%d.%m.%Y")
-    covariates <- covariates_preprocess_dates(covariates, covariate_dates)
+    # Any empty intervention is put at a very late data
+    interventions[is.na(interventions)] = format(Sys.Date()+3000, format="%d.%m.%Y")
+    interventions <- interventions_preprocess_dates(interventions, intervention_dates)
 
-    return(covariates)
+    return(interventions)
 }
 
-covariates_preprocess_dates <- function(covariates, covariate_dates){
+interventions_preprocess_dates <- function(interventions, intervention_dates){
     # Format dates consistently
-    for (covar in covariate_dates) {
-      covariates[[covar]] <- as.Date(covariates[[covar]], format = "%d.%m.%Y")
+    for (intervene in intervention_dates) {
+      interventions[[intervene]] <- as.Date(interventions[[intervene]], format = "%d.%m.%Y")
     }
     # Apply actions less stringent than a lockdown at the same time as the
     # lockdown if not done already
-    for (covar in covariate_dates) {
-      lockdown_passed <- covariates[[covar]] > covariates$lockdown        
-      covariates[[covar]][lockdown_passed] <- covariates$lockdown[lockdown_passed]
+    for (intervene in intervention_dates) {
+      lockdown_passed <- interventions[[intervene]] > interventions$lockdown        
+      interventions[[intervene]][lockdown_passed] <- interventions$lockdown[lockdown_passed]
     }
-    return(covariates)
+    return(interventions)
 }
 
 
 ## TEST the equivalence to the preceding implementation.
 
-covariates_read_deprecated <- function (covariates_file){
+interventions_read_deprecated <- function (interventions_file){
     ## Version fo preprocessing from base.r
-    covariates <- read.csv(covariates_file, stringsAsFactors = FALSE)
-    # Modify names for covariates
-    names_covariates <- c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
-    covariates <- covariates %>%
-      filter((Type %in% names_covariates))
-    covariates <- covariates[,c(1,2,4)]
-    covariates <- spread(covariates, Type, Date.effective)
-    names(covariates) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
-    covariates <- covariates[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
+    interventions <- read.csv(interventions_file, stringsAsFactors = FALSE)
+    # Modify names for interventions
+    names_interventions <- c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
+    interventions <- interventions %>%
+      filter((Type %in% names_interventions))
+    interventions <- interventions[,c(1,2,4)]
+    interventions <- spread(interventions, Type, Date.effective)
+    names(interventions) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
+    interventions <- interventions[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
     # Format dates
-    covariates$schools_universities <- as.Date(covariates$schools_universities, format = "%d.%m.%Y")
-    covariates$lockdown <- as.Date(covariates$lockdown, format = "%d.%m.%Y")
-    covariates$public_events <- as.Date(covariates$public_events, format = "%d.%m.%Y")
-    covariates$self_isolating_if_ill <- as.Date(covariates$self_isolating_if_ill, format = "%d.%m.%Y")
-    covariates$social_distancing_encouraged <- as.Date(covariates$social_distancing_encouraged, format = "%d.%m.%Y")
+    interventions$schools_universities <- as.Date(interventions$schools_universities, format = "%d.%m.%Y")
+    interventions$lockdown <- as.Date(interventions$lockdown, format = "%d.%m.%Y")
+    interventions$public_events <- as.Date(interventions$public_events, format = "%d.%m.%Y")
+    interventions$self_isolating_if_ill <- as.Date(interventions$self_isolating_if_ill, format = "%d.%m.%Y")
+    interventions$social_distancing_encouraged <- as.Date(interventions$social_distancing_encouraged, format = "%d.%m.%Y")
     # Apply actions less stringent than a lockdown at the same time as the
     # lockdown if not done already
-    print(covariates)
-    covariates$schools_universities[covariates$schools_universities > covariates$lockdown] <- covariates$lockdown[covariates$schools_universities > covariates$lockdown]
-    covariates$public_events[covariates$public_events > covariates$lockdown] <- covariates$lockdown[covariates$public_events > covariates$lockdown]
-    covariates$social_distancing_encouraged[covariates$social_distancing_encouraged > covariates$lockdown] <- covariates$lockdown[covariates$social_distancing_encouraged > covariates$lockdown]
-    covariates$self_isolating_if_ill[covariates$self_isolating_if_ill > covariates$lockdown] <- covariates$lockdown[covariates$self_isolating_if_ill > covariates$lockdown]
-    print(covariates)
-    return(covariates)
+    print(interventions)
+    interventions$schools_universities[interventions$schools_universities > interventions$lockdown] <- interventions$lockdown[interventions$schools_universities > interventions$lockdown]
+    interventions$public_events[interventions$public_events > interventions$lockdown] <- interventions$lockdown[interventions$public_events > interventions$lockdown]
+    interventions$social_distancing_encouraged[interventions$social_distancing_encouraged > interventions$lockdown] <- interventions$lockdown[interventions$social_distancing_encouraged > interventions$lockdown]
+    interventions$self_isolating_if_ill[interventions$self_isolating_if_ill > interventions$lockdown] <- interventions$lockdown[interventions$self_isolating_if_ill > interventions$lockdown]
+    print(interventions)
+    return(interventions)
 
 }
 
-TEST_covariates_read_check_equivalence <- function(covariates_file){
+TEST_interventions_read_check_equivalence <- function(interventions_file){
     print("==========================================================")
     print("Testing 'r-utils/read-covarites.r'")
     print("==========================================================")
 
-    covariates_new <- covariates_read('data/interventions.csv')
-    covariates_deprecated <- covariates_read_deprecated('data/interventions.csv')
+    interventions_new <- interventions_read('data/interventions.csv')
+    interventions_deprecated <- interventions_read_deprecated('data/interventions.csv')
 
-    if(all(covariates_new==covariates_deprecated)){
-        print("TEST PASSED: Old and new covariates reading processes are equivalent.")
+    if(all(interventions_new==interventions_deprecated)){
+        print("TEST PASSED: Old and new interventions reading processes are equivalent.")
         return(0)
     } else {
         print("TEST FAILED: Covariates reading processes are NOT equivalent.")

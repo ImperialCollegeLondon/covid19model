@@ -9,7 +9,7 @@ library(scales)
 library(stringr)
 library(abind)
 
-process_covariates <- function(countries, interventions, d, ifr.by.country,N2){
+process_covariates <- function(countries, interventions, d, ifr.by.country, N2){
   serial.interval = read.csv("data/serial_interval.csv")
   # Pads serial interval with 0 if N2 is greater than the length of the serial
   # interval array

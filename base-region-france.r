@@ -80,7 +80,7 @@ region_to_country_map <- region_to_country_map[keep_regions]
 
 serial.interval = read.csv("data/serial_interval.csv")
 ifr.by.country <- return_ifr()
-covariates <- covariates_read('data/interventions.csv', max_date)
+covariates <- read_interventions('data/interventions.csv', max_date)
 
 forecast = 0
 N2 = 120 # increase if you need more forecast Max is 100 at the moment

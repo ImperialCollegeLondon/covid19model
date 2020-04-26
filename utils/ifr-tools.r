@@ -1,8 +1,8 @@
 
-return_ifr <- function (){
-    ifr.by.country = read.csv("data/popt_ifr.csv")
-    ifr.by.country$country = as.character(ifr.by.country[,2])
-    ifr.by.country$country[ifr.by.country$country == "United Kingdom"] = "United_Kingdom"
+source("read-data.r")
 
-    return(ifr.by.country)
+return_ifr <- function (){
+    return(read_ifr_data())
 }
+
+# Other tools coming
