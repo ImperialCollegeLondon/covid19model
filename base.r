@@ -6,6 +6,13 @@ library(dplyr)
 library(tidyr)
 library(EnvStats)
 library(optparse)
+library(bayesplot)
+# Load libraries used in other files in order to fail early if they're missing
+library(ggpubr)
+library(svglite)
+library(abind)
+library(stringr)
+library(jsonlite)
 
 source('utils/read-data.r')
 source('utils/process-covariates.r')
@@ -99,7 +106,6 @@ dir.create("figures/", showWarnings = FALSE, recursive = TRUE)
 dir.create("web/", showWarnings = FALSE, recursive = TRUE)
 dir.create("web/data", showWarnings = FALSE, recursive = TRUE)
 
-library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)
 
 print("Generating covariate size effects plot")
