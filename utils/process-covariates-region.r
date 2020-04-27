@@ -1,43 +1,51 @@
+library(rstan)
+library(data.table)
+library(lubridate)
+library(gdata)
+library(dplyr)
+library(tidyr)
+library(EnvStats)
+library(scales)
+library(stringr)
+library(abind)
+
 process_covariates_region <- function(region_to_country_map, interventions,
     d, ifr.by.country, N2){
 
   serial.interval = read.csv("data/serial_interval.csv")
-  forecast = 0
-  N2 = 120 # increase if you need more forecast Max is 100 at the moment
-
-  dates = list()
-  reported_cases = list()
   # Pads serial interval with 0 if N2 is greater than the length of the serial
   # interval array
   if (N2 > length(serial.interval$fit)) {
     pad_serial.interval <- data.frame(
       "X"=(length(serial.interval$fit)+1):N2,
-      "fit"=rep(0.0, max(N2-length(serial.interval$fit), 0 ))
+      "fit"=rep(1e-17, max(N2-length(serial.interval$fit), 0 ))
     )
     serial.interval = rbind(serial.interval, pad_serial.interval)
   }
-  stan_data = list(
-    M=length(names(region_to_country_map)),N=NULL,covariate1=NULL,
-    covariate2=NULL,covariate3=NULL,covariate4=NULL,covariate5=NULL,
-    covariate6=NULL,deaths=NULL,f=NULL,N0=6,cases=NULL,
-    SI=serial.interval$fit[1:N2],
-    EpidemicStart = NULL, pop = NULL) # N0 = 6 to make it consistent with Rayleigh
-  deaths_by_country = list()
-
   # various distributions required for modeling
   infection_to_onset <- c("mean"=5.1, "deviation"=0.86)
   onset_to_death <- c("mean"=18.8, "deviation"=0.45)
   # infection-to-onset distribution
-  x1 = rgammaAlt(1e7,infection_to_onset["mean"], infection_to_onset["deviation"])
+  x1 = rgammaAlt(1e6,infection_to_onset["mean"], infection_to_onset["deviation"])
   # onset-to-death distribution
-  x2 = rgammaAlt(1e7,onset_to_death["mean"], onset_to_death["deviation"])
-
+  x2 = rgammaAlt(1e6,onset_to_death["mean"], onset_to_death["deviation"])
   ecdf.saved = ecdf(x1+x2)
+  # stan data definition
+  stan_data <- list(M=length(names(region_to_country_map)),N=NULL,deaths=NULL,f=NULL,
+                   N0=6,cases=NULL,SI=serial.interval$fit[1:N2],features=NULL,
+                   EpidemicStart = NULL, pop = NULL)
+  reported_cases <- list()
+  deaths_by_country <- list()
+  covariate_list <- list()
+  
 
   log_simulation_inputs(run_name, region_to_country_map,  ifr.by.country,
     infection_to_onset, onset_to_death)
 
   preprocess_error = FALSE
+
+  k=1
+  # going over each region
   for(Region in names(region_to_country_map))
   {
     Country = region_to_country_map[[Region]]
