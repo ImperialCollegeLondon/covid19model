@@ -50,12 +50,14 @@ reprocess_simulation <- function (run_name) {
     }
   }
 
-  if (!exists("infection_to_onset", inherits = FALSE)){
+  if (!exists("infection_to_onset", inherits = FALSE) 
+    || !exists("onset_to_death", inherits = FALSE)){
     message("infection_to_onset and onset_to_death did not exist creating them")
     infection_to_onset <- c("mean"=5.1, "deviation"=0.86)
     onset_to_death <- c("mean"=18.8, "deviation"=0.45)
   }
-
+  print(infection_to_onset)
+  print(onset_to_death)
   ifr.by.country = return_ifr()
 
   # Extract info from fit
@@ -77,22 +79,50 @@ postprocess_simulation <- function (
   message(" Plot intervals")
   message("----------------------------------------------------")
   plot_intervals(run_name, extracted_fit, countries, dates)
+
   message("----------------------------------------------------")
   message(" Plot covariate-size-effects.r")
   message("----------------------------------------------------")
-  system(paste0("Rscript covariate-size-effects.r ", run_name,'-stanfit.Rdata'))
+  covariate_size_effects_error <- system(paste0("Rscript covariate-size-effects.r ", run_name,'-stanfit.Rdata'), intern=FALSE)
+
   message("----------------------------------------------------")
   message(" Plot plot-3-panel.r")
   message("----------------------------------------------------")
-  system(paste0("Rscript plot-3-panel.r ", run_name,'-stanfit.Rdata'))
+  plot_3_panel_error <- system(paste0("Rscript plot-3-panel.r ", run_name,'-stanfit.Rdata'), intern=FALSE)
+
   message("----------------------------------------------------")
   message(" Plot plot-forecast.r")
   message("----------------------------------------------------")
-  system(paste0("Rscript plot-forecast.r ",run_name,'-stanfit.Rdata'))
+  plot_forecast_error <- system(paste0("Rscript plot-forecast.r ",run_name,'-stanfit.Rdata'), intern=FALSE)
+
   message("----------------------------------------------------")
   message(" Plot make-table.r")
   message("----------------------------------------------------")
-  system(paste0("Rscript make-table.r ",run_name,'-stanfit.Rdata'))
+  make_table_error <- system(paste0("Rscript make-table.r ",run_name,'-stanfit.Rdata'), intern=FALSE)
+  errstr = ""
+  if(covariate_size_effects_error != 0){
+    errstr = paste(errstr, 
+      sprintf("Error while plotting covariate size effects! Code: %d\n", covariate_size_effects_error)
+    )
+  }
+  if(plot_3_panel_error != 0){
+    errstr = paste(errstr, 
+      sprintf("Generation of 3-panel plots failed! Code: %d\n", plot_3_panel_error))
+  }
+  if(plot_forecast_error != 0) {
+    errstr = paste(errstr, 
+      sprintf("Generation of forecast plot failed! Code: %d\n", plot_forecast_error))
+  }
+  if(make_table_error != 0){
+    errstr = paste(errstr, 
+      sprintf("Generation of alpha covar table failed! Code: %d\n", make_table_error))
+  }
+  if(errstr != ""){
+    message("----------------------------------------------------")
+    message(" Error report")
+    message("----------------------------------------------------")
+    stop(errstr)
+  }
 }
 
 plot_intervals <- function(run_name, extracted_fit, countries, dates){
