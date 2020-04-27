@@ -41,10 +41,6 @@ process_covariates_region <- function(region_to_country_map, interventions,
   reported_cases <- list()
   deaths_by_country <- list()
   covariate_list <- list()
-  
-
-  log_simulation_inputs(run_name, region_to_country_map,  ifr.by.country,
-    infection_to_onset, onset_to_death)
 
   preprocess_error = FALSE
 

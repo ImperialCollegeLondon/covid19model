@@ -3,7 +3,7 @@ library(tidyr)
 library(dplyr)
 library(rstan)
 library(data.table)
-library(lubridate,warn.conflicts = FALSE)
+library(lubridate, warn.conflicts = FALSE)
 library(gdata)
 library(EnvStats)
 library(matrixStats)
@@ -24,6 +24,19 @@ make_forecast_plot <- function(){
   
   load(paste0("results/", filename))
 
+  filename = gsub("(.*)stanfit.Rdata$", "\\1", filename)
+  out = rstan::extract(fit)
+  prediction = out$prediction
+  estimated.deaths = out$E_deaths
+
+  # Calculate the longest possible forecast for the given data
+  Nmax = dim(out$Rt_adj)[2]
+  max_forecast = Nmax - max(unlist(lapply(dates, length)))
+  forecast_plot = min(max_forecast, forecast_plot)
+
+  all_forecast_data <- data.frame()
+  all_data <- data.frame()
+  
   for(i in 1:length(countries)){
     N <- length(dates[[i]])
     N2 <- N + forecast_plot

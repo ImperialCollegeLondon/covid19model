@@ -4,8 +4,8 @@ source("utils/ifr-tools.r")
 
 log_simulation_inputs <- function(
   run_name, region_to_country_map,  ifr.by.country,
-  infection_to_onset, onset_to_death){
-
+  infection_to_onset, onset_to_death, model_version="v2"){
+  # model_version defaults to 2 as from version 3 it gets passed.
   # stores the countries
   
   # Stores the IFRS by region
@@ -36,6 +36,12 @@ log_simulation_inputs <- function(
   write.csv(parameter_table, paste0(
     "results/", run_name, "-inputs-distribution-parameters.csv"
     ))
+  fileConn<-file(paste0(
+    "results/", run_name, "-model-version.dat"
+    ))
+  
+  writeLines(c(model_version), fileConn)
+  close(fileConn)
 }
 
 reprocess_simulation <- function (run_name) {
@@ -50,14 +56,17 @@ reprocess_simulation <- function (run_name) {
     }
   }
 
+  if (!exists("VERSION", inherits = FALSE)){
+    message("VERSION did not exist defaulting to 2")
+    VERSION="v2"
+  }
+
   if (!exists("infection_to_onset", inherits = FALSE) 
     || !exists("onset_to_death", inherits = FALSE)){
     message("infection_to_onset and onset_to_death did not exist creating them")
     infection_to_onset <- c("mean"=5.1, "deviation"=0.86)
     onset_to_death <- c("mean"=18.8, "deviation"=0.45)
   }
-  print(infection_to_onset)
-  print(onset_to_death)
   ifr.by.country = return_ifr()
 
   # Extract info from fit
@@ -66,7 +75,7 @@ reprocess_simulation <- function (run_name) {
     message("ERROR processing file, a fit could not be extracted, skipping")
   } else {
     log_simulation_inputs(run_name, region_to_country_map, 
-      ifr.by.country,infection_to_onset, onset_to_death)
+      ifr.by.country,infection_to_onset, onset_to_death, VERSION)
     postprocess_simulation(run_name, extracted_fit, countries, dates)
   }
 

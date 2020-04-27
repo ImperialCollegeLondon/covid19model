@@ -32,6 +32,9 @@ make_three_pannel_plot <- function(){
   prediction = out$prediction
   estimated.deaths = out$E_deaths
   
+  if(!exists("interventions", inherits=FALSE)){
+    interventions <- covariates
+  }
   if (!exists("region_to_country_map", inherits = FALSE)){
     print("region_to_country_map did not exist creating it")
     for(country in countries){
@@ -69,27 +72,27 @@ make_three_pannel_plot <- function(){
     
     
     # delete these 2 lines
-    covariates_country <- covariates[which(covariates$Country == country), 2:6] 
-    covariates_country_long <- tidyr::gather(covariates_country, key = "key", 
+    interventions_country <- interventions[which(interventions$Country == country), 2:6] 
+    interventions_country_long <- tidyr::gather(interventions_country, key = "key", 
                                              value = "value")
-    covariates_country_long$x <- rep(NULL, length(covariates_country_long$key))
-    un_dates <- unique(covariates_country_long$value)
+    interventions_country_long$x <- rep(NULL, length(interventions_country_long$key))
+    un_dates <- unique(interventions_country_long$value)
     
     for (k in 1:length(un_dates)){
-      idxs <- which(covariates_country_long$value == un_dates[k])
+      idxs <- which(interventions_country_long$value == un_dates[k])
       max_val <- round(max(rt_ui)) + 0.3
       for (j in idxs){
-        covariates_country_long$x[j] <- max_val
+        interventions_country_long$x[j] <- max_val
         max_val <- max_val - 0.3
       }
     }
     
     
-    covariates_country_long$value <- as_date(covariates_country_long$value) 
-    covariates_country_long$country <- rep(country, 
-                                           length(covariates_country_long$value))
-    covariates_country_long$region <- rep(Region, 
-                                           length(covariates_country_long$value))
+    interventions_country_long$value <- as_date(interventions_country_long$value) 
+    interventions_country_long$country <- rep(country, 
+                                           length(interventions_country_long$value))
+    interventions_country_long$region <- rep(Region, 
+                                           length(interventions_country_long$value))
     
     data_country <- data.frame("time" = as_date(as.character(dates[[i]])),
                                "country" = rep(country, length(dates[[i]])),
@@ -136,10 +139,10 @@ make_three_pannel_plot <- function(){
     
     all_data <- rbind(all_data, data_country)
     all_data_out <- rbind(all_data_out, data_country_out_temp)
-    intervention_data <- rbind(intervention_data, covariates_country_long)
+    intervention_data <- rbind(intervention_data, interventions_country_long)
     
     make_plots(data_country = data_country, 
-               covariates_country_long = covariates_country_long,
+               interventions_country_long = interventions_country_long,
                filename2 = filename2,
                country = Region,
                percent_pop = percent_pop)
@@ -152,7 +155,7 @@ make_three_pannel_plot <- function(){
 }
 
 #---------------------------------------------------------------------------
-make_plots <- function(data_country, covariates_country_long, 
+make_plots <- function(data_country, interventions_country_long, 
                        filename2, country, percent_pop){
   
   if (country == 'United_Kingdom')
@@ -239,10 +242,10 @@ make_plots <- function(data_country, covariates_country_long,
                                         group = key,
                                         fill = key)) +
     geom_hline(yintercept = 1, color = 'black', size = 0.1) + 
-    geom_segment(data = covariates_country_long,
+    geom_segment(data = interventions_country_long,
                  aes(x = value, y = 0, xend = value, yend = max(x)), 
                  linetype = "dashed", colour = "grey", alpha = 0.75) +
-    geom_point(data = covariates_country_long, aes(x = value, 
+    geom_point(data = interventions_country_long, aes(x = value, 
                                                    y = x, 
                                                    group = key, 
                                                    shape = key, 

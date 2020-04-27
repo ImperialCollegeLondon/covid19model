@@ -13,6 +13,8 @@ source("utils/process-covariates-region.r")
 source("utils/ifr-tools.r")
 source("utils/log-and-process.r")
 
+VERSION="v3"
+
 # Commandline options and parsing
 parsedargs <- base_arg_parse()
 DEBUG <- parsedargs[["DEBUG"]]
@@ -92,6 +94,9 @@ reported_cases = processed_data$reported_cases
 infection_to_onset = processed_data$infection_to_onset
 onset_to_death = processed_data$onset_to_death
 
+log_simulation_inputs(run_name, region_to_country_map,  ifr.by.country,
+    infection_to_onset, onset_to_death, VERSION)
+
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 m = stan_model(paste0('stan-models/',StanModel,'.stan'))
@@ -117,7 +122,7 @@ save.image(paste0('results/',run_name,'.Rdata'))
 save(
   fit, prediction, dates,reported_cases,deaths_by_country,countries,
   region_to_country_map, estimated.deaths, estimated.deaths.cf, 
-  out,interventions, infection_to_onset, onset_to_death,
+  out,interventions, infection_to_onset, onset_to_death, VERSION,
   file=paste0('results/',run_name,'-stanfit.Rdata'))
 
 postprocess_simulation(run_name, out, countries, dates)
