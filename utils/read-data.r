@@ -3,11 +3,20 @@ library(lubridate)
 library(stringr)
 library(dplyr)
 
-read_obs_data <- function(countries){
+source("utils/arg-parser.r")
+
+read_obs_data <- function(countries, file_list=c('data/COVID-19-up-to-date.rds'), max_date=""){
   # Read the deaths and cases data
-  d <- readRDS('data/COVID-19-up-to-date.rds')
+  d <- trim_data_to_date_range(
+    do.call('rbind', lapply(data_files, readRDS)),
+    max_date  # optional arguments allow data customisation
+  )
   colnames(d)[colnames(d) == "Countries.and.territories"] <- "Country"
-  d <-d[d$Country %in% countries$Regions, c(1,5,6,7)]
+  tryCatch({
+    d <-d[d$Country %in% countries$Regions, c(1,5,6,7)]
+  },error = function(e) {
+    d <-d[d$Country %in% names(countries), c(1,5,6,7)]
+  })
   d$DateRep <- as.Date(d$DateRep, format = '%d/%m/%Y')
   return(d)
 }

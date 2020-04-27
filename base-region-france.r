@@ -58,10 +58,8 @@ data_files <- c(
   "data/COVID-19-up-to-date.rds",
   "data/all-france.rds"
 )
-d <- trim_data_to_date_range(
-  do.call('rbind', lapply(data_files, readRDS)),
-  max_date  # optional arguments allow data customisation
-)
+countries <- names(region_to_country_map)
+d <- read_obs_data(countries, data_files, max_date)
 # Trim countries and regions that fail the number of death test.
 death_thresh_epi_start = 10
 keep_regions = logical(length = length(region_to_country_map))
@@ -69,7 +67,7 @@ for(i in 1:length(region_to_country_map))
 {
   Region <- names(region_to_country_map)[i]
   Country = region_to_country_map[[Region]]  
-  d1=d[d$Countries.and.territories==Region,c(1,5,6,7)] 
+  d1=d[d$Country==Region,c(1,5,6,7)] 
   keep_regions[i] = !is.na(which(cumsum(d1$Deaths)>=death_thresh_epi_start)[1]) # also 5
   if (!keep_regions[i]) {
     message(sprintf(
@@ -78,30 +76,21 @@ for(i in 1:length(region_to_country_map))
   }
 }
 region_to_country_map <- region_to_country_map[keep_regions]
+countries <- names(region_to_country_map)
 ## get IFR and population from same file
 ifr.by.country <- return_ifr()
-covariates <- read_interventions('data/interventions.csv', max_date)
+interventions <- read_interventions('data/interventions.csv', max_date)
 
+N2 = 120
+processed_data <- process_covariates_region(region_to_country_map, 
+  interventions, d, ifr.by.country, N2)
 
-processed_data <- process_covariates_region(region_to_country_map, interventions, d, ifr.by.country, N2)
 stan_data = processed_data$stan_data
 dates = processed_data$dates
 deaths_by_country = processed_data$deaths_by_country
 reported_cases = processed_data$reported_cases
-
-if(DEBUG) {
-  for(i in 1:length(region_to_country_map)) {
-    write.csv(
-      data.frame(date=dates[[i]],
-                 `school closure`=stan_data$covariate1[1:stan_data$N[i],i],
-                 `self isolating if ill`=stan_data$covariate2[1:stan_data$N[i],i],
-                 `public events`=stan_data$covariate3[1:stan_data$N[i],i],
-                 `government makes any intervention`=stan_data$covariate4[1:stan_data$N[i],i],
-                 `lockdown`=stan_data$covariate5[1:stan_data$N[i],i],
-                 `social distancing encouraged`=stan_data$covariate6[1:stan_data$N[i],i]),
-      file=sprintf("results/%s%s-check-dates.csv",run_name, names(region_to_country_map)[i]),row.names=F)
-  }
-}
+infection_to_onset = processed_data$infection_to_onset
+onset_to_death = processed_data$onset_to_death
 
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
@@ -124,11 +113,11 @@ estimated.deaths.cf = out$E_deaths0
 
 save.image(paste0('results/',run_name,'.Rdata'))
 
-countries <- names(region_to_country_map)
+
 save(
   fit, prediction, dates,reported_cases,deaths_by_country,countries,
   region_to_country_map, estimated.deaths, estimated.deaths.cf, 
-  out,covariates,infection_to_onset, onset_to_death,
+  out,interventions, infection_to_onset, onset_to_death,
   file=paste0('results/',run_name,'-stanfit.Rdata'))
 
 postprocess_simulation(run_name, out, countries, dates)
