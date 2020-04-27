@@ -35,6 +35,9 @@ process_covariates_region <- function(region_to_country_map, interventions,
   stan_data <- list(M=length(names(region_to_country_map)),N=NULL,deaths=NULL,f=NULL,
                    N0=6,cases=NULL,SI=serial.interval$fit[1:N2],features=NULL,
                    EpidemicStart = NULL, pop = NULL)
+  # Other values
+  forecast <- 0
+  dates <- list()
   reported_cases <- list()
   deaths_by_country <- list()
   covariate_list <- list()
@@ -163,5 +166,12 @@ process_covariates_region <- function(region_to_country_map, interventions,
   for (i in 1:stan_data$M){
     stan_data$X[i,,] = covariate_list[[i]] 
   }
-  return(list("stan_data" = stan_data, "dates" = dates, "reported_cases"=reported_cases, "deaths_by_country" = deaths_by_country))
+  return(list(
+    "stan_data" = stan_data,
+    "dates" = dates,
+    "reported_cases"=reported_cases,
+    "deaths_by_country" = deaths_by_country,
+    "infection_to_onset" = infection_to_onset,
+    "onset_to_death" = onset_to_death
+    ))
 }
