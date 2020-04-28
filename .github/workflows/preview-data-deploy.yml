@@ -1,7 +1,7 @@
 on:
   push:
     branches: 
-    - preview-data
+    - staging
 
 jobs:
   build-and-deploy:
