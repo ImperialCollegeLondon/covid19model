@@ -13,11 +13,11 @@ You can directly get csv files [here](https://mrc-ide.github.io/covid19estimates
  
  :warning: base_general.r and base_general.stan, base_general_speed.stan and  	base_general_speed2.stan are now valid models for only version2
 
-:warning: This code is released with no support.
+:warning: This code is released with no support. We try our best to look at issues and pull request but can't help people with setup most of the time. We have docker images and conda enviornment file to make it easy for you to get started with the setup, any other approach assumes user can handle their computing enviornments approriately.
 
 :warning: This model is in active development and so parameter name and behaviours, and output file formats will change without notice.
 
-:warning: As with any mathematical model, it is easy to misconfigure inputs and therefore get meaningless outputs. The Imperial College COVID-19 team only endorses outputs it has itself generated.
+:warning: As with any mathematical model, it is easy to misconfigure inputs and therefore get meaningless outputs. The development team only endorses outputs it has itself generated.
 
 ## Version 2 Release
 In this update we extend our original [model](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-13-europe-npi-impact/)  to include (a) population saturation effects, (b) prior uncertainty on the infection fatality ratio and (c) a more balanced prior on intervention effects.  We also (d) included another 3 countries (Greece, the Netherlands and Portugal). The updated technical detail is available [here](https://github.com/ImperialCollegeLondon/covid19model/blob/master/Technical_description_of_Imperial_COVID_19_Model.pdf).
