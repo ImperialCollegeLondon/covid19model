@@ -38,5 +38,6 @@ read_interventions <- function(countries){
   interventions$public_events[interventions$public_events > interventions$lockdown] <- interventions$lockdown[interventions$public_events > interventions$lockdown]
   interventions$social_distancing_encouraged[interventions$social_distancing_encouraged > interventions$lockdown] <- interventions$lockdown[interventions$social_distancing_encouraged > interventions$lockdown]
   interventions$self_isolating_if_ill[interventions$self_isolating_if_ill > interventions$lockdown] <- interventions$lockdown[interventions$self_isolating_if_ill > interventions$lockdown]
+  interventions <- interventions[interventions$Country %in% countries$Region, ]
   return(interventions)
 }
