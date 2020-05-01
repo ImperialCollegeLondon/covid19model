@@ -20,6 +20,7 @@ RUN apt-get install -y r-cran-remotes
 
 RUN Rscript -e "update.packages(.libPaths()[1])"
 
+
 RUN install2.r --error --deps FALSE \
 	EnvStats remotes BH ggplot2 isoband \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
@@ -29,6 +30,7 @@ WORKDIR /var/model
 COPY data data/
 COPY stan-models stan-models/
 COPY utils utils/
+COPY rpackage rpackage/
 COPY *.r ./
 
 RUN mkdir results
