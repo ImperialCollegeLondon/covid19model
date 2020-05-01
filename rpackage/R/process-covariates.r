@@ -1,15 +1,16 @@
-library(rstan)
-library(data.table)
-library(lubridate)
-library(gdata)
-library(dplyr)
-library(tidyr)
-library(EnvStats)
-library(scales)
-library(stringr)
-library(abind)
-
-process_covariates <- function(countries, interventions, d, ifr.by.country,N2){
+#' Process Covariates
+#' 
+#' @param countries Countries to use
+#' @param interventions Interventions object returned by [read_interventions()].
+#' @param d Observation data (see [read_obs_data()])
+#' @param ifr.by.country IFR by country (see [read_ifr_data()])
+#' @param N2 Increase if you need more forecast
+#' 
+#' @importFrom stats ecdf
+#' 
+#' 
+#' @export
+process_covariates <- function(countries, interventions, d, ifr.by.country, N2){
   serial.interval = read.csv("data/serial_interval.csv")
   # Pads serial interval with 0 if N2 is greater than the length of the serial
   # interval array
@@ -23,8 +24,8 @@ process_covariates <- function(countries, interventions, d, ifr.by.country,N2){
   # various distributions required for modeling
   mean1 <- 5.1; cv1 <- 0.86; # infection to onset
   mean2 <- 17.8; cv2 <- 0.45 # onset to death
-  x1 <- rgammaAlt(1e6,mean1,cv1) # infection-to-onset distribution
-  x2 <- rgammaAlt(1e6,mean2,cv2) # onset-to-death distribution
+  x1 <- EnvStats::rgammaAlt(1e6,mean1,cv1) # infection-to-onset distribution
+  x2 <- EnvStats::rgammaAlt(1e6,mean2,cv2) # onset-to-death distribution
   
   ecdf.saved <- ecdf(x1+x2)
   forecast <- 0
@@ -45,18 +46,18 @@ process_covariates <- function(countries, interventions, d, ifr.by.country,N2){
     region <-region[order(as.Date(region$DateRep)),]  # ensure date ordering
     
     # padding in raw data backwards ex. portugal
-    date_min <- dmy('31/12/2019') 
+    date_min <- lubridate::dmy('31/12/2019') 
     if (region$DateRep[1] > date_min){
       print(paste(Country,'In padding ECDC data'))
       pad_days <-region$DateRep[1] - date_min
-      pad_dates <- date_min + days(1:pad_days[[1]]-1)
+      pad_dates <- date_min + lubridate::days(1:pad_days[[1]]-1)
       padded_data <- data.frame("Country" = rep(Country, pad_days),
                                 "DateRep" = pad_dates,
                                 "Cases" = as.integer(rep(0, pad_days)),
                                 "Deaths" = as.integer(rep(0, pad_days)),
                                 stringsAsFactors=F)
       
-     region <- bind_rows(padded_data,region)
+     region <- dplyr::bind_rows(padded_data,region)
     }
     index = which(region$Cases>0)[1]
     index1 = which(cumsum(region$Deaths)>=10)[1] # also 5

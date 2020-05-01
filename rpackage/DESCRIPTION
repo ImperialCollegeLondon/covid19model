@@ -1,0 +1,20 @@
+Package: covid19model
+Type: Package
+Title: Helper Functions for the covid19 Model from Imperial College London
+Version: 0.1
+Date: 2020-05-01
+Author: Mans Magnusson
+Maintainer: Mans Magnusson <mons.magnusson@gmail.com>
+Description: The package contain helper functions to run an analyze the covid19 Imperial College London model.
+License: LGPL
+RoxygenNote: 7.0.1
+Encoding: UTF-8
+Imports:
+    checkmate,
+    dplyr,
+    EnvStats,
+    ggplot2 (>= 3.3.0),
+    lubridate,
+    matrixStats
+Suggests: 
+    testthat (>= 2.1.0)
