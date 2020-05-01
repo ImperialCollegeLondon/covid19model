@@ -6,7 +6,7 @@ Date: 2020-05-01
 Author: Mans Magnusson
 Maintainer: Mans Magnusson <mons.magnusson@gmail.com>
 Description: The package contain helper functions to run an analyze the covid19 Imperial College London model.
-License: LGPL
+License: MIT + file LICENSE
 RoxygenNote: 7.0.1
 Encoding: UTF-8
 Imports:
