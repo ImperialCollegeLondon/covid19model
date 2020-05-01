@@ -16,11 +16,12 @@ RUN apt-get install -y r-cran-ggpubr
 RUN apt-get install -y r-cran-nortest
 RUN apt-get install -y r-cran-cowplot
 RUN apt-get install -y r-cran-bh
+RUN apt-get install -y r-cran-remotes
 
 RUN Rscript -e "update.packages(.libPaths()[1])"
 
 RUN install2.r --error --deps FALSE \
-	EnvStats BH ggplot2 isoband \
+	EnvStats remotes BH ggplot2 isoband \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 WORKDIR /var/model
