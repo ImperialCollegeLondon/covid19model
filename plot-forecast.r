@@ -12,9 +12,6 @@ library(gridExtra)
 library(ggpubr)
 library(bayesplot)
 library(cowplot)
-
-# Install R package
-remotes::install_local("rpackage/")
 library(covid19model)
 
 #---------------------------------------------------------------------------
