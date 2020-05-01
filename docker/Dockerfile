@@ -18,8 +18,7 @@ RUN apt-get install -y r-cran-cowplot
 RUN apt-get install -y r-cran-bh
 RUN apt-get install -y r-cran-remotes
 
-RUN Rscript -e "update.packages(.libPaths()[1])"
-
+RUN Rscript -e "update.packages(.libPaths()[1]);remotes::install_local("rpackage/")"
 
 RUN install2.r --error --deps FALSE \
 	EnvStats remotes BH ggplot2 isoband \
@@ -33,11 +32,14 @@ COPY utils utils/
 COPY rpackage rpackage/
 COPY *.r ./
 
-RUN Rscript -e "remotes::install_local("rpackage/")"
+
 RUN mkdir results
 RUN mkdir figures
 RUN mkdir web
 RUN touch Rplots.pdf
 RUN chmod -R a+rwx data results figures web Rplots.pdf
+RUN touch Rplots.pdf
+RUN mkdir -p /usr/local/lib/R/site-library 
+RUN chmod 777 /usr/local/lib/R/site-library
 
 CMD Rscript base.r base
