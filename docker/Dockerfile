@@ -18,7 +18,7 @@ RUN apt-get install -y r-cran-cowplot
 RUN apt-get install -y r-cran-bh
 RUN apt-get install -y r-cran-remotes
 
-RUN Rscript -e "update.packages(.libPaths()[1]);remotes::install_local("rpackage/")"
+RUN Rscript -e "update.packages(.libPaths()[1]);remotes::install_local('rpackage/')"
 
 RUN install2.r --error --deps FALSE \
 	EnvStats remotes BH ggplot2 isoband \
