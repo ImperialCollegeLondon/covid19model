@@ -13,5 +13,6 @@ dependencies:
   - r-abind
   - r-svglite
   - r-jsonlite
+  - r-remotes
 channels:
   - conda-forge
