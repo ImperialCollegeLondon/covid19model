@@ -13,6 +13,9 @@ library(bayesplot)
 library(cowplot)
 library(svglite)
 library(ggplot2)
+
+# Install R package
+remotes::install_local("rpackage/")
 library(covid19model)
 
 #---------------------------------------------------------------------------
