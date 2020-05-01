@@ -34,7 +34,6 @@ COPY rpackage rpackage/
 COPY *.r ./
 
 RUN Rscript -e "remotes::install_local("rpackage/")"
-
 RUN mkdir results
 RUN mkdir figures
 RUN mkdir web
