@@ -75,7 +75,7 @@ make_forecast_plot <- function(){
                                         "death_min_forecast" = estimated_deaths_li_forecast,
                                         "death_max_forecast"= estimated_deaths_ui_forecast)
     all_data <- rbind(all_data, data_country)
-    all_data_forecast <- rbind(all_data_forecast, data_country)
+    all_data_forecast <- rbind(all_data_forecast, data_country_forecast)
     make_single_plot(data_country = data_country, 
                      data_country_forecast = data_country_forecast,
                      filename = filename,
