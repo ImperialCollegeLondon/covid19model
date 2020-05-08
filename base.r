@@ -7,8 +7,9 @@ library(tidyr)
 library(EnvStats)
 library(optparse)
 
-source('utils/read-data.r')
-source('utils/process-covariates.r')
+# Install R package
+remotes::install_local("rpackage/")
+library(covid19model)
 
 # Commandline options and parsing
 parser <- OptionParser()

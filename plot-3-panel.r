@@ -13,8 +13,8 @@ library(bayesplot)
 library(cowplot)
 library(svglite)
 library(ggplot2)
+library(covid19model)
 
-source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
 make_three_pannel_plot <- function(){
   

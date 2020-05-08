@@ -1,8 +1,13 @@
-library(tidyr)
-library(lubridate)
-library(stringr)
-library(dplyr)
-
+#' Read Data
+#' 
+#' @details 
+#' The functions reads data from the data folder.
+#' 
+#' @param countries Countries to use include in data
+#' 
+#' @importFrom utils read.csv 
+#' 
+#' @export
 read_obs_data <- function(countries){
   # Read the deaths and cases data
   d <- readRDS('data/COVID-19-up-to-date.rds')
@@ -12,6 +17,8 @@ read_obs_data <- function(countries){
   return(d)
 }
 
+#' @rdname read_obs_data
+#' @export
 read_ifr_data <- function(){
   ifr.by.country <- read.csv("data/popt_ifr.csv")
   ifr.by.country$country <- as.character(ifr.by.country[,2])
@@ -20,12 +27,14 @@ read_ifr_data <- function(){
   
 }
 
+#' @rdname read_obs_data
+#' @export
 read_interventions <- function(countries){
   interventions = read.csv('data/interventions.csv', stringsAsFactors = FALSE)
   names_interventions = c('Schools + Universities','Self-isolating if ill', 'Public events', 'Lockdown', 'Social distancing encouraged')
   interventions <- interventions[interventions$Type %in% names_interventions,]
   interventions <- interventions[,c(1,2,4)]
-  interventions <- spread(interventions, Type, Date.effective)
+  interventions <- eval(parse(text = "tidyr::spread(interventions, Type, Date.effective)"))
   names(interventions) <- c('Country','lockdown', 'public_events', 'schools_universities','self_isolating_if_ill', 'social_distancing_encouraged')
   interventions <- interventions[c('Country','schools_universities', 'self_isolating_if_ill', 'public_events', 'lockdown', 'social_distancing_encouraged')]
   interventions$schools_universities <- as.Date(interventions$schools_universities, format = "%d.%m.%Y")

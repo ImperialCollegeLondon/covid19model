@@ -12,8 +12,8 @@ library(gridExtra)
 library(ggpubr)
 library(bayesplot)
 library(cowplot)
+library(covid19model)
 
-source("utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
 make_forecast_plot <- function(){
   
