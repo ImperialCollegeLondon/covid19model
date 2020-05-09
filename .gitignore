@@ -51,6 +51,13 @@ figures/*.pdf
 Rplots.pdf
 web/*
 results/*.csv
+Italy/code/stan-models/*.rds
+Italy/results/*.Rdata
+Italy/results/*.pdf
+Italy/results/*.png
+Italy/figures/*.png
+Italy/figures/*.pdf
+Italy/results/*.RDS
 
 
 
