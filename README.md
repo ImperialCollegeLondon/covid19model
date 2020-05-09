@@ -26,7 +26,7 @@ You can directly get csv files [here](https://mrc-ide.github.io/covid19estimates
  
  :warning: base_general.r and base_general.stan, base_general_speed.stan and  	base_general_speed2.stan are now valid models for only version2
 
-:warning: This code is released with no support. We try our best to look at issues and pull request but can't help people with setup most of the time. We have docker images and conda enviornment file to make it easy for you to get started with the setup, any other approach assumes user can handle their computing enviornments approriately.
+:warning: This code is released with no support. We try our best to look at issues and pull request but can't help people with setup most of the time. We have docker images and conda environment file to make it easy for you to get started with the setup, any other approach assumes user can handle their computing environments approriately.
 
 :warning: This model is in active development and so parameter name and behaviours, and output file formats will change without notice.
 
@@ -90,5 +90,5 @@ Three different run modes are supported:
 
 # Results 
 * The results are stored in two folders results and figures.
-* Results has the stored stan fits and data used for plotting
+* Results have the stored stan fits and data used for plotting
 * Figures have the images with daily cases, daily death and Rt for all countries.
