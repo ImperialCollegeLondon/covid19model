@@ -13,5 +13,10 @@ dependencies:
   - r-abind
   - r-svglite
   - r-jsonlite
+  - r-abind
+  - r-zoo
+  - r-gtable
+  - r-ggrepel
+  - r-scales
 channels:
   - conda-forge
