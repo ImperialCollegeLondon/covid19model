@@ -9,35 +9,9 @@ library(scales)
 library(stringr)
 library(abind)
 library(optparse)
-library(stargazer)
 
 source("Italy/code/utils/read-data-subnational.r")
 
-make_table_pretty <- function(filename, date_till_percentage){
-  # Read deaths data for regions
-    d <- read_obs_data()
-    d<-d[which(d$country!="Italy"),]
-    regions<-unique(as.factor(d$country))
-
-  # Read ifr 
-    ifr.by.country <- read_ifr_data(unique(d$country))
-    ifr.by.country <- ifr.by.country[1:21,]
-
-  # Table 1 and top 7
-    regions_sum <- d %>% dplyr::group_by(country) %>% dplyr::summarise(Deaths=sum(Deaths)) %>%
-                          inner_join(ifr.by.country) %>% mutate(deathsPer1000=Deaths/popt) %>% 
-                          arrange(desc(deathsPer1000))
-    regions_sum <- regions_sum[,-which(colnames(regions_sum) %in% c("X"))]
-    regions_sum$ifr<-signif(regions_sum$ifr*100,2)
-    regions_sum$deathsPer1000 <- signif(regions_sum$deathsPer1000*1000,2)
-    
-    colnames(regions_sum)[which(colnames(regions_sum)=="country")]<-"regions"
-    
-    AR <- make_table(filename, date_till_percentage)
-    
-    table<-inner_join(regions_sum,AR)
-    print(stargazer<-stargazer(table,summary=FALSE))
-}
 
 make_table <- function(filename, date_till_percentage){
   print(sprintf("Running %s up until %s",filename, date_till_percentage))

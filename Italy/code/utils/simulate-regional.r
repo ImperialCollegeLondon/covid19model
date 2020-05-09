@@ -9,7 +9,6 @@ library(scales)
 library(stringr)
 library(abind)
 library(scales)
-library(zoo)
 library(matrixStats)
 library(optparse)
 

@@ -8,8 +8,6 @@ library(EnvStats)
 library(scales)
 library(stringr)
 library(abind)
-library(zoo)
-library(forecast)
 
 process_covariates <- function(regions, mobility, intervention, d, ifr.by.country, N2, formula, formula_partial){
   intervention$Country <- factor(intervention$Country)
@@ -143,12 +141,11 @@ process_covariates <- function(regions, mobility, intervention, d, ifr.by.countr
     stan_data$EpidemicStart = c(stan_data$EpidemicStart,index1+1-index2)
     stan_data$pop = c(stan_data$pop, d1_pop$popt)
     mobility1 = mobility1[index2:nrow(mobility1),]
-    print(paste0("int:",intervention_length))
     
     intervention1 <- intervention[intervention$Country == Country, c(2,3,4,5,6)]
     for (ii in 1:ncol(intervention1)) {
       covariate = names(intervention1)[ii]
-      d1[covariate] <- (d1$DateRep >= intervention1[1,covariate])*1  # should this be > or >=?
+      d1[covariate] <- (d1$DateRep >= as.data.frame(intervention1)[1,covariate])*1
     }
     
     dates[[Country]] = d1$DateRep
@@ -156,13 +153,6 @@ process_covariates <- function(regions, mobility, intervention, d, ifr.by.countr
     N = length(d1$Cases)
     print(sprintf("%s has %d days of data",Country,N))
     forecast = N2 - N
-    if(forecast < 0) {
-      print(sprintf("%s: %d", Country, N))
-      print("ERROR!!!! increasing N2")
-      N2 = N
-      forecast = N2 - N
-    }
-    
     # IFR is the overall probability of dying given infection
     convolution = function(u) (IFR * ecdf.saved(u))
     
@@ -175,7 +165,6 @@ process_covariates <- function(regions, mobility, intervention, d, ifr.by.countr
     deaths=c(as.vector(as.numeric(d1$Deaths)),rep(-1,forecast))
     cases=c(as.vector(as.numeric(d1$Cases)),rep(-1,forecast))
     deaths_by_country[[Country]] = as.vector(as.numeric(d1$Deaths))
-    print(paste0(mobility_length))
     intervention_state <- as.data.frame(d1[, colnames(intervention1)])
     mobility1[N:(N+forecast),] <- mobility1[N,]
     intervention_state[N:(N+forecast),] <-  intervention_state[N,]

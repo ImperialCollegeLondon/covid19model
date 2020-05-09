@@ -2,7 +2,7 @@ library(dplyr)
 library(lubridate)
 library(grid)
 library(gtable)
-source("Italy/code/plotting/format-data-plotting.R")
+source("Italy/code/plotting/format-data-plotting.r")
 
 make_scenario_comparison_plots_mobility <- function(JOBID, StanModel, len_forecast, last_date_data, 
                                                     baseline=FALSE, mobility_increase = 20,top=7){

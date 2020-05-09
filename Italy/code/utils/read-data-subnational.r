@@ -4,7 +4,6 @@ library(stringr)
 library(tidyverse)
 library(dplyr)
 library(magrittr)
-library(stargazer)
 
 read_obs_data <- function(){
   # Read the deaths and cases data

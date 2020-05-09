@@ -9,9 +9,9 @@ library(scales)
 library(stringr)
 library(abind)
 library(optparse)
-library(zoo)
-library(forecast)
 library(ggplot2)
+library(ggrepel)
+library(gtable)
 
 source('Italy/code/utils/read-data-subnational.r')
 source('Italy/code/utils/process-covariates-italy.r')
@@ -150,7 +150,7 @@ make_plots_all(paste0('Italy/results/', StanModel, '-', JOBID, '-stanfit.Rdata')
                last_date_data = max(dates[[1]]))
 source("Italy/code/utils/make-table.r")
 # Prints attackrates to console
-make_table_pretty(paste0('Italy/results/', StanModel, '-', JOBID, '-stanfit.Rdata'), 
+make_table(paste0('Italy/results/', StanModel, '-', JOBID, '-stanfit.Rdata'), 
                   date_till_percentage = max(dates[[1]]))
 
 source("Italy/code/utils/simulate-regional.r")
@@ -199,28 +199,3 @@ make_scenario_comparison_plots_mobility(JOBID = JOBID, StanModel, len_forecast =
                                         last_date_data = max(dates[[1]]) + len_forecast, baseline = FALSE, 
                                         mobility_increase = 40,top=9)
 
-source("Italy/code/plotting/scenarios-deaths-averted.r")
-deaths_averted_20 <- compute_deaths_averted(JOBID = JOBID, StanModel, len_forecast = len_forecast, last_date_data = max(dates[[1]]) + len_forecast, 
-                                            baseline = FALSE, subdir='Italy', mobility_increase = 20)
-deaths_averted_40<-compute_deaths_averted(JOBID = JOBID, StanModel, len_forecast = len_forecast, last_date_data = max(dates[[1]]) + len_forecast, 
-                                          baseline = FALSE, subdir='Italy', mobility_increase = 40)
-deaths_averted <- deaths_averted_20[,-which(colnames(deaths_averted_20)=="cases.averted")]
-deaths_averted$deaths_40 <- deaths_averted_40$deaths.averted
-
-stargazer(deaths_averted,summary=FALSE)
-
-# Attack rates after 8 weeks of simulation of scenarios
-scenario_type = "increase-mob-current"
-mobility_increase = 20
-t_20 <- make_table_simulation(paste0('Italy/results/sim-', scenario_type, "-", StanModel, '-', len_forecast, '-', mobility_increase, '-', JOBID, '-stanfit.Rdata'), 
-                              date_till_percentage = max(dates[[1]]) + len_forecast)
-mobility_increase = 40
-t_40 <- make_table_simulation(paste0('Italy/results/sim-', scenario_type, "-", StanModel, '-', len_forecast, '-', mobility_increase, '-', JOBID, '-stanfit.Rdata'), 
-                              date_till_percentage = max(dates[[1]]) + len_forecast)
-t_20 <- t_20[,c('regions', 'text')]
-t_40 <- t_40[,c('regions', 'text')]
-colnames(t_20) <- c('Regions', '20% return to pre-lockdown mobility')
-colnames(t_40) <- c('Regions', '40% return to pre-lockdown mobility')
-t <- cbind(t_20,t_40[,2])
-colnames(t) <- c('Regions', '20% return to pre-lockdown mobility', '40% return to pre-lockdown mobility')
-stargazer(t,summary=FALSE)
