@@ -58,7 +58,9 @@ ifr.by.country <- read_ifr_data()
 # Read interventions
 interventions <- read_interventions(countries)
 
-N2 <- 110 # increase if you need more forecast
+forecast <- 7 # increase to get correct number of days to simulate
+# Maximum number of days to simulate
+N2 <- (max(d$DateRep) - min(d$DateRep) + 1 + forecast)[[1]]
 
 processed_data <- process_covariates(countries = countries, interventions = interventions, 
                                      d = d , ifr.by.country = ifr.by.country, N2 = N2)
