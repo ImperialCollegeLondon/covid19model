@@ -18,6 +18,8 @@ library(bayesplot)
 library(cowplot)
 library(optparse)
 
+source("Brazil/code/preprocessing-subnation-brazil.r")
+
 # Commandline options and parsing
 parser <- OptionParser()
 parser <- add_option(parser, c("-D", "--debug"), action="store_true",
@@ -59,8 +61,6 @@ if(length(args) == 0) {
 StanModel = args[1]
 cat(sprintf("Running:\nStanModel = %s\nDebug: %s\n",
             StanModel,DEBUG))
-
-source("Brazil/code/preprocessing-subnation-brazil.r")
 
 
 ####################################################################
@@ -105,5 +105,6 @@ save(fit, dates, reported_cases,deaths_by_country, countries,
      prediction, estimated.deaths,stan_data,JOBID,df_pop,filename,df_region_codes,
      file=paste0('Brazil/results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
+################Code for plotting and making attack rate table#############
 source('Brazil/code/plot-3-panel.r')
 make_data_plot(filename)
