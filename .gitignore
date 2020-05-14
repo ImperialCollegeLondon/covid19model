@@ -58,6 +58,14 @@ Italy/results/*.png
 Italy/figures/*.png
 Italy/figures/*.pdf
 Italy/results/*.RDS
+Brazil/code/stan-models/*.rds
+Brazil/results/*.Rdata
+Brazil/results/*.pdf
+Brazil/results/*.png
+Brazil/figures/*.png
+Brazil/figures/*.pdf
+Brazil/figures/*.txt
+Brazil/results/*.RDS
 
 
 
