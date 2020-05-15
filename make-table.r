@@ -11,6 +11,8 @@ dates_italy <- dates[[which(countries == "Italy")]]
 len_dates <- length(dates_italy)
 
 date_till_percentage <- as.character(Sys.Date())
+if(date_till_percentage > max(dates[[which(countries == "Italy")]]))
+  date_till_percentage = max(dates[[which(countries == "Italy")]])
 
 cases <- vector("list", length = length(countries))
 total_cases <- vector("list", length = length(countries))
