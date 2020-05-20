@@ -211,49 +211,50 @@ process_covariates <- function(regions, mobility, intervention, d, ifr.by.countr
   stan_data$P = dim(features)[2]
   stan_data$X = array(NA, dim = c(stan_data$M , stan_data$N2 ,stan_data$P ))
   stan_data$P_partial = dim(features_partial)[2]
+  # If there is no partial pooling of variables set of dim 1 to avoid overflows 
   if(stan_data$P_partial==0){
     stan_data$X_partial = array(0, dim = c(stan_data$M , stan_data$N2, 1))
   }
+  # If there partial pooling of variables set X_partial to the correct size:
+  # (countries or regions)* N2 * P_partial 
   else{
     stan_data$X_partial = array(NA, dim = c(stan_data$M , stan_data$N2 ,stan_data$P_partial))
   }
+  # Unpack covariates and partial covariates to pass to stan model
   for (i in 1:stan_data$M){
     stan_data$X[i,,] = covariate_list[[i]]
     if(stan_data$P_partial != 0)
       stan_data$X_partial[i,,] = covariate_list_partial[[i]]
   }
-  if(stan_data$P_partial == 0)
+  if(stan_data$P_partial == 0) # special case when ther are no partial covariates
     stan_data$P_partial = 1
-  dm=dim(stan_data$X)
-  for(j in 1:dm[3]){ # for covariates
-    for(i in 1:dm[1]){ # regions
-      raw=stan_data$X[i,,j]
-      if(all(raw!=0)){
-        top = raw[raw>=0]
-        bottom = raw[raw<=0]
-        adjusted=raw
-        if(sum(top==1)!=length(top)) top=rescale(top,to=c(0,1));adjusted[raw>=0]=top
-        # if(sum(bottom==0)!=length(bottom)) bottom=rescale(bottom,to=c(-1,0));adjusted[raw<=0]=bottom
-        stan_data$X[i,,j] = adjusted
-      }
-    }
-  }
-  dm=dim(stan_data$X_partial)
-  for(j in 1:dm[3]){ # for covariates
-    for(i in 1:dm[1]){ # regions
-      raw=stan_data$X_partial[i,,j]
-      if(all(raw!=0)){
-        top = raw[raw>=0]
-        bottom = raw[raw<=0]
-        adjusted=raw
-        if(sum(top==1)!=length(top)) top=rescale(top,to=c(0,1));adjusted[raw>=0]=top
-        # if(sum(bottom==0)!=length(bottom)) bottom=rescale(bottom,to=c(-1,0));adjusted[raw<=0]=bottom
-        stan_data$X_partial[i,,j] = adjusted
-      }
-    }
-  }
-  
+
+  # Normalise positive covariate effects to be between 0 and 1
+  stan_data$X=normalise_covariate_array(stan_data$X)
+  # Normalise positive pooled covariate effects to be between 0 and 1
+  stan_data$X_partial=normalise_covariate_array(stan_data$X_partial)
   
   return(list("stan_data" = stan_data, "dates" = dates, "reported_cases"=reported_cases, "deaths_by_country" = deaths_by_country))
 }
 
+normalise_covariate_array <- function(covariate_array){
+  # Normalise positive covariate effects to be between 0 and 1
+  dm=dim(covariate_array)
+  for(j in 1:dm[3]){ # for covariates
+    for(i in 1:dm[1]){ # countries
+      raw=covariate_array[i,,j]
+      if(all(raw!=0)){
+        top = raw[raw>=0]
+        bottom = raw[raw<=0]
+        adjusted=raw
+        # only act on real valued covariates (not the discrete interventions)
+        if(sum(top==1)!=length(top)){
+          top=rescale(top,to=c(0,1))
+          adjusted[raw>=0]=top
+        }
+        covariate_array[i,,j] = adjusted
+      }
+    }
+  }
+  return(covariate_array)
+}
