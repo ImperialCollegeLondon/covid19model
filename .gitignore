@@ -67,6 +67,10 @@ Brazil/figures/*.pdf
 Brazil/figures/*.txt
 Brazil/results/*.RDS
 
+# No data files
+data/*.csv
+Brazil/data/*.csv
+Italy/data/*.csv
 
 
 # Python
