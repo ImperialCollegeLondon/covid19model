@@ -1,0 +1,52 @@
+state_name,code,pop_density,pop_count,region_census_sub_revised,region_code
+Illinois,IL,231,12859995,Great Lakes,2
+Michigan,MI,175,9922576,Great Lakes,2
+Wisconsin,WI,106,5771337,Great Lakes,2
+Indiana,IN,184,6619680,Great Lakes,2
+Ohio,OH,284,11614373,Great Lakes,2
+Minnesota,MN,68,5489594,Great Lakes,2
+Kansas,KS,36,2911641,Great Plains,3
+Iowa,IA,55,3123899,Great Plains,3
+Missouri,MO,88,6083672,Great Plains,3
+Nebraska,NE,24,1896190,Great Plains,3
+North Dakota,ND,10,756927,Great Plains,3
+South Dakota,SD,11,858469,Great Plains,3
+New Jersey,NJ,1218,8958013,Northeast Corridor,5
+New York,NY,420,19795791,Northeast Corridor,5
+Pennsylvania,PA,286,12802503,Northeast Corridor,5
+Connecticut,CT,741,3590886,Northeast Corridor,5
+Maine,ME,43,1329328,Northeast Corridor,5
+Rhode Island,RI,1021,1056298,Northeast Corridor,5
+Massachusetts,MA,871,6794422,Northeast Corridor,5
+New Hampshire,NH,148,1330608,Northeast Corridor,5
+Vermont,VT,67,626042,Northeast Corridor,5
+Kentucky,KY,112,4425092,Southern Appalachia,1
+Tennessee,TN,160,6600299,Southern Appalachia,1
+Alabama,AL,95,4858979,Southern Appalachia,1
+Mississippi,MS,63,2992333,Southern Appalachia,1
+Delaware,DE,485,945934,South Atlantic,7
+District of Columbia,DC,11011,672228,South Atlantic,7
+North Carolina,NC,206,10042802,South Atlantic,7
+Virginia,VA,212,8382993,South Atlantic,7
+Maryland,MD,618,6006401,South Atlantic,7
+South Carolina,SC,162,4896146,South Atlantic,7
+West Virginia,WV,76,1844128,South Atlantic,7
+Florida,FL,378,20271272,South Atlantic,7
+Georgia,GA,177,10214860,South Atlantic,7
+Louisiana,LA,108,4670724,TOLA,8
+Arkansas,AR,57,2978204,TOLA,8
+Oklahoma,OK,57,3911338,TOLA,8
+Texas,TX,105,27469114,TOLA,8
+New Mexico,NM,17,2085109,Mountain,4
+Colorado,CO,52,5456574,Mountain,4
+Montana,MT,7,1032949,Mountain,4
+Nevada,NV,26,2890845,Mountain,4
+Utah,UT,36,2995919,Mountain,4
+Wyoming,WY,6,586107,Mountain,4
+Arizona,AZ,60,6828065,Mountain,4
+Idaho,ID,20,1654930,Mountain,4
+California,CA,251,39144818,Pacific,6
+Hawaii,HI,222,1431603,Pacific,6
+Oregon,OR,41,4028977,Pacific,6
+Washington,WA,107,7170351,Pacific,6
+Alaska,AK,1,738432,Pacific,6
