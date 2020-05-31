@@ -1,4 +1,4 @@
-FROM rocker/r-base:3.6.3
+FROM conda-forge/r-base
 
 RUN apt-get update
 #RUN apt-get install -y build-essential libxml2-dev libcurl4-openssl-dev libssl-dev
