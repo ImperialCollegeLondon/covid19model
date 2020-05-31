@@ -66,6 +66,15 @@ Brazil/figures/*.png
 Brazil/figures/*.pdf
 Brazil/figures/*.txt
 Brazil/results/*.RDS
+usa/code/stan-models/*.rds
+usa/results/*.Rdata
+usa/results/*.pdf
+usa/results/*.png
+usa/figures/*.png
+usa/figures/*.pdf
+usa/results/*.RDS
+usa/figures/*.csv
+usa/results/*.csv
 
 
 

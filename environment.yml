@@ -18,5 +18,9 @@ dependencies:
   - r-gtable
   - r-ggrepel
   - r-scales
+  - r-stringr
+  - r-ggplot2
+  - r-ggstance
+  - r-gridextra
 channels:
   - conda-forge
