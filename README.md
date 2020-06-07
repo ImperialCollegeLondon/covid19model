@@ -5,6 +5,18 @@ Code for modelling estimated deaths and cases for COVID19 from Report 13 publish
 
 If you are looking for the individual based model used in [Report 9](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-9-impact-of-npis-on-covid-19/), please look [here](https://github.com/mrc-ide/covid-sim)
 
+## Version 7 Release
+
+This code is the exact code that was used in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. https://doi.org/10.1038/s41586-020-2405-7.
+
+To run the code from the main folder in rstudio source `base-nature.r` or from terminal after reaching the root of the repository type `Rscript base-nature.r`.
+
+The code shold be run in full mode to obtain any results. Not running full model to estimate anything is not recommended and discouraged. Only full run should be used to get results.
+
+This code doesn't superseed our earlier model, it is here for everyone to have a direcft access to code used in our Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. https://doi.org/10.1038/s41586-020-2405-7.
+
+The instructions for European, Italy, Brazil and USA code are same as earlier (Look at version 3, version 4, version 5, version 6).
+
 ## Version 6 Release
 
 This is the release related to [report 23](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-23-united-states/), where we use mobility data to estimate situation in all states of the USA. All other code is still the same.
