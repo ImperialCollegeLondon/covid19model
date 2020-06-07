@@ -33,7 +33,7 @@ parameters {
   real<lower=0> alpha_hier[P]; // sudo parameter for the hier term for alpha
   real<lower=0> gamma;
   vector[M] lockdown;
-  vector[M] sweden;
+  vector[M] last_intervention;
   real<lower=0> kappa;
   real<lower=0> y[M];
   real<lower=0> phi;
@@ -57,7 +57,7 @@ transformed parameters {
         prediction[1:N0,m] = rep_vector(y[m],N0); // learn the number of cases in the first N0 days
         cumm_sum[2:N0,m] = cumulative_sum(prediction[2:N0,m]);
         
-        Rt[,m] = mu[m] * exp(-X[m][,1:6] * alpha[1:6] - X[m][,5] * lockdown[m]- X[m][,7] * sweden[m]);
+        Rt[,m] = mu[m] * exp(-X[m][,1:6] * alpha[1:6] - X[m][,5] * lockdown[m]- X[m][,7] * last_intervention[m]);
         Rt_adj[1:N0,m] = Rt[1:N0,m];
         for (i in (N0+1):N2) {
           real convolution = dot_product(sub_col(prediction, 1, m, i-1), tail(SI_rev, i-1));
@@ -79,7 +79,7 @@ model {
   }
   gamma ~ normal(0,.2);
   lockdown ~ normal(0,gamma);
-  sweden ~ normal(0,gamma);
+  last_intervention ~ normal(0,gamma);
   phi ~ normal(0,5);
   kappa ~ normal(0,0.5);
   mu ~ normal(3.28, kappa); // citation: https://academic.oup.com/jtm/article/27/2/taaa021/5735319
