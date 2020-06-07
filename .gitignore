@@ -75,6 +75,15 @@ usa/figures/*.pdf
 usa/results/*.RDS
 usa/figures/*.csv
 usa/results/*.csv
+nature/stan-models/*.rds
+nature/results/*.Rdata
+nature/results/*.pdf
+nature/results/*.png
+nature/figures/*.png
+nature/figures/*.pdf
+nature/results/*.RDS
+nature/figures/*.csv
+nature/results/*.csv
 
 
 
