@@ -9,10 +9,8 @@ library(scales)
 library(stringr)
 library(abind)
 
-process_covariates <- function(countries, interventions, d, ifr.by.country,N2, 
-                               serial_interval = "nature/data/serial-interval.rds",
-                               mean2 = 17.8){
-  serial.interval = readRDS(serial_interval)
+process_covariates <- function(countries, interventions, d, ifr.by.country,N2){
+  serial.interval = readRDS("nature/data/serial-interval.rds")
   # Pads serial interval with 0 if N2 is greater than the length of the serial
   # interval array
   if (N2 > length(serial.interval$fit)) {
@@ -24,7 +22,7 @@ process_covariates <- function(countries, interventions, d, ifr.by.country,N2,
   }
   # various distributions required for modeling
   mean1 <- 5.1; cv1 <- 0.86; # infection to onset
-  mean2 <- mean2; cv2 <- 0.45 # onset to death
+  mean2 <- 17.8; cv2 <- 0.45 # onset to death
   x1 <- rgammaAlt(1e6,mean1,cv1) # infection-to-onset distribution
   x2 <- rgammaAlt(1e6,mean2,cv2) # onset-to-death distribution
   

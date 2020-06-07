@@ -39,12 +39,8 @@ if(DEBUG && FULL) {
 
 if(length(cmdoptions$args) == 0) {
   StanModel = 'base-nature'
-  serial_interval = "nature/data/serial-interval.rds"
-  mean2 = 17.8
 } else {
   StanModel = cmdoptions$args[1]
-  serial_interval = cmdoptions$args[2]
-  mean2 = as.double(cmdoptions$args[3])
 }
 
 print(sprintf("Running %s",StanModel))
@@ -54,8 +50,8 @@ if(DEBUG) {
   print("Running in FULL mode")
 }
 
-cat(sprintf("Running:\nStanModel = %s\nserial_interval = %s\nmean2 = %s\nDebug: %s\n",
-            StanModel,serial_interval,mean2,DEBUG))
+cat(sprintf("Running:\nStanModel = %s\nDebug: %s\n",
+            StanModel,DEBUG))
 
 # Read which countires to use
 countries <- readRDS('nature/data/regions.rds')
@@ -72,9 +68,7 @@ forecast <- 0 # increase to get correct number of days to simulate
 N2 <- (max(d$DateRep) - min(d$DateRep) + 1 + forecast)[[1]]
 
 processed_data <- process_covariates(countries = countries, interventions = interventions, 
-                                     d = d , ifr.by.country = ifr.by.country, N2 = N2, 
-                                     serial_interval = serial_interval , 
-                                     mean2 = mean2)
+                                     d = d , ifr.by.country = ifr.by.country, N2 = N2)
 
 stan_data = processed_data$stan_data
 dates = processed_data$dates
