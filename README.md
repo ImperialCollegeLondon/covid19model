@@ -7,15 +7,15 @@ If you are looking for the individual based model used in [Report 9](https://www
 
 ## Version 7 Release
 
-This code is the exact code that was used in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. https://doi.org/10.1038/s41586-020-2405-7.
+This code is the exact code that was used in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. [https://www.nature.com/articles/s41586-020-2405-7](https://www.nature.com/articles/s41586-020-2405-7).
 
 To run the code from the main folder in rstudio source `base-nature.r` or from terminal after reaching the root of the repository type `Rscript base-nature.r`.
 
 The code shold be run in full mode to obtain any results. Not running full model to estimate anything is not recommended and discouraged. Only full run should be used to get results.
 
-The repository with  posterior draws of the model in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. https://doi.org/10.1038/s41586-020-2405-7 is [here](https://github.com/ImperialCollegeLondon/covid19modelnaturedraws).
+The repository with  posterior draws of the model in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. [https://www.nature.com/articles/s41586-020-2405-7](https://www.nature.com/articles/s41586-020-2405-7) is [here](https://github.com/ImperialCollegeLondon/covid19modelnaturedraws).
 
-This code doesn't superseed our earlier model, it is here for everyone to have a direct access to code used in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. https://doi.org/10.1038/s41586-020-2405-7.
+This code doesn't superseed our earlier model, it is here for everyone to have a direct access to code used in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. [https://www.nature.com/articles/s41586-020-2405-7](https://www.nature.com/articles/s41586-020-2405-7).
 
 The instructions for European, Italy, Brazil and USA code are same as earlier (Look at version 3, version 4, version 5, version 6).
 
