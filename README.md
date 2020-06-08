@@ -13,6 +13,8 @@ To run the code from the main folder in rstudio source `base-nature.r` or from t
 
 The code shold be run in full mode to obtain any results. Not running full model to estimate anything is not recommended and discouraged. Only full run should be used to get results.
 
+The repository with  posterior draws of the model in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. https://doi.org/10.1038/s41586-020-2405-7 is [here](https://github.com/ImperialCollegeLondon/covid19modelnaturedraws).
+
 This code doesn't superseed our earlier model, it is here for everyone to have a direcft access to code used in our Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. https://doi.org/10.1038/s41586-020-2405-7.
 
 The instructions for European, Italy, Brazil and USA code are same as earlier (Look at version 3, version 4, version 5, version 6).
