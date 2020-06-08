@@ -5,7 +5,6 @@ library(gdata)
 library(dplyr)
 library(tidyr)
 library(EnvStats)
-library(optparse)
 
 source('nature/utils/format-data.r')
 

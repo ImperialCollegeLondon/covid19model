@@ -14,7 +14,6 @@ library(bayesplot)
 library(cowplot)
 make_data = function(filename,label,counterfactual=FALSE, i, days=7) {
   out=rstan::extract(fit)
-  print(sprintf("%s: %f",filename,mean(out$mu[,i])))
   N <- length(dates[[i]])
   N2 <- N + days
   times_forecast <- dates[[i]][N2]

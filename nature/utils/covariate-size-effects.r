@@ -4,7 +4,6 @@ library(ggpubr)
 library(bayesplot)
 library(matrixStats)
 library(cowplot)
-library(svglite)
 
 plot_covars <- function(filename){ 
   

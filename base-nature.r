@@ -8,6 +8,13 @@ library(EnvStats)
 library(optparse)
 library(stringr)
 library(bayesplot)
+library(matrixStats)
+library(scales)
+library(gridExtra)
+library(ggpubr)
+library(cowplot)
+library(ggplot2)
+library(abind)
 
 source('nature/utils/process-covariates.r')
 
@@ -26,7 +33,7 @@ if(is.null(cmdoptions$options$debug)) {
   DEBUG = cmdoptions$options$debug
 }
 
-Sys.setenv(FULL = "TRUE")
+# Sys.setenv(FULL = "TRUE")
 if(is.null(cmdoptions$options$full)) {
   FULL = Sys.getenv("FULL") == "TRUE"
 } else {
@@ -83,7 +90,7 @@ if(DEBUG) {
 } else if (FULL) {
   fit = sampling(m,data=stan_data,iter=1800,warmup=1000,chains=5,thin=1,control = list(adapt_delta = 0.99, max_treedepth = 20))
 } else { 
-  fit = sampling(m,data=stan_data,iter=800,warmup=400,chains=4,thin=1,control = list(adapt_delta = 0.95, max_treedepth = 10))
+  fit = sampling(m,data=stan_data,iter=600,warmup=300,chains=4,thin=1,control = list(adapt_delta = 0.95, max_treedepth = 10))
 }   
 
 out = rstan::extract(fit)
@@ -116,7 +123,7 @@ ggsave(sprintf("nature/figures/%s-final-rt.png",filename),g,width=4,height=6)
 
 print("Generate 3-panel plots")
 source('nature/utils/plot-3-panel.r')
-make_three_pannel_plot(filename)
+make_three_panel_plot(filename)
 
 print('Covars plots')
 source('nature/utils/covariate-size-effects.r')

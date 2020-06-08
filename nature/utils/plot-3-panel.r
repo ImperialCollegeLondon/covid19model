@@ -11,12 +11,11 @@ library(gridExtra)
 library(ggpubr)
 library(bayesplot)
 library(cowplot)
-library(svglite)
 library(ggplot2)
 
 source("nature/utils/geom-stepribbon.r")
 #---------------------------------------------------------------------------
-make_three_pannel_plot <- function(filename){
+make_three_panel_plot <- function(filename){
   
   print(sprintf("loading: %s",paste0("nature/results/",filename,'-stanfit.Rdata')))
   load(paste0("nature/results/", filename,'-stanfit.Rdata'))
@@ -211,7 +210,7 @@ make_plots <- function(data_country, covariates_country_long,
     scale_x_date(date_breaks = "weeks", labels = date_format("%e %b"), 
                  limits = c(data_country$time[1], 
                             data_country$time[length(data_country$time)])) +
-    scale_y_continuous(expand = expansion(mult=c(0,0.1))) + 
+    scale_y_continuous(expand = c(0,0.1)) + 
     theme_pubr(base_family="sans") + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(legend.position="right")
