@@ -99,9 +99,6 @@ read_ifr_data <- function(regions){
 read_google_mobility <- function(Country){
   google_mobility <- read.csv('Italy/data/Global_Mobility_Report.csv', stringsAsFactors = FALSE)
   google_mobility$date = as.Date(google_mobility$date, format = '%Y-%m-%d')
-  google_mobility[, c(6,7,8,9,10,11)] <- google_mobility[, c(6,7,8,9,10,11)]/100
-  google_mobility[, c(6,7,8,9,10)] <- google_mobility[, c(6,7,8,9,10)] * -1
-  google_mobility<-google_mobility[,c(2,3,5,6,7,8,9,10,11)]
   colnames(google_mobility)[which(colnames(google_mobility)=="country_region")]<-"state"
   colnames(google_mobility)[which(colnames(google_mobility)=="sub_region_1")]<-"country"
   colnames(google_mobility)[which(colnames(google_mobility)=="grocery_and_pharmacy_percent_change_from_baseline")]<-"grocery.pharmacy"
@@ -111,6 +108,11 @@ read_google_mobility <- function(Country){
   colnames(google_mobility)[which(colnames(google_mobility)=="residential_percent_change_from_baseline")]<-"residential"
   colnames(google_mobility)[which(colnames(google_mobility)=="retail_and_recreation_percent_change_from_baseline")]<-"retail.recreation"
   google_mobility$country[which(google_mobility$country =="")]<-"Italy"
+  
+  google_mobility[, c("retail.recreation","grocery.pharmacy","parks","transitstations","workplace","residential")] <- 
+    google_mobility[, c("retail.recreation","grocery.pharmacy","parks","transitstations","workplace","residential")]/100
+  google_mobility[, c("retail.recreation","grocery.pharmacy","parks","transitstations","workplace")] <- 
+    google_mobility[, c("retail.recreation","grocery.pharmacy","parks","transitstations","workplace")] * -1
   
   mobility <- google_mobility
   nametrans <- read.csv("Italy/data/province_name_translation.csv")

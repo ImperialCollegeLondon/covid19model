@@ -61,11 +61,17 @@ read_google_mobility <- function(){
   google_mobility <- left_join(google_mobility, states, by = c("sub_region_1"))
   # Format the google mobility data
   google_mobility$date = as.Date(google_mobility$date, format = '%Y-%m-%d')
-  google_mobility[, c(6:11)] <- google_mobility[, c(6:11)]/100
-  google_mobility[, c(6:10)] <- google_mobility[, c(6:10)] * -1
-  names(google_mobility) <- c("country_region_code", "country_region", "sub_region_1", "sub_region_2",
+  names(google_mobility) <- c("country_region_code", "country_region", "sub_region_1", "sub_region_2", "iso", "fips",
                               "date", "retail.recreation", "grocery.pharmacy", "parks", "transitstations",
                               "workplace", "residential", "code")
+  google_mobility[, c("retail.recreation", "grocery.pharmacy", "parks", "transitstations", "workplace", "residential")] <- 
+    google_mobility[, c("retail.recreation", "grocery.pharmacy", "parks", "transitstations", "workplace", "residential")]/100
+  google_mobility[, c("retail.recreation", "grocery.pharmacy", "parks", "transitstations", "workplace")] <- 
+    google_mobility[, c("retail.recreation", "grocery.pharmacy", "parks", "transitstations", "workplace")] * -1
+  
+  google_mobility <- select(google_mobility, "country_region_code", "country_region", "sub_region_1", "sub_region_2",
+                            "date", "retail.recreation", "grocery.pharmacy", "parks", "transitstations",
+                            "workplace", "residential", "code")
   
   return(google_mobility)
 }

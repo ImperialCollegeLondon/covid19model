@@ -43,5 +43,5 @@ system('usa/code/utils/mobility-reg/get-visitdata.sh',intern=FALSE)
 
 ## Do prediction from foursquare to google mobility
 ## please uncomment this only if you want to run this
-## we don't gurantee this regression will work if foursqaure changes it data format 
+## we don't gurantee this regression will work if foursqaure changes it data format
 # system(paste0("Rscript usa/code/utils/mobility-reg/mobility-regression.r"),intern=FALSE)

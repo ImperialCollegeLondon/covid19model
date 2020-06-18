@@ -63,7 +63,7 @@ process_covariates <- function(states, mobility, intervention = NULL,
   # states for transit
   transit_states <- c('NY', 'DC', 'MA', 'CA', 'WA', 'IL', 'MD', 'NJ')
   colnames(interventions_lifted) <- c("StatePostal_lif", "EmergDec_lif", "GathRecomAny_lif", "GathRestrictAny_lif", 
-                                      "OtherBuisnessClose_lif", "Quarantine_lif", "RestaurantRestrict_lif", "SchoolClose_lif", "StayAtHome_lif")
+                                      "OtherBusinessClose_lif", "Quarantine_lif", "RestaurantRestrict_lif", "SchoolClose_lif", "StayAtHome_lif")
   interventions_lifted$April1 = as.Date("2020-04-01")
   for(State in states) {
     # Selects correct IFR for each country
@@ -296,7 +296,7 @@ create_features <- function(len_mobility, padded_covariates, covariates_forecast
                'school_lifted' = covariates_lifted_forecast$SchoolClose_lif, 'emergency_lifted' = covariates_lifted_forecast$EmergDec_lif, 
                'stayHome_lifted' = covariates_lifted_forecast$StayAtHome_lif, 'quarantine_lifted' = covariates_lifted_forecast$Quarantine_lif,
                'gatherRestrict_lifted' = covariates_lifted_forecast$GathRestrictAny_lif,
-               'business_lifted' = covariates_lifted_forecast$OtherBuisnessClose_lif,
+               'business_lifted' = covariates_lifted_forecast$OtherBusinessClose_lif,
                "restaurant_lifted" = covariates_lifted_forecast$RestaurantRestrict_lif,
                "April1" = covariates_lifted_forecast$April1,
                'firstIntervention_lifted' = 1*((covariates_lifted_forecast$SchoolClose_lif+
@@ -304,7 +304,7 @@ create_features <- function(len_mobility, padded_covariates, covariates_forecast
                                                   covariates_lifted_forecast$StayAtHome_lif+
                                                   covariates_lifted_forecast$Quarantine_lif+
                                                   covariates_lifted_forecast$GathRestrictAny_lif+
-                                                  covariates_lifted_forecast$OtherBuisnessClose_lif+
+                                                  covariates_lifted_forecast$OtherBusinessClose_lif+
                                                   covariates_lifted_forecast$RestaurantRestrict_lif) >= 1),
                'transit_use' = transit_usage,
                'residential' = padded_covariates$residential, 

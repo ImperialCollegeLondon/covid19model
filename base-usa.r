@@ -33,7 +33,7 @@ if(is.null(cmdoptions$options$debug)) {
 } else {
   DEBUG = cmdoptions$options$debug
 }
-# Sys.setenv(FULL = "TRUE") # to run  in full mode
+#Sys.setenv(FULL = "TRUE") # to run  in full mode
 if(is.null(cmdoptions$options$full)) {
   FULL = Sys.getenv("FULL") == "TRUE"
 } else {
