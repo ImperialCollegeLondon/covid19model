@@ -9,9 +9,9 @@ If you are looking for the individual based model used in Imperial's [Report 9, 
 
 The code for running models remains unchanged in the release. We provide scripts to calculate `ifr` for European countries and USA states. We hope the release of ifr computation code will enable the researchers to adapt the ifr calculations as per their requirements. The two files to run are `compute-ifr-europe.r` and `compute-ifr-usa.r`.
 
-The code for ifr calculation for a new country will need changes if you have different age-specific bands. The code provided is not a universal code that will work for each country, intention is to help researchers to modify the code easily for their setup.
+The code for ifr calculation for a new country will need changes if you have different age-specific bands. The code provided is not a universal code that will work for each country, the intention is to help researchers to modify the code easily for their setup.
 
-The code for ifr needs an additional package named `socialmixr`, which is not specified in enviornment file as it doesn't exist with conda. you will need to download it via `CRAN`.
+The code for ifr needs an additional package named `socialmixr`, which is not specified in environment file as it doesn't exist with conda. You will need to download it via `CRAN`.
 
 ## Version 7 Release [![DOI](https://zenodo.org/badge/250386901.svg)](https://zenodo.org/badge/latestdoi/250386901)
 
