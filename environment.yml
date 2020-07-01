@@ -22,5 +22,6 @@ dependencies:
   - r-ggplot2
   - r-ggstance
   - r-gridextra
+  - r-dfoptim
 channels:
   - conda-forge

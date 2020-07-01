@@ -5,6 +5,14 @@ Code for modelling estimated deaths and infections for COVID-19 from ["Estimatin
 
 If you are looking for the individual based model used in Imperial's [Report 9, Ferguson, Laydon, Nedjati-Gilani et al](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-9-impact-of-npis-on-covid-19/), please look [here](https://github.com/mrc-ide/covid-sim).
 
+## Version 8 Release
+
+The code for running models remains unchanged in the release. We provide scripts to calculate `ifr` for European countries and USA states. We hope the release of ifr computation code will enable the researchers to adapt the ifr calculations as per their requirements. The two files to run are `compute-ifr-europe.r` and `compute-ifr-usa.r`.
+
+The code for ifr calculation for a new country will need changes if you have different age-specific bands. The code provided is not a universal code that will work for each country, intention is to help researchers to modify the code easily for their setup.
+
+The code for ifr needs an additional package named `socialmixr`, which is not specified in enviornment file as it doesn't exist with conda. you will need to download it via `CRAN`.
+
 ## Version 7 Release [![DOI](https://zenodo.org/badge/250386901.svg)](https://zenodo.org/badge/latestdoi/250386901)
 
 This code is the exact code that was used in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. [https://www.nature.com/articles/s41586-020-2405-7](https://www.nature.com/articles/s41586-020-2405-7)
