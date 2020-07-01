@@ -13,7 +13,7 @@ pop_columns <- 3:20
 severity_inputs <- readRDS('data/severity-inputs.rds')
 IFRs <- severity_inputs$IFR_adj
 
-# Extract relevant xontact matrix
+# Extract relevant contact matrix
 #   Note: Only limited countries have contact matrices available.
 contact_mat <- contact_matrix(polymod, countries = "United Kingdom", 
                               age.limits = seq(0, 75, by = 5))$matrix
