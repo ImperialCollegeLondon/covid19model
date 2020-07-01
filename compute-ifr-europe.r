@@ -40,6 +40,8 @@ for (i in 1:length(countries)){
   
   # Pick the Country You want and Extract Relevant Contact Matrix
   #   Note: Only limited countries have contact matrices available.
+  # Contact matrices are taken from PolyMod apart for France
+  # Mossong J, Hens N, Jit M, Beutels P, Auranen K, Mikolajczyk R, Massari M, Salmaso S, Tomba GS, Wallinga J, Heijne J, Sadkowska-Todys M, Rosinska M, Edmunds WJ (2017). “POLYMOD social contact data.” doi:10.5281/zenodo.1157934 (URL: https://doi.org/10.5281/zenodo.1157934), Version 1.1.
   contact_mat_list<-readRDS("data/contact-matrices.rds")
   contact_mat <- data.matrix((contact_mat_list[[demog_WPP$Matrix[idx]]]))
   
