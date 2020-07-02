@@ -1,11 +1,12 @@
 ![](https://github.com/ImperialCollegeLondon/covid19model/workflows/CI/badge.svg)
 
-# covid19model
+# covid19model [![DOI](https://zenodo.org/badge/250386901.svg)](https://zenodo.org/badge/latestdoi/250386901)
+
 Code for modelling estimated deaths and infections for COVID-19 from ["Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe"](https://www.nature.com/articles/s41586-020-2405-7), Flaxman, Mishra, Gandy et al, Nature, 2020, the published version of our original [Report 13](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-13-europe-npi-impact/).
 
 If you are looking for the individual based model used in Imperial's [Report 9, Ferguson, Laydon, Nedjati-Gilani et al](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-9-impact-of-npis-on-covid-19/), please look [here](https://github.com/mrc-ide/covid-sim).
 
-## Version 8 Release
+## Version 8 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3927595.svg)](https://doi.org/10.5281/zenodo.3927595)
 
 The code for running models remains unchanged in the release. We provide scripts to calculate `ifr` for European countries and USA states. We hope the release of ifr computation code will enable the researchers to adapt the ifr calculations as per their requirements. The two files to run are `compute-ifr-europe.r` and `compute-ifr-usa.r`.
 
