@@ -13,7 +13,7 @@ The code for ifr calculation for a new country will need changes if you have dif
 
 The code for ifr needs an additional package named `socialmixr`, which is not specified in environment file as it doesn't exist with conda. You will need to download it via `CRAN`.
 
-## Version 7 Release [![DOI](https://zenodo.org/badge/250386901.svg)](https://zenodo.org/badge/latestdoi/250386901)
+## Version 7 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3888697.svg)](https://doi.org/10.5281/zenodo.3888697)
 
 This code is the exact code that was used in Flaxman, Mishra, Gandy et al. "Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe," Nature, 2020. [https://www.nature.com/articles/s41586-020-2405-7](https://www.nature.com/articles/s41586-020-2405-7)
 
