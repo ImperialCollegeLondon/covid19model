@@ -27,7 +27,9 @@ To run this code you can directly run the base-usa.r file or from command line a
 
 The code shold be run in full mode to obtain any results. Not running full model to estimate anything is not recommended and discouraged. Only full run should be used to get results.
 
-The instructions for European, Italy and Brazil code are same as earlier (Look at version 3, version 4 and version 5). This release is specific to [USA report](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-23-united-states/)
+The instructions for European, Italy and Brazil code are same as earlier (Look at version 3, version 4 and version 5). This release is specific to [USA report](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-23-united-states/).
+
+This release has been checked on macOS Catalina version 10.15.6 and Ubuntu version 18.04.2.  A full run takes about 20 hours using 4 cores.
 
 ## Version 5 Release
 
@@ -91,6 +93,26 @@ conda env create -f environment.yml
 Then activate the environment for use:
 ```
 conda activate covid19model
+```
+
+This does not include the packages required for plotting maps. The following packages are required:
+```
+library(ggplot2)
+library(ggstance)
+library(ggrepel)
+library(cowplot)
+library(geofacet)
+library(broom)
+library(maptools)
+library(rgeos)
+library(rgdal)
+library(colorspace)
+library(sf)
+library(scales)
+library(bayesplot)
+library(matrixStats)
+library(boot)
+library(lubridate)
 ```
 
 ## Using Docker
