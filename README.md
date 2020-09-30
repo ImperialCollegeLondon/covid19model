@@ -9,7 +9,7 @@ If you are looking for the individual based model used in Imperial's [Report 9, 
 
 ## Version 9 Release
 
-This is the release related to [report 32](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-32-us/) and [medRxiv paper](https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1), where we use age sppecific mobility data to estimate the epidemic in the USA. All other code is still the same for previous releases.
+This is the release related to [report 32](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-32-us/) and [medRxiv paper](https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1), where we use age specific mobility data to estimate the epidemic in the USA by accounting for age-specific heterogeneity. All other code is still the same for previous releases.
 
 To run this code you need to follow the steps listed in the agespecific model[here](https://github.com/ImperialCollegeLondon/covid19model/tree/master/covid19AgeModel).
 
