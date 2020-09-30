@@ -7,7 +7,7 @@ Code for modelling estimated deaths and infections for COVID-19 from ["Estimatin
 If you are looking for the individual based model used in Imperial's [Report 9, Ferguson, Laydon, Nedjati-Gilani et al](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-9-impact-of-npis-on-covid-19/), please look [here](https://github.com/mrc-ide/covid-sim).
 
 
-## Version 9 Release
+## Version 9 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4059564.svg)](https://doi.org/10.5281/zenodo.4059564)
 
 This is the release related to [report 32](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-32-us/) and [medRxiv paper](https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1), where we use age-specific mobility data to estimate the epidemic in the USA by accounting for age-specific heterogeneity. All other code is still the same for previous releases.
 
