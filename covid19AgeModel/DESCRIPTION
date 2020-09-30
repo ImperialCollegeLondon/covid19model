@@ -1,0 +1,50 @@
+Package: covid19AgeModel
+Version: 1.0-0
+Date: 2018/10/31
+Title: 
+Authors@R: c(person("Melodie", "Monod", role = c("aut"), email = "melodie.monod18@imperial.ac.uk"),
+	person("Alex", "Blenkinsop", role = "ctb", email = 'a.blenkinsop@imperial.ac.uk'),
+	person("Xiaoyue", "Xi", role = "ctb", email = 'xiaoyue.xi16@imperial.ac.uk'),
+	person("Swapnil", "Mishra", role = "ctb"),
+	person("Ettie", "Unwin", role = "ctb"),
+	person("Oliver", "Ratmann", role = c("ctb", "cre"), email = "oliver.ratmann@imperial.ac.uk")
+	)
+Depends:
+	R (>= 3.6.1)
+Imports: 
+    abind (>= 1.4-5),
+    bayesplot (>= 1.7.1),
+    broom (>= 0.5.6),
+    colorspace (>= 1.4-1),
+    corrplot (>= 0.84),
+    cowplot (>= 1.0.0),
+    data.table (>= 1.10.5), 
+    dplyr (>= 0.7.4), 
+    EnvStats (>= 2.3.1),
+    forcats (>= 0.4.0),
+    gdata (>= 2.18.0),
+    ggplot2 (>= 2.2.1.9000), 
+    ggpubr (>= 0.3.0),
+    gridExtra (>= 2.2.1), 
+    gtable (>= 0.2.0), 
+    gtools (>= 3.8.2),
+    hexbin (>= 1.27.2),
+    knitr (>= 1.17),
+    lubridate (>= 1.7.8),
+    magick (>= 2.4.0),
+    magrittr (>= 1.5),
+    rmarkdown (>= 1.7),
+    purrr (>= 0.3.3),
+    RColorBrewer (>= 1.1-2), 
+    reshape2 (>= 1.4.4),
+    rstan (>= 2.19.3),
+    scales (>= 1.1.0),
+    tidyr (>= 1.0.2),
+    tidyverse (>= 1.2.1),
+    viridis (>= 0.5.1),
+    yaml (>= 2.2.0),
+    zoo (>= 1.8-6),
+Description: COVID19 contact and infection model of the Imperial College London COVID-19 Response Team
+License: GPL (>=2)
+LazyLoad: yes
+RoxygenNote: 7.1.1

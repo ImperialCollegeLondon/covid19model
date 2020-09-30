@@ -1,0 +1,2071 @@
+---
+title: 'Results for age-specific/mobility renewal model'
+output:
+  html_document: 
+    default
+params:
+  stanModelFile:
+    value: x
+  job_dir:
+    value: x
+  job_tag:
+    value: x
+  states:
+    value: x
+---
+  
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+args = params
+file.to.figure = function(name) file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-", name, ".png"))
+```
+
+## Session info
+This file presents the results of Stan model 
+```{r, echo=FALSE}
+args$stanModelFile
+```
+with job tag
+```{r, echo=FALSE}
+args$job_tag
+```
+
+## Results
+
+### Expected deaths  {.tabset .tabset-fade}
+
+`r if ('AL' %in% args$states) '#### Alabama'`
+```{r, include=('AL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-AL"))){
+  knitr::include_graphics(file.to.figure("E_deathsByAge_panel-AL"))
+}
+```
+
+`r if ('AK' %in% args$states) '#### Alaska'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-AK"))){
+  knitr::include_graphics(file.to.figure("E_deathsByAge_panel-AK"))
+}
+```
+
+`r if ('AZ' %in% args$states) '#### Arizona'`
+```{r, include=('AZ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-AZ"))){
+  knitr::include_graphics(file.to.figure("E_deathsByAge_panel-AZ"))
+}
+```
+
+`r if ('AR' %in% args$states) '#### Arkansas'`
+```{r, include=('AR' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-AR"))){
+  knitr::include_graphics(file.to.figure("E_deathsByAge_panel-AR"))
+}
+```
+
+`r if ('CA' %in% args$states) '#### California'`
+```{r, include=('CA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-CA"))){
+  knitr::include_graphics(file.to.figure("E_deathsByAge_panel-CA"))
+}
+```
+
+`r if ('CO' %in% args$states) '#### Colorado'`
+```{r, include=('CO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-CO"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-CO"))
+}
+```
+
+`r if ('CT' %in% args$states) '#### Connecticut'`
+```{r, include=('CT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-CT"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-CT"))
+}
+```
+
+`r if ('DE' %in% args$states) '#### Delaware'`
+```{r, include=('DE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-DE"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-DE"))
+}
+```
+
+`r if ('DC' %in% args$states) '#### District of Columbia'`
+```{r, include=('DC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-DC"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-DC"))
+}
+```
+
+`r if ('FL' %in% args$states) '#### Florida'`
+```{r, include=('FL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-FL"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-FL"))
+}
+```
+
+`r if ('GA' %in% args$states) '#### Georgia'`
+```{r, include=('GA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-GA"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-GA"))
+}
+```
+
+`r if ('HI' %in% args$states) '#### Hawaii'`
+```{r, include=('HI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-HI"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-HI"))
+}
+```
+
+`r if ('ID' %in% args$states) '#### Indiana'`
+```{r, include=('ID' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-ID"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-ID"))
+}
+```
+
+`r if ('IL' %in% args$states) '#### Illinois'`
+```{r, include=('IL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-IL"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-IL"))
+}
+```
+
+`r if ('IN' %in% args$states) '#### Indiana'`
+```{r, include=('IN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-IN"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-IN"))
+}
+```
+
+`r if ('IA' %in% args$states) '#### Iowa'`
+```{r, include=('IA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-IA"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-IA"))
+}
+```
+
+`r if ('KS' %in% args$states) '#### Kansas'`
+```{r, include=('KS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-KS"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-KS"))
+}
+```
+
+`r if ('KY' %in% args$states) '#### Kentucky'`
+```{r, include=('KY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-KY"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-KY"))
+}
+```
+
+`r if ('LA' %in% args$states) '#### Louisiana'`
+```{r, include=('LA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-LA"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-LA"))
+}
+```
+
+`r if ('ME' %in% args$states) '#### Maine'`
+```{r, include=('ME' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-ME"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-ME"))
+}
+```
+
+`r if ('MD' %in% args$states) '#### Maryland'`
+```{r, include=('MD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-MD"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MD"))
+}
+```
+
+`r if ('MA' %in% args$states) '#### Masschusetts'`
+```{r, include=('MA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-MA"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MA"))
+}
+```
+
+`r if ('MI' %in% args$states) '#### Michigan'`
+```{r, include=('MI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-MI"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MI"))
+}
+```
+
+`r if ('MN' %in% args$states) '#### Minnesota'`
+```{r, include=('MN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-MN"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MN"))
+}
+```
+
+`r if ('MS' %in% args$states) '#### Mississippi'`
+```{r, include=('MS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-MS"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MS"))
+}
+```
+
+`r if ('MO' %in% args$states) '#### Missouri'`
+```{r, include=('MO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-MO"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MO"))
+}
+```
+
+`r if ('MT' %in% args$states) '#### Montana'`
+```{r, include=('MT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-MT"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MT"))
+}
+```
+
+`r if ('NE' %in% args$states) '#### Nebraska'`
+```{r, include=('NE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NE"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NE"))
+}
+```
+
+`r if ('NV' %in% args$states) '#### Nevada'`
+```{r, include=('NV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NV"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NV"))
+}
+```
+
+`r if ('NH' %in% args$states) '#### New Hampshire'`
+```{r, include=('NH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NH"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NH"))
+}
+```
+
+`r if ('NJ' %in% args$states) '#### New Jersey'`
+```{r, include=('NJ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NJ"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NJ"))
+}
+```
+
+`r if ('NM' %in% args$states) '#### New Mexico'`
+```{r, include=('NM' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NM"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NM"))
+}
+```
+
+`r if ('NY' %in% args$states) '#### New York'`
+```{r, include=('NY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NY"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NY"))
+}
+```
+
+`r if ('NYC' %in% args$states) '#### New York City'`
+```{r, include=('NYC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NYC"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NYC"))
+}
+```
+
+`r if ('NC' %in% args$states) '#### North Carolina'`
+```{r, include=('NC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-NC"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-NC"))
+}
+```
+
+`r if ('ND' %in% args$states) '#### North Dakota'`
+```{r, include=('ND' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-ND"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-ND"))
+}
+```
+
+`r if ('OH' %in% args$states) '#### Ohio'`
+```{r, include=('OH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-OH"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-OH"))
+}
+```
+
+`r if ('OK' %in% args$states) '#### Oklahoma'`
+```{r, include=('OK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-OK"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-OK"))
+}
+```
+
+`r if ('OR' %in% args$states) '#### Oregon'`
+```{r, include=('OR' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-OR"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-OR"))
+}
+```
+
+`r if ('PA' %in% args$states) '#### Pennsylvania'`
+```{r, include=('PA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-PA"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-PA"))
+}
+```
+
+`r if ('RI' %in% args$states) '#### Rhode Island'`
+```{r, include=('RI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-RI"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-RI"))
+}
+```
+
+`r if ('SC' %in% args$states) '#### South Carolina'`
+```{r, include=('SC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-SC"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-SC"))
+}
+```
+
+`r if ('SD' %in% args$states) '#### South Dakota'`
+```{r, include=('SD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-SD"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-SD"))
+}
+```
+
+`r if ('TN' %in% args$states) '#### Tennessee'`
+```{r, include=('TN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-TN"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-TN"))
+}
+```
+
+`r if ('TX' %in% args$states) '#### Texas'`
+```{r, include=('TX' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-TX"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-TX"))
+}
+```
+
+`r if ('UT' %in% args$states) '#### Utah'`
+```{r, include=('UT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-UT"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-UT"))
+}
+```
+
+`r if ('VT' %in% args$states) '#### Vermont'`
+```{r, include=('VT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-VT"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-VT"))
+}
+```
+
+`r if ('VA' %in% args$states) '#### Virginia'`
+```{r, include=('VA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-VA"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-VA"))
+}
+```
+
+`r if ('WA' %in% args$states) '#### Washington'`
+```{r, include=('WA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-WA"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-WA"))
+}
+```
+
+`r if ('WV' %in% args$states) '#### West Virginia'`
+```{r, include=('WV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-WV"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-WV"))
+}
+```
+
+`r if ('WI' %in% args$states) '#### Wisconsin'`
+```{r, include=('WI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-WI"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-WI"))
+}
+```
+
+`r if ('WY' %in% args$states) '#### Wyoming'`
+```{r, include=('WY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("E_deathsByAge_panel-WY"))){
+knitr::include_graphics(file.to.figure("E_deathsByAge_panel-WY"))
+}
+```
+
+### Summaries by state {.tabset .tabset-fade}
+
+`r if ('AL' %in% args$states) '#### Alabama'`
+`r if ('AL' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('AL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-AL"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-AL"))
+}
+```
+
+`r if ('AL' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('AL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-AL"))){
+  knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-AL"))
+}
+```
+
+`r if ('AL' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('AL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-AL"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-AL"))
+}
+```
+
+`r if ('AL' %in% args$states) '##### Flows between age bands'`
+```{r, include=('AL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-AL")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-AL")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-AL"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-AL"),file.to.figure("reduced_flow_sourcesonwardabs-AL"),file.to.figure("reduced_flow_sourcesonwardprop-AL")))
+}
+```
+
+`r if ('AK' %in% args$states) '#### Alaska'`
+`r if ('AK' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-AK"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-AK"))
+}
+```
+
+`r if ('AK' %in% args$states) '#### Evolution of contact intensities over time'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-AK"))){
+  knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-AK"))
+}
+```
+
+`r if ('AK' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-AK"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-AK"))
+}
+```
+
+`r if ('AK' %in% args$states) '##### Flows between age bands'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-AK")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-AK")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-AK"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-AK"),file.to.figure("reduced_flow_sourcesonwardabs-AK"),file.to.figure("reduced_flow_sourcesonwardprop-AK")))
+}
+```
+
+
+`r if ('AZ' %in% args$states) '#### Arizona'`
+`r if ('AZ' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('AZ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-AZ"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-AZ"))
+}
+```
+
+`r if ('AZ' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('AZ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-AZ"))){
+  knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-AZ"))
+}
+```
+
+`r if ('AZ' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('AZ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-AZ"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-AZ"))
+}
+```
+
+`r if ('AZ' %in% args$states) '##### Flows between age bands'`
+```{r, include=('AZ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-AZ")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-AZ")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-AZ"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-AZ"),file.to.figure("reduced_flow_sourcesonwardabs-AZ"),file.to.figure("reduced_flow_sourcesonwardprop-AZ")))
+}
+```
+
+
+`r if ('AK' %in% args$states) '#### Arkansas'`
+`r if ('AK' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-AK"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-AK"))
+}
+```
+
+`r if ('AK' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-AK"))){
+  knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-AK"))
+}
+```
+
+`r if ('AK' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-AK"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-AK"))
+}
+```
+
+`r if ('AK' %in% args$states) '##### Flows between age bands'`
+```{r, include=('AK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-AK")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-AK")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-AK"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-AK"),file.to.figure("reduced_flow_sourcesonwardabs-AK"),file.to.figure("reduced_flow_sourcesonwardprop-AK")))
+}
+```
+
+
+`r if ('CA' %in% args$states) '#### California'`
+`r if ('CA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('CA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-CA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-CA"))
+}
+```
+
+`r if ('CA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('CA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-CA"))){
+  knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-CA"))
+}
+```
+
+`r if ('CA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('CA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-CA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-CA"))
+}
+```
+
+`r if ('CA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('CA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-CA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-CA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-CA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-CA"),file.to.figure("reduced_flow_sourcesonwardabs-CA"),file.to.figure("reduced_flow_sourcesonwardprop-CA")))
+}
+```
+
+`r if ('CO' %in% args$states) '#### Colorado'`
+`r if ('CO' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('CO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-CO"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-CO"))
+}
+```
+
+`r if ('CO' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('CO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-CO"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-CO"))
+}
+```
+
+`r if ('CO' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('CO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-CO"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-CO"))
+}
+```
+
+`r if ('CO' %in% args$states) '##### Flows between age bands'`
+```{r, include=('CO' %in% args$states), out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-CO")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-CO")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-CO"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-CO"),file.to.figure("reduced_flow_sourcesonwardabs-CO"),file.to.figure("reduced_flow_sourcesonwardprop-CO")))
+}
+```
+
+
+`r if ('CT' %in% args$states) '#### Connecticut'`
+`r if ('CT' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('CT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-CT"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-CT"))
+}
+```
+
+`r if ('CT' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('CT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-CT"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-CT"))
+}
+```
+
+`r if ('CT' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('CT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-CT"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-CT"))
+}
+```
+
+`r if ('CT' %in% args$states) '##### Flows between age bands'`
+```{r, include=('CT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-CT")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-CT")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-CT"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-CT"),file.to.figure("reduced_flow_sourcesonwardabs-CT"),file.to.figure("reduced_flow_sourcesonwardprop-CT")))
+}
+```
+
+
+`r if ('DE' %in% args$states) '#### Delaware'`
+`r if ('DE' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('DE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-DE"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-DE"))
+}
+```
+
+`r if ('DE' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('DE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-DE"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-DE"))
+}
+```
+
+`r if ('DE' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('DE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-DE"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-DE"))
+}
+```
+
+`r if ('DE' %in% args$states) '##### Flows between age bands'`
+```{r, include=('DE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-DE")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-DE")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-DE"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-DE"),file.to.figure("reduced_flow_sourcesonwardabs-DE"),file.to.figure("reduced_flow_sourcesonwardprop-DE")))
+}
+```
+
+
+`r if ('DC' %in% args$states) '#### District of Columbia'`
+`r if ('DC' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('DC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-DC"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-DC"))
+}
+```
+
+`r if ('DC' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('DC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-DC"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-DC"))
+}
+```
+
+`r if ('DC' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('DC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-DC"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-DC"))
+}
+```
+
+`r if ('DC' %in% args$states) '##### Flows between age bands'`
+```{r, include=('DC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-DC")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-DC")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-DC"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-DC"),file.to.figure("reduced_flow_sourcesonwardabs-DC"),file.to.figure("reduced_flow_sourcesonwardprop-DC")))
+}
+```
+
+
+`r if ('FL' %in% args$states) '#### Florida'`
+`r if ('FL' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('FL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-FL"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-FL"))
+}
+```
+
+`r if ('FL' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('FL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-FL"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-FL"))
+}
+```
+
+`r if ('FL' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('FL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-FL"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-FL"))
+}
+```
+
+`r if ('FL' %in% args$states) '##### Flows between age bands'`
+```{r, include=('FL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-FL")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-FL")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-FL"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-FL"),file.to.figure("reduced_flow_sourcesonwardabs-FL"),file.to.figure("reduced_flow_sourcesonwardprop-FL")))
+}
+```
+
+`r if ('GA' %in% args$states) '#### Georgia'`
+`r if ('GA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('GA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-GA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-GA"))
+}
+```
+
+`r if ('GA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('GA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-GA"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-GA"))
+}
+```
+
+`r if ('GA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('GA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-GA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-GA"))
+}
+```
+
+`r if ('GA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('GA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-GA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-GA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-GA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-GA"),file.to.figure("reduced_flow_sourcesonwardabs-GA"),file.to.figure("reduced_flow_sourcesonwardprop-GA")))
+}
+```
+
+
+`r if ('HI' %in% args$states) '#### Hawaii'`
+`r if ('HI' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('HI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-HI"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-HI"))
+}
+```
+
+`r if ('HI' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('HI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-HI"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-HI"))
+}
+```
+
+`r if ('HI' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('HI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-HI"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-HI"))
+}
+```
+
+`r if ('HI' %in% args$states) '##### Flows between age bands'`
+```{r, include=('GA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-HI")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-HI")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-HI"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-HI"),file.to.figure("reduced_flow_sourcesonwardabs-HI"),file.to.figure("reduced_flow_sourcesonwardprop-HI")))
+}
+```
+
+`r if ('ID' %in% args$states) '#### Idaho'`
+`r if ('ID' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('ID' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-ID"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-ID"))
+}
+```
+
+`r if ('ID' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('ID' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-ID"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-ID"))
+}
+```
+
+`r if ('ID' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('ID' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-ID"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-ID"))
+}
+```
+
+`r if ('ID' %in% args$states) '##### Flows between age bands'`
+```{r, include=('ID' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-ID")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-ID")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-ID"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-ID"),file.to.figure("reduced_flow_sourcesonwardabs-ID"),file.to.figure("reduced_flow_sourcesonwardprop-ID")))
+}
+```
+
+`r if ('IL' %in% args$states) '#### Illinois'`
+`r if ('IL' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('IL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-IL"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-IL"))
+}
+```
+
+`r if ('IL' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('IL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-IL"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-IL"))
+}
+```
+
+`r if ('IL' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('IL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-IL"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-IL"))
+}
+```
+
+`r if ('IL' %in% args$states) '##### Flows between age bands'`
+```{r, include=('IL' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-IL")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-IL")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-IL"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-IL"),file.to.figure("reduced_flow_sourcesonwardabs-IL"),file.to.figure("reduced_flow_sourcesonwardprop-IL")))
+}
+```
+
+
+`r if ('IN' %in% args$states) '#### Indiana'`
+`r if ('IN' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('IN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-IN"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-IN"))
+}
+```
+
+`r if ('IN' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('IN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-IN"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-IN"))
+}
+```
+
+`r if ('IN' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('IN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-IN"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-IN"))
+}
+```
+
+`r if ('IN' %in% args$states) '##### Flows between age bands'`
+```{r, include=('IN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-IN")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-IN")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-IN"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-IN"),file.to.figure("reduced_flow_sourcesonwardabs-IN"),file.to.figure("reduced_flow_sourcesonwardprop-IN")))
+}
+```
+
+
+`r if ('IA' %in% args$states) '#### Iowa'`
+`r if ('IA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('IA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-IA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-IA"))
+}
+```
+
+`r if ('IA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('IA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-IA"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-IA"))
+}
+```
+
+`r if ('IA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('IA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-IA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-IA"))
+}
+```
+
+`r if ('IA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('IA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-IA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-IA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-IA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-IA"),file.to.figure("reduced_flow_sourcesonwardabs-IA"),file.to.figure("reduced_flow_sourcesonwardprop-IA")))
+}
+```
+
+
+`r if ('KS' %in% args$states) '#### Kansas'`
+`r if ('KS' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('KS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-KS"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-KS"))
+}
+```
+
+`r if ('KS' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('KS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-KS"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-KS"))
+}
+```
+
+`r if ('KS' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('KS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-KS"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-KS"))
+}
+```
+
+`r if ('KS' %in% args$states) '##### Flows between age bands'`
+```{r, include=('KS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-KS")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-KS")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-KS"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-KS"),file.to.figure("reduced_flow_sourcesonwardabs-KS"),file.to.figure("reduced_flow_sourcesonwardprop-KS")))
+}
+```
+
+
+`r if ('KY' %in% args$states) '#### Kentucky'`
+`r if ('KY' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('KY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-KY"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-KY"))
+}
+```
+
+`r if ('KY' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('KY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-KY"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-KY"))
+}
+```
+
+`r if ('KY' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('KY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-KY"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-KY"))
+}
+```
+
+`r if ('KY' %in% args$states) '##### Flows between age bands'`
+```{r, include=('KY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-KY")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-KY")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-KY"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-KY"),file.to.figure("reduced_flow_sourcesonwardabs-KY"),file.to.figure("reduced_flow_sourcesonwardprop-KY")))
+}
+```
+
+`r if ('LA' %in% args$states) '#### Louisiana'`
+`r if ('LA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('LA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-LA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-LA"))
+}
+```
+
+`r if ('LA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('LA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-LA"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-LA"))
+}
+```
+
+`r if ('LA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('LA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-LA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-LA"))
+}
+```
+
+`r if ('LA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('LA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-LA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-LA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-LA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-LA"),file.to.figure("reduced_flow_sourcesonwardabs-LA"),file.to.figure("reduced_flow_sourcesonwardprop-LA")))
+}
+```
+
+
+`r if ('ME' %in% args$states) '#### Maine'`
+`r if ('ME' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('ME' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-ME"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-ME"))
+}
+```
+
+`r if ('ME' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('ME' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-ME"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-ME"))
+}
+```
+
+`r if ('ME' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('ME' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-ME"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-ME"))
+}
+```
+
+`r if ('ME' %in% args$states) '##### Flows between age bands'`
+```{r, include=('ME' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-ME")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-ME")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-ME"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-ME"),file.to.figure("reduced_flow_sourcesonwardabs-ME"),file.to.figure("reduced_flow_sourcesonwardprop-ME")))
+}
+```
+
+
+`r if ('MD' %in% args$states) '#### Maryland'`
+`r if ('MD' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('MD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-MD"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-MD"))
+}
+```
+
+`r if ('MD' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('MD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-MD"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-MD"))
+}
+```
+
+`r if ('MD' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('MD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-MD"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-MD"))
+}
+```
+
+`r if ('MD' %in% args$states) '##### Flows between age bands'`
+```{r, include=('MD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-MD")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MD")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MD"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-MD"),file.to.figure("reduced_flow_sourcesonwardabs-MD"),file.to.figure("reduced_flow_sourcesonwardprop-MD")))
+}
+```
+
+`r if ('MA' %in% args$states) '#### Massachusetts'`
+`r if ('MA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('MA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-MA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-MA"))
+}
+```
+
+`r if ('MA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('MA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-MA"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-MA"))
+}
+```
+
+`r if ('MA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('MA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-MA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-MA"))
+}
+```
+
+`r if ('MA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('MA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-MA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-MA"),file.to.figure("reduced_flow_sourcesonwardabs-MA"),file.to.figure("reduced_flow_sourcesonwardprop-MD")))
+}
+```
+
+
+`r if ('MI' %in% args$states) '#### Michigan'`
+`r if ('MI' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('MI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-MI"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-MI"))
+}
+```
+
+`r if ('MI' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('MI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-MI"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-MI"))
+}
+```
+
+`r if ('MI' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('MI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-MI"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-MI"))
+}
+```
+
+`r if ('MI' %in% args$states) '##### Flows between age bands'`
+```{r, include=('MI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-MI")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MI")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MI"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-MI"),file.to.figure("reduced_flow_sourcesonwardabs-MI"),file.to.figure("reduced_flow_sourcesonwardprop-MI")))
+}
+```
+
+
+`r if ('MN' %in% args$states) '#### Minnesota'`
+`r if ('MN' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('MN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-MN"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-MN"))
+}
+```
+
+`r if ('MN' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('MN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-MN"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-MN"))
+}
+```
+
+`r if ('MN' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('MN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-MN"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-MN"))
+}
+```
+
+`r if ('MN' %in% args$states) '##### Flows between age bands'`
+```{r, include=('MN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-MN")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MN")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MN"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-MN"),file.to.figure("reduced_flow_sourcesonwardabs-MN"),file.to.figure("reduced_flow_sourcesonwardprop-MN")))
+}
+```
+
+`r if ('MS' %in% args$states) '#### Mississippi'`
+`r if ('MS' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('MS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-MS"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-MS"))
+}
+```
+
+`r if ('MS' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('MS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-MS"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-MS"))
+}
+```
+
+`r if ('MS' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('MS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-MS"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-MS"))
+}
+```
+
+`r if ('MS' %in% args$states) '##### Flows between age bands'`
+```{r, include=('MS' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-MS")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MS")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MS"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-MS"),file.to.figure("reduced_flow_sourcesonwardabs-MS"),file.to.figure("reduced_flow_sourcesonwardprop-MS")))
+}
+```
+
+
+`r if ('MO' %in% args$states) '#### Missouri'`
+`r if ('MO' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('MO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-MO"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-MO"))
+}
+```
+
+`r if ('MO' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('MO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-MO"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-MO"))
+}
+```
+
+`r if ('MO' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('MO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-MO"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-MO"))
+}
+```
+
+`r if ('MO' %in% args$states) '##### Flows between age bands'`
+```{r, include=('MO' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-MO")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MO")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MO"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-MO"),file.to.figure("reduced_flow_sourcesonwardabs-MO"),file.to.figure("reduced_flow_sourcesonwardprop-MO")))
+}
+```
+
+
+`r if ('MT' %in% args$states) '#### Montana'`
+`r if ('MT' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('MT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-MT"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-MT"))
+}
+```
+
+`r if ('MT' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('MT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-MT"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-MT"))
+}
+```
+
+`r if ('MT' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('MT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-MT"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-MT"))
+}
+```
+
+`r if ('MT' %in% args$states) '##### Flows between age bands'`
+```{r, include=('MT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-MT")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MT")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MT"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-MT"),file.to.figure("reduced_flow_sourcesonwardabs-MT"),file.to.figure("reduced_flow_sourcesonwardprop-MT")))
+}
+```
+
+
+`r if ('NE' %in% args$states) '#### Nebraska'`
+`r if ('NE' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NE"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NE"))
+}
+```
+
+`r if ('NE' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NE"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NE"))
+}
+```
+
+`r if ('NE' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NE"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NE"))
+}
+```
+
+`r if ('NE' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NE' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NE")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NE")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NE"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NE"),file.to.figure("reduced_flow_sourcesonwardabs-NE"),file.to.figure("reduced_flow_sourcesonwardprop-NE")))
+}
+```
+
+
+`r if ('NV' %in% args$states) '#### Nevada'`
+`r if ('NV' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NV"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NV"))
+}
+```
+
+`r if ('NV' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NV"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NV"))
+}
+```
+
+`r if ('NV' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NV"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NV"))
+}
+```
+
+`r if ('NV' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NV")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NV")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NV"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NV"),file.to.figure("reduced_flow_sourcesonwardabs-NV"),file.to.figure("reduced_flow_sourcesonwardprop-NV")))
+}
+```
+
+
+`r if ('NH' %in% args$states) '#### New Hampshire'`
+`r if ('NH' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NH"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NH"))
+}
+```
+
+`r if ('NH' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NH"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NH"))
+}
+```
+
+`r if ('NH' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NH"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NH"))
+}
+```
+
+`r if ('NH' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NH")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NH")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NH"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NH"),file.to.figure("reduced_flow_sourcesonwardabs-NH"),file.to.figure("reduced_flow_sourcesonwardprop-NH")))
+}
+```
+
+
+`r if ('NJ' %in% args$states) '#### New Jersey'`
+`r if ('NJ' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NJ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NJ"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NJ"))
+}
+```
+
+`r if ('NJ' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NJ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NJ"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NJ"))
+}
+```
+
+`r if ('NJ' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NJ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NJ"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NJ"))
+}
+```
+
+`r if ('NJ' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NJ' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NJ")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NJ")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NJ"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NJ"),file.to.figure("reduced_flow_sourcesonwardabs-NJ"),file.to.figure("reduced_flow_sourcesonwardprop-NJ")))
+}
+```
+
+
+`r if ('NM' %in% args$states) '#### New Mexico'`
+`r if ('NM' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NM' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NM"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NM"))
+}
+```
+
+`r if ('NM' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NM' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NM"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NM"))
+}
+```
+
+`r if ('NM' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NM' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NM"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NM"))
+}
+```
+
+`r if ('NM' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NM' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NM")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NM")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NM"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NM"),file.to.figure("reduced_flow_sourcesonwardabs-NM"),file.to.figure("reduced_flow_sourcesonwardprop-NM")))
+}
+```
+
+
+`r if ('NY' %in% args$states) '#### New York'`
+`r if ('NY' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NY"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NY"))
+}
+```
+
+`r if ('NY' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NY"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NY"))
+}
+```
+
+
+`r if ('NY' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NY"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NY"))
+}
+```
+
+`r if ('NY' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NY")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NY")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NY"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NY"),file.to.figure("reduced_flow_sourcesonwardabs-NY"),file.to.figure("reduced_flow_sourcesonwardprop-NY")))
+}
+```
+
+
+`r if ('NYC' %in% args$states) '#### New York City'`
+`r if ('NYC' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NYC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NYC"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NYC"))
+}
+```
+
+`r if ('NYC' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NYC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NYC"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NYC"))
+}
+```
+
+`r if ('NYC' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NYC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NYC"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NYC"))
+}
+```
+
+`r if ('NYC' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NYC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NYC")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NYC")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NYC"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NYC"),file.to.figure("reduced_flow_sourcesonwardabs-NYC"),file.to.figure("reduced_flow_sourcesonwardprop-NYC")))
+}
+```
+
+
+`r if ('NC' %in% args$states) '#### North Carolina'`
+`r if ('NC' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('NC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-NC"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-NC"))
+}
+```
+
+`r if ('NC' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('NC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-NC"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-NC"))
+}
+```
+
+`r if ('NC' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('NC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-NC"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-NC"))
+}
+```
+
+`r if ('NC' %in% args$states) '##### Flows between age bands'`
+```{r, include=('NC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-NC")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-NC")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-NC"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-NC"),file.to.figure("reduced_flow_sourcesonwardabs-NC"),file.to.figure("reduced_flow_sourcesonwardprop-NC")))
+}
+```
+
+
+`r if ('ND' %in% args$states) '#### North Dakota'`
+`r if ('ND' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('ND' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-ND"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-ND"))
+}
+```
+
+`r if ('ND' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('ND' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-ND"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-ND"))
+}
+```
+
+`r if ('ND' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('ND' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-ND"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-ND"))
+}
+```
+
+`r if ('ND' %in% args$states) '##### Flows between age bands'`
+```{r, include=('ND' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-ND")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-ND")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-ND"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-ND"),file.to.figure("reduced_flow_sourcesonwardabs-ND"),file.to.figure("reduced_flow_sourcesonwardprop-ND")))
+}
+```
+
+
+`r if ('OH' %in% args$states) '#### Ohio'`
+`r if ('OH' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('OH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-OH"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-OH"))
+}
+```
+
+`r if ('OH' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('OH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-OH"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-OH"))
+}
+```
+
+`r if ('OH' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('OH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-OH"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-OH"))
+}
+```
+
+`r if ('OH' %in% args$states) '##### Flows between age bands'`
+```{r, include=('OH' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-OH")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-OH")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-OH"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-OH"),file.to.figure("reduced_flow_sourcesonwardabs-OH"),file.to.figure("reduced_flow_sourcesonwardprop-OH")))
+}
+```
+
+`r if ('OK' %in% args$states) '#### Oklahoma'`
+`r if ('OK' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('OK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-OK"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-OK"))
+}
+```
+
+`r if ('OK' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('OK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-OK"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-OK"))
+}
+```
+
+`r if ('OK' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('OK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-OK"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-OK"))
+}
+```
+
+`r if ('OK' %in% args$states) '##### Flows between age bands'`
+```{r, include=('OK' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-OK")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-OK")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-OK"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-OK"),file.to.figure("reduced_flow_sourcesonwardabs-OK"),file.to.figure("reduced_flow_sourcesonwardprop-OK")))
+}
+```
+
+`r if ('OR' %in% args$states) '#### Oregon'`
+`r if ('OR' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('OR' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-OR"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-OR"))
+}
+```
+
+`r if ('OR' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('OR' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-OR"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-OR"))
+}
+```
+
+`r if ('OR' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('OR' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-OR"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-OR"))
+}
+```
+
+`r if ('OR' %in% args$states) '##### Flows between age bands'`
+```{r, include=('OR' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-OR")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-OR")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-OR"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-OR"),file.to.figure("reduced_flow_sourcesonwardabs-OR"),file.to.figure("reduced_flow_sourcesonwardprop-OR")))
+}
+```
+
+`r if ('PA' %in% args$states) '#### Pennsylvania'`
+`r if ('PA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('PA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-PA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-PA"))
+}
+```
+
+`r if ('PA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('PA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-PA"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-PA"))
+}
+```
+
+`r if ('PA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('PA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-PA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-PA"))
+}
+```
+
+`r if ('PA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('PA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-PA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-PA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-PA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-PA"),file.to.figure("reduced_flow_sourcesonwardabs-PA"),file.to.figure("reduced_flow_sourcesonwardprop-PA")))
+}
+```
+
+
+`r if ('RI' %in% args$states) '#### Rhode Island'`
+`r if ('RI' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('RI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-RI"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-RI"))
+}
+```
+
+`r if ('RI' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('RI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-RI"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-RI"))
+}
+```
+
+`r if ('RI' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('RI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-RI"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-RI"))
+}
+```
+
+`r if ('RI' %in% args$states) '##### Flows between age bands'`
+```{r, include=('RI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-RI")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-RI")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-RI"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-RI"),file.to.figure("reduced_flow_sourcesonwardabs-RI"),file.to.figure("reduced_flow_sourcesonwardprop-RI")))
+}
+```
+
+
+`r if ('SC' %in% args$states) '#### South Carolina'`
+`r if ('SC' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('SC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-SC"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-SC"))
+}
+```
+
+`r if ('SC' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('SC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-SC"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-SC"))
+}
+```
+
+`r if ('SC' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('SC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-SC"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-SC"))
+}
+```
+
+`r if ('SC' %in% args$states) '##### Flows between age bands'`
+```{r, include=('SC' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-SC")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-SC")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-SC"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-SC"),file.to.figure("reduced_flow_sourcesonwardabs-SC"),file.to.figure("reduced_flow_sourcesonwardprop-SC")))
+}
+```
+
+
+`r if ('SD' %in% args$states) '#### South Dakota'`
+`r if ('SD' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('SD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-SD"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-SD"))
+}
+```
+
+`r if ('SD' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('SD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-SD"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-SD"))
+}
+```
+
+`r if ('SD' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('SD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-SD"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-SD"))
+}
+```
+
+`r if ('SD' %in% args$states) '##### Flows between age bands'`
+```{r, include=('SD' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-SD")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-SD")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-SD"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-SD"),file.to.figure("reduced_flow_sourcesonwardabs-SD"),file.to.figure("reduced_flow_sourcesonwardprop-SD")))
+}
+```
+
+
+`r if ('TN' %in% args$states) '#### Tennessee'`
+`r if ('TN' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('TN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-TN"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-TN"))
+}
+```
+
+`r if ('TN' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('TN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-TN"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-TN"))
+}
+```
+
+`r if ('TN' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('TN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-TN"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-TN"))
+}
+```
+
+`r if ('TN' %in% args$states) '##### Flows between age bands'`
+```{r, include=('TN' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-TN")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-TN")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-TN"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-TN"),file.to.figure("reduced_flow_sourcesonwardabs-TN"),file.to.figure("reduced_flow_sourcesonwardprop-TN")))
+}
+```
+
+
+`r if ('TX' %in% args$states) '#### Texas'`
+`r if ('TX' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('TX' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-TX"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-TX"))
+}
+```
+
+`r if ('TX' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('TX' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-TX"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-TX"))
+}
+```
+
+`r if ('TX' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('TX' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-TX"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-TX"))
+}
+```
+
+`r if ('TX' %in% args$states) '##### Flows between age bands'`
+```{r, include=('TX' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-TX")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-TX")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-TX"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-TX"),file.to.figure("reduced_flow_sourcesonwardabs-TX"),file.to.figure("reduced_flow_sourcesonwardprop-TX")))
+}
+```
+
+
+`r if ('UT' %in% args$states) '#### Utah'`
+`r if ('UT' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('UT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-UT"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-UT"))
+}
+```
+
+`r if ('UT' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('UT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-UT"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-UT"))
+}
+```
+
+`r if ('UT' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('UT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-UT"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-UT"))
+}
+```
+
+`r if ('UT' %in% args$states) '##### Flows between age bands'`
+```{r, include=('UT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-UT")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-UT")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-UT"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-UT"),file.to.figure("reduced_flow_sourcesonwardabs-UT"),file.to.figure("reduced_flow_sourcesonwardprop-UT")))
+}
+```
+
+
+`r if ('VT' %in% args$states) '#### Vermont'`
+`r if ('VT' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('VT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-VT"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-VT"))
+}
+```
+
+`r if ('VT' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('VT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-VT"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-VT"))
+}
+```
+
+`r if ('VT' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('VT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-VT"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-VT"))
+}
+```
+
+`r if ('VT' %in% args$states) '##### Flows between age bands'`
+```{r, include=('VT' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-VT")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-VT")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-VT"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-VT"),file.to.figure("reduced_flow_sourcesonwardabs-VT"),file.to.figure("reduced_flow_sourcesonwardprop-VT")))
+}
+```
+
+`r if ('VA' %in% args$states) '#### Virginia'`
+`r if ('VA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('VA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-VA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-VA"))
+}
+```
+
+`r if ('VA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('VA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-VA"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-VA"))
+}
+```
+
+`r if ('VA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('VA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-VA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-VA"))
+}
+```
+
+`r if ('VA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('VA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-VA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-VA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-VA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-VA"),file.to.figure("reduced_flow_sourcesonwardabs-VA"),file.to.figure("reduced_flow_sourcesonwardprop-VA")))
+}
+```
+
+`r if ('WA' %in% args$states) '#### Washington'`
+`r if ('WA' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('WA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-WA"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-WA"))
+}
+```
+
+`r if ('WA' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('WA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-WA"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-WA"))
+}
+```
+
+`r if ('WA' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('WA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-WA"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-WA"))
+}
+```
+
+`r if ('WA' %in% args$states) '##### Flows between age bands'`
+```{r, include=('WA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-WA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-WA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-WA"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-WA"),file.to.figure("reduced_flow_sourcesonwardabs-WA"),file.to.figure("reduced_flow_sourcesonwardprop-WA")))
+}
+```
+
+
+`r if ('WV' %in% args$states) '#### West Virginia'`
+`r if ('WV' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('WV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-WV"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-WV"))
+}
+```
+
+`r if ('WV' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('WV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-WV"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-WV"))
+}
+```
+
+`r if ('WV' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('WV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-WV"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-WV"))
+}
+```
+
+`r if ('WV' %in% args$states) '##### Flows between age bands'`
+```{r, include=('WV' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-WV")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-WV")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-WV"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-WV"),file.to.figure("reduced_flow_sourcesonwardabs-WV"),file.to.figure("reduced_flow_sourcesonwardprop-WV")))
+}
+```
+
+
+`r if ('WI' %in% args$states) '#### Wisconsin'`
+`r if ('WI' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('WI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-WI"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-WI"))
+}
+```
+
+`r if ('WI' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('WI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-WI"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-WI"))
+}
+```
+
+`r if ('WI' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('WI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-WI"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-WI"))
+}
+```
+
+`r if ('WI' %in% args$states) '##### Flows between age bands'`
+```{r, include=('WI' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-WI")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-WI")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-WI"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-WI"),file.to.figure("reduced_flow_sourcesonwardabs-WI"),file.to.figure("reduced_flow_sourcesonwardprop-WI")))
+}
+```
+
+`r if ('WY' %in% args$states) '#### Wyoming'`
+`r if ('WY' %in% args$states) '##### Daily cases, daily deaths and Rt in the population'`
+```{r, include=('WY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("cases_deaths_Rt_panel_plot-WY"))){
+  knitr::include_graphics(file.to.figure("cases_deaths_Rt_panel_plot-WY"))
+}
+```
+
+`r if ('WY' %in% args$states) '##### Evolution of contact intensities over time'`
+```{r, include=('WY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("deaths_mobilitytrends_contactpatterns-WY"))){
+knitr::include_graphics(file.to.figure("deaths_mobilitytrends_contactpatterns-WY"))
+}
+```
+
+`r if ('WY' %in% args$states) '##### Rt, expected cases, attack rate, infectious contacts by age band'`
+```{r, include=('WY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("five_panel_plot_new-WY"))){
+knitr::include_graphics(file.to.figure("five_panel_plot_new-WY"))
+}
+```
+
+`r if ('WY' %in% args$states) '##### Flows between age bands'`
+```{r, include=('WY' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(all(c(file.exists(file.to.figure("flow_summary-WY")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-WY")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-WY"))))){
+knitr::include_graphics(c(file.to.figure("flow_summary-WY"),file.to.figure("reduced_flow_sourcesonwardabs-WY"),file.to.figure("reduced_flow_sourcesonwardprop-WY")))
+}
+```
+
+### IFR and attack rate by state
+```{r, include=TRUE, out.width="100%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("ifroverall-bystate"))){
+knitr::include_graphics(file.to.figure("ifroverall-bystate"))
+}
+```
+
+```{r, include=TRUE, out.width="100%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("attackrateoverall-bystate"))){
+knitr::include_graphics(file.to.figure("attackrateoverall-bystate"))
+}
+```
+
+### Parameter estimates  {.tabset .tabset-fade}
+
+#### State-specific parameters
+
+```{r, include=TRUE, out.width="120%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("model_parameters_all_states"))){
+knitr::include_graphics(file.to.figure("model_parameters_all_states"))
+}
+```
+
+#### Age-specific parameters
+##### IFR by age
+```{r, include=TRUE, out.width="40%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("ifr_age_base"))){
+knitr::include_graphics(file.to.figure("ifr_age_base"))
+}
+```
+
+##### Susceptibility by age
+###### Posterior
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("relsusceptibility_age"))){
+knitr::include_graphics(file.to.figure("relsusceptibility_age"))
+}
+```
+
+###### Standard deviation of log susceptibiity
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("sd_log_relsusceptibility_age"))){
+knitr::include_graphics(file.to.figure("sd_log_relsusceptibility_age"))
+}
+```
+
+##### Transmissibility by age
+###### Posterior
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("reltransmissibility_age"))){
+knitr::include_graphics(file.to.figure("reltransmissibility_age"))
+}
+```
+
+###### Standard deviation of log susceptibiity
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("sd_log_reltransmissibility_age"))){
+knitr::include_graphics(file.to.figure("sd_log_reltransmissibility_age"))
+}
+```
+
+#### Other parameters
+##### Mobility trend regression coefficients
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("beta"))){
+knitr::include_graphics(file.to.figure("beta"))
+}
+```
+
+##### Variance of state-specific R0
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("kappa"))){
+knitr::include_graphics(file.to.figure("kappa"))
+}
+```
+
+##### Overdispersion parameter in Neg Binomial model
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("phi"))){
+knitr::include_graphics(file.to.figure("phi"))
+}
+```
+
+##### Intervention effects on mobility at school
+```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("elt_school_intv_effect"))){
+knitr::include_graphics(file.to.figure("elt_school_intv_effect"))
+}
+```
+
+#### Sampler diagnostics
+```{r, echo = FALSE}
+file <- file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-","sampler_diagnostics.rds") )
+diagostics <- readRDS(file)
+diagostics
+```
+
+#### Convergence diagnostics
+We present below the parameters which had a smaller effective sample size than 500, with their corresponding mean, standard deviation, n eff and R hat.
+
+```{r, echo = FALSE}
+file <- file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-","pars-with-small-neff.rds") )
+neff <- readRDS(file)
+neff[which(neff[,9]<500), c(1, 2, 9, 10)]
+```
+
+### Effect of age-specific mobility trends on changes in baseline contact intensities
+
+```{r, include=TRUE, out.width="120%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("eta_mtc-all-states"))){
+knitr::include_graphics(file.to.figure("eta_mtc-all-states"))
+}
+```
+
+```{r, include=TRUE, out.width="120%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("marginal-contacts-overall-all-states"))){
+knitr::include_graphics(file.to.figure("marginal-contacts-overall-all-states"))
+}
+```

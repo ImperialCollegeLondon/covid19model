@@ -1,0 +1,52 @@
+state_name,code,pop_density,pop_count,region_federal,region_census,region_census_sub,consortium,region_census_sub_revised,region_same_as_census,governor_party
+Illinois,IL,231,12859995,5,Midwest,East North Central,,East North Central,1,D
+Michigan,MI,175,9922576,5,Midwest,East North Central,Midwest,East North Central,1,D
+Wisconsin,WI,106,5771337,5,Midwest,East North Central,Midwest,East North Central,1,D
+Indiana,IN,184,6619680,5,Midwest,East North Central,,East North Central,1,R
+Ohio,OH,284,11614373,5,Midwest,East North Central,,East North Central,1,R
+Minnesota,MN,68,5489594,5,Midwest,West North Central,Midwest,East North Central,0,D
+Kansas,KS,36,2911641,7,Midwest,West North Central,,West North Central,1,D
+Iowa,IA,55,3123899,7,Midwest,West North Central,,West North Central,1,R
+Missouri,MO,88,6083672,7,Midwest,West North Central,,West North Central,1,R
+Nebraska,NE,24,1896190,7,Midwest,West North Central,,West North Central,1,R
+North Dakota,ND,10,756927,8,Midwest,West North Central,,West North Central,1,R
+South Dakota,SD,11,858469,8,Midwest,West North Central,,West North Central,1,R
+New Jersey,NJ,1218,8958013,2,Northeast,Middle Atlantic,Northeast,Northeast Corridor,0,D
+New York,NY,420,19795791,2,Northeast,Middle Atlantic,Northeast,Northeast Corridor,0,D
+Pennsylvania,PA,286,12802503,3,Northeast,Middle Atlantic,Northeast,Northeast Corridor,0,D
+Connecticut,CT,741,3590886,1,Northeast,New England,Northeast,Northeast Corridor,0,D
+Maine,ME,43,1329328,1,Northeast,New England,Northeast,Northeast Corridor,0,D
+Rhode Island,RI,1021,1056298,1,Northeast,New England,Northeast,Northeast Corridor,0,D
+Massachusetts,MA,871,6794422,1,Northeast,New England,Northeast,Northeast Corridor,0,R
+New Hampshire,NH,148,1330608,1,Northeast,New England,,Northeast Corridor,0,R
+Vermont,VT,67,626042,1,Northeast,New England,,Northeast Corridor,0,R
+Kentucky,KY,112,4425092,4,South,East South Central,,East South Central,1,D
+Tennessee,TN,160,6600299,3,South,East South Central,,East South Central,1,R
+Alabama,AL,95,4858979,4,South,East South Central,,East South Central,1,R
+Mississippi,MS,63,2992333,4,South,East South Central,,East South Central,1,R
+Delaware,DE,485,945934,3,South,South Atlantic,,South Atlantic,1,D
+District of Columbia,DC,11011,672228,3,South,South Atlantic,,South Atlantic,1,D
+North Carolina,NC,206,10042802,3,South,South Atlantic,,South Atlantic,1,D
+Virginia,VA,212,8382993,3,South,South Atlantic,,South Atlantic,1,D
+Maryland,MD,618,6006401,3,South,South Atlantic,,South Atlantic,1,R
+South Carolina,SC,162,4896146,3,South,South Atlantic,,South Atlantic,1,R
+West Virginia,WV,76,1844128,3,South,South Atlantic,,South Atlantic,1,R
+Florida,FL,378,20271272,4,South,South Atlantic,,South Atlantic,1,R
+Georgia,GA,177,10214860,4,South,South Atlantic,,South Atlantic,1,R
+Louisiana,LA,108,4670724,6,South,West South Central,,West South Central,1,D
+Arkansas,AR,57,2978204,6,South,West South Central,,West South Central,1,R
+Oklahoma,OK,57,3911338,6,South,West South Central,,West South Central,1,R
+Texas,TX,105,27469114,6,South,West South Central,,West South Central,1,R
+New Mexico,NM,17,2085109,6,West,Mountain,,Mountain,1,D
+Colorado,CO,52,5456574,8,West,Mountain,Western,Mountain,1,D
+Montana,MT,7,1032949,8,West,Mountain,,Mountain,1,D
+Nevada,NV,26,2890845,9,West,Mountain,Western,Mountain,1,D
+Utah,UT,36,2995919,8,West,Mountain,,Mountain,1,R
+Wyoming,WY,6,586107,8,West,Mountain,,Mountain,1,R
+Arizona,AZ,60,6828065,9,West,Mountain,,Mountain,1,R
+Idaho,ID,20,1654930,10,West,Mountain,,Mountain,1,R
+California,CA,251,39144818,9,West,Pacific,Western,Pacific,1,D
+Hawaii,HI,222,1431603,9,West,Pacific,,Pacific,1,D
+Oregon,OR,41,4028977,10,West,Pacific,Western,Pacific,1,D
+Washington,WA,107,7170351,10,West,Pacific,Western,Pacific,1,D
+Alaska,AK,1,738432,10,West,Pacific,,Pacific,1,R

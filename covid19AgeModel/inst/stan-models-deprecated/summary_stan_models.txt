@@ -1,0 +1,11 @@
+rstan version:
+21: (deprecated) if the start of the epidemic = start death by age data, then consider only daily death -- now there is a condition in process-covariates so that this case does not occur
+
+cmdstan version:
+05-20b: Only overall death in the likelihood
+05-20: Daily death by age in the likelihood as soon as they are available
+05-19: Daily death by age in the likelihood and IFR by age prior 
+05-16: Daily death by age in the likelihood,  IFR by age prior and cumulative deaths on the first day  
+05-24: Daily death by age in the likelihood, cumulative deaths on the first day and beta age 
+05-20c: Daily death by age in the likelihood, IFR by age prior, cumulative deaths on the first day and beta age 
+05-25: Daily death by age in the likelihood, IFR by age prior, cumulative deaths on the first day, beta age and depletion of susceptible
