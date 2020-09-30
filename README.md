@@ -13,9 +13,9 @@ This is the release related to [report 32](https://www.imperial.ac.uk/mrc-global
 
 To run this code you need to follow the steps listed in the age-specific model [here](https://github.com/ImperialCollegeLondon/covid19model/tree/master/covid19AgeModel).
 
-The code should be run in full mode to obtain credible results. Not running full model to estimate anything is not recommended and discouraged. Only full run should be used to get results.
+The code should be run in full mode to obtain credible results. Not running a full run to estimate anything is not recommended and discouraged. Only a full run should be used to get results.
 
-The instructions for European, Italy, Brazil, USA, Nature and IFR  code are same as earlier (Look at version 3, version 4, version 5, version 6, version 7 and version 8). This release is specific to [report 32](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-32-us/).
+The instructions for European, Italy, Brazil, USA, Nature, and IFR  code are the same as earlier (Look at version 3, version 4, version 5, version 6, version 7, and version 8). This release is specific to [report 32](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-32-us/).
 
 This release has been checked on macOS Catalina version 10.15.6/7 and Ubuntu version 18.04.2.
 
