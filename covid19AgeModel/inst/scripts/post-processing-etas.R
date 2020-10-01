@@ -140,7 +140,7 @@ if(!file.exists(file) | args_dir[['overwrite']])
     cat("\nWrite ",file," ... ")
     saveRDS(mcnts, file=file)
     file2 <- gsub('_by_age','',file)
-    cat("\nWrite ",file," ... ")
+    cat("\nWrite ",file2," ... ")
     saveRDS(ocnts, file=file2)
   })
   cat(" \n -------------------------------- \n summarise marginal contact intensities by age: end \n -------------------------------- \n")
@@ -148,8 +148,8 @@ if(!file.exists(file) | args_dir[['overwrite']])
 if(file.exists(file))
 {
   mcnts <- readRDS(file)
-  file <- gsub('_by_age','',file)
-  ocnts <- readRDS(file)
+  file2 <- gsub('_by_age','',file)
+  ocnts <- readRDS(file2)
 }
 
 #	handle if forecast period is to be included in plots
@@ -189,7 +189,17 @@ file <- paste0(outfile.base,'-marginal_contact_intensities_across_states_weighte
 if(!file.exists(file) | args_dir[['overwrite']])
 {
   cat(" \n -------------------------------- \n summarise marginal contact intensities across states: start \n -------------------------------- \n")
-  tryCatch({		
+  tryCatch({	
+    round.choose <- function(x, roundTo, dir = 1) {
+      if(dir == 1) {  ##ROUND UP
+        x + (roundTo - x %% roundTo)
+      } else {
+        if(dir == 0) {  ##ROUND DOWN
+          x - (x %% roundTo)
+        }
+      }
+    }
+    
     weighted_contacts <- make_contact_intensities_across_states_summaries(plot.pars.basic$regions, 
                                                                           plot.pars.basic$mobility_data,
                                                                           plot.pars.basic$dates,
@@ -220,7 +230,7 @@ if(!file.exists(file) | args_dir[['overwrite']])
     file2 <- paste0(outfile.base,'-marginal_contact_intensities_across_states_weighted_age.rds')
     saveRDS(age_specific, file=file2, version = 2)
     
-    p <- make_age_contact_boxplot(age_specific, outfile.base)
+    #p <- make_age_contact_boxplot(age_specific, outfile.base)
     
     
   })

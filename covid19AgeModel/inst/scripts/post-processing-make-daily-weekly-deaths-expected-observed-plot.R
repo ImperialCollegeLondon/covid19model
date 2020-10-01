@@ -1,8 +1,8 @@
-# post-processing-make-deaths-panel-plot.R
+# post-processing-make-daily-weekly-deaths-expected-observed-plot.R
 # 
 ###############################################################################
 
-cat(" \n -------------------------------- \n \n post-processing-make-deaths-panel-plot.R \n \n -------------------------------- \n")
+cat(" \n -------------------------------- \n \n post-processing-make-daily-weekly-deaths-expected-observed-plot.R \n \n -------------------------------- \n")
 
 suppressMessages(library(data.table, quietly = TRUE))
 suppressMessages(library(bayesplot, quietly = TRUE))
@@ -130,3 +130,5 @@ df.weekly = find_observed_death_fourageband(e_adeaths_weekly, "weekly")
 
 plot_expected_observed_death(df.daily, "daily")
 plot_expected_observed_death(df.weekly, "weekly")
+
+cat(" \n -------------------------------- \n \n Completed post-processing-make-daily-weekly-deaths-expected-observed-plot.R \n \n -------------------------------- \n")

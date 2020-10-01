@@ -1,8 +1,8 @@
-# post-processing-plot-mean-age-newcases.R
+# post-processing-plot-age-newcases.R
 # 
 ###############################################################################
 
-cat(" \n -------------------------------- \n \n Running post-processing-plot-mean-age-newcases.R \n \n -------------------------------- \n")
+cat(" \n -------------------------------- \n \n Running post-processing-plot-age-newcases.R \n \n -------------------------------- \n")
 
 suppressMessages(library(data.table, quietly = TRUE))
 suppressMessages(library(bayesplot, quietly = TRUE))
@@ -82,6 +82,10 @@ if(!file.exists(file) | args_dir[['overwrite']])
 	cat("\nWrite ",file," ... ")
 	saveRDS(e_newcases_byage_c, file=file)
 }
+if(file.exists(file))
+{
+  e_newcases_byage_c <- readRDS(file)
+}
 cat("\n ----------- plot_proportion_newcases_byage_c ----------- \n")
 
 #
@@ -134,7 +138,10 @@ if(!file.exists(file) | args_dir[['overwrite']])
 	cat("\nWrite ",file," ... ")
 	saveRDS(e_age_newcases, file=file)
 }
-
+if(file.exists(file))
+{
+  e_age_newcases <- readRDS(file)
+}
 cat("\n ----------- plot_mean_age_new_cases ----------- \n")
 
 #
@@ -168,4 +175,4 @@ ggplot(e_age_newcases, aes(x = date)) +
 	scale_colour_viridis(begin=0,end=1,direction=-1) +
 	ggsave(paste0(outfile.base,'-mean_ageofinfection.png'), w = 210, h = 310, units = "mm")
 
-cat(" \n -------------------------------- \n \n Completed post-processing-plot-mean-age-newcases.R \n \n -------------------------------- \n")
+cat(" \n -------------------------------- \n \n Completed post-processing-plot-age-newcases.R \n \n -------------------------------- \n")

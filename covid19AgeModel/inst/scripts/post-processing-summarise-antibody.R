@@ -1,8 +1,8 @@
-# post-processing-validate-prop_antibodys.R
+# post-processing-summarise-antibody.R
 # 
 ###############################################################################
 
-cat(" \n -------------------------------- \n \n post-processing-validate-prop_antibodys.R \n \n -------------------------------- \n")
+cat(" \n -------------------------------- \n \n post-processing-summarise-antibody.R \n \n -------------------------------- \n")
 
 suppressMessages(library(data.table, quietly = TRUE))
 suppressMessages(library(bayesplot, quietly = TRUE))
@@ -349,7 +349,7 @@ cat("\n ----------- plot estimated/observed attack rates ----------- \n")
 da <- copy( artable[[1]] )
 
 da <- subset(da, select=-c(L_est,L_obs))
-da <- reshape2::melt(da, measure.vars=c('M_est','CL_est','CU_est','M_obs','CL_obs','CU_obs'))
+da <- as.data.table( reshape2::melt(da, measure.vars=c('M_est','CL_est','CU_est','M_obs','CL_obs','CU_obs')) )
 set(da, NULL, 'value', da[, as.numeric(value)/100])	
 da[, mtype:= gsub('est','Estimated',gsub('obs','Survey',gsub('^([A-Za-z]+)_([A-Za-z]+)$','\\2',variable)))]
 da[, stat:= gsub('^([A-Za-z]+)_([A-Za-z]+)$','\\1',variable)]
@@ -379,4 +379,4 @@ for (i in 1:length(lags)) {
   ggsave(file=paste0(outfile.base, "-prop_antibody_validation_lag",lags[i],".png"),g,w=7, h=10)
 }
 
-cat(" \n -------------------------------- \n \n completed post-processing-validate-prop_antibodys.R \n \n -------------------------------- \n")
+cat(" \n -------------------------------- \n \n completed post-processing-summarise-antibody.R \n \n -------------------------------- \n")
