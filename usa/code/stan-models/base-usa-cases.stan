@@ -131,10 +131,8 @@ model {
   under_reporting ~ beta(12,5);
   for(m in 1:M){
     deaths[EpidemicStart[m]:N[m], m] ~ neg_binomial_2(E_deaths[EpidemicStart[m]:N[m], m], phi);
-    // cases[(N[m]-cases_start):N[m], m] ~ neg_binomial_2(prediction[(N[m]-cases_start):N[m], m] * under_reporting[m], phi);
     if (cases_start > 0){
       for (i in (N[m]-cases_start):N[m]){
-        //cases[i, m] ~ neg_binomial_2((mean(prediction[(i-8):(i-1), m])) * under_reporting[m], phi2); 
         cases[i, m] ~ neg_binomial_2(E_cases[i, m] * under_reporting[m], phi2); //### lags multiple by new SI (infection to onset as above)
       }
     }
