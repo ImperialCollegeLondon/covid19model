@@ -6,6 +6,17 @@ Code for modelling estimated deaths and infections for COVID-19 from ["Estimatin
 
 If you are looking for the individual based model used in Imperial's [Report 9, Ferguson, Laydon, Nedjati-Gilani et al](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-9-impact-of-npis-on-covid-19/), please look [here](https://github.com/mrc-ide/covid-sim).
 
+## Version 10 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4059564.svg)](https://doi.org/10.5281/zenodo.4059564)
+
+This is the release related to our usa-paper (soon to be out) and [medRxiv paper](https://www.medrxiv.org/content/10.1101/2020.07.13.20152355v2?rss=1%22), where we use mobility data to estimate situation in all states of the USA. All other code is still the same.
+
+To run this code you can directly run the base-usa.r file or from command line after seting the current directory as the repository directory run the following command `Rscript base-usa-cases.r`
+
+The code should be run in full mode to obtain credible results. Not running a full run to estimate anything is not recommended and discouraged. Only a full run should be used to get results.
+
+The instructions for European, Italy, Brazil, USA, Nature, IFR, USA age-specific  code are the same as earlier (Look at version 3, version 4, version 5, version 6, version 7, version 8, and version 9). This release is specific to [ usa-paper (soon to be out) and [medRxiv paper](https://www.medrxiv.org/content/10.1101/2020.07.13.20152355v2?rss=1%22).
+
+This release has been checked on macOS Catalina version 10.15.6/7 and Ubuntu version 18.04.2.
 
 ## Version 9 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4059564.svg)](https://doi.org/10.5281/zenodo.4059564)
 
