@@ -16,7 +16,7 @@ source(here("whatif/utils/plot-with-eta.r"))
 o2d<-function(){
   i2o <- EuropeCovid$obs$deaths$i2o
   shape1 <- 5.807; scale1 <- 0.948; # infection to onset https://www.acpjournals.org/doi/10.7326/M20-0504
-  shape2 <- 1.45404 ; scale2 <- 10.43547 # using estimated of onset to death from chess data
+  shape2 <- 1.454 ; scale2 <- 10.434 # using estimated of onset to death from chess data
   x1 <- rgamma(1e6,shape=shape1,scale=scale1) # infection-to-onset distribution
   x2 <- rgamma(1e6,shape=shape2,scale=scale2) # infection-to-onset distribution
   
