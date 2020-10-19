@@ -224,7 +224,7 @@ infections <- posterior_infections(fit_orig,poster_mean=TRUE, seed=seed)
 infections_cf1 <- posterior_infections_(fit_orig, eta=e1$draws, posterior_mean=TRUE, seed=seed)
 infections_cf2 <- posterior_infections_(fit_orig, eta=e2$draws, posterior_mean=TRUE, seed=seed)
 infections_cf3 <- posterior_infections(fit3, posterior_mean=TRUE, seed=seed)
-infections_cf4 <- posterior_infections(fit4, posterior_mean=TRUE, seed=seed)
+infections_cf4 <- posterior_infections(fit4,posterior_mean=TRUE, seed=seed)
 
 rt$group <- as.character(rt$group)
 rt_cf1$group <- as.character(rt_cf1$group)
