@@ -208,7 +208,7 @@ for (chain in 1:nchains) {
 
 ## plotting rt
 # get posterior infections
-
+seed = 1234
 rt <- posterior_rt(fit_orig, seed=seed)
 rt_cf1 <- posterior_rt_(fit_orig, eta=e1$draws, seed=seed)
 rt_cf2 <- posterior_rt_(fit_orig, eta=e2$draws, seed=seed)
