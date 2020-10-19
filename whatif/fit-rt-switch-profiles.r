@@ -31,7 +31,7 @@ o2d<-function(){
 }
 
 # use daily death data official stats fro DEnmark, Sweden, UK
-dat <- read.csv(here("whatif/data/Daily_death_data.csv"))
+dat <- read.csv(here("whatif/data/daily-death-data.csv"))
 dat <- pivot_longer(dat, cols = -Date, names_to = 'country', values_to = 'deaths')
 dat$deaths[is.na(dat$deaths)]=0 # to have all time series starting on the same day 30th Jan 2020
 dat <- drop_na(dat) # to drop NAs just incase
