@@ -3,7 +3,7 @@ library(here)
 library(data.table)
 library(matrixStats)
 library(tidyverse)
-source("whatif/utils/plot-with-eta.r")
+source(here("whatif/utils/plot-with-eta.r"))
 set.seed(1234)
 cumul <- function(object) {
   dfs <- split(
