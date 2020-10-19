@@ -84,6 +84,10 @@ nature/figures/*.pdf
 nature/results/*.RDS
 nature/figures/*.csv
 nature/results/*.csv
+whatif/figures/*.pdf
+whatif/figures/*.png
+whatif/results/*.rds
+whatif/utils/*.rds
 
 
 
