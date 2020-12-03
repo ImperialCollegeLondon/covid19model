@@ -8,7 +8,7 @@ If you are looking for the individual based model used in Imperial's [Report 9, 
 
 ## Version 10 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4073091.svg)](https://doi.org/10.5281/zenodo.4073091)
 
-This is the release related to our usa-paper (soon to be out) and [medRxiv paper](https://www.medrxiv.org/content/10.1101/2020.07.13.20152355v2?rss=1%22), where we use mobility data to estimate situation in all states of the USA. All other code is still the same.
+This is the release related to Unwin, H.J.T., Mishra, S., Bradley, V.C. et al. State-level tracking of COVID-19 in the United States. Nat Commun 11, 6189 (2020). https://doi.org/10.1038/s41467-020-19652-6, where we use mobility data to estimate situation in all states of the USA. All other code is still the same.
 
 To run this code you can directly run the base-usa.r file or from command line after seting the current directory as the repository directory run the following command `Rscript base-usa-cases.r`
 
