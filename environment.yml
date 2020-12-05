@@ -1,5 +1,6 @@
 name: covid19model
 dependencies:
+  - r-base
   - r-bayesplot
   - r-data.table
   - r-envstats
