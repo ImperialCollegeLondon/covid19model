@@ -1,7 +1,7 @@
 FROM rocker/r-base
 
 RUN apt-get update
-#RUN apt-get install -y build-essential libxml2-dev libcurl4-openssl-dev libssl-dev
+RUN apt-get install -y build-essential libxml2-dev libcurl4-openssl-dev libssl-dev
 
 RUN apt-get install -y \
 	r-cran-rstan \
