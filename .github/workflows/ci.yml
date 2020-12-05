@@ -29,7 +29,7 @@ jobs:
 
     - name: Perform a short debug simulation run incl. fetching from the ECDC
       run: |
-        docker run --rm --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest Rscript web-fetch-and-run.r
+        docker run --rm --user $(id -u):$(id -g) --env DEBUG=TRUE covid19model:latest Rscript base-nature.r
 
     - name: Push image to GitHub packages
       if: github.event_name == 'push'
@@ -57,6 +57,6 @@ jobs:
     # work around this with conda run
     - name: Run short debug simulation
       run: |
-        conda run --name covid19model Rscript base.r base
+        conda run --name covid19model Rscript base-nature.r
       env:
         DEBUG: "TRUE"
