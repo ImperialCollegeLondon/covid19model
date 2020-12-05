@@ -25,6 +25,7 @@ RUN install2.r --error --deps FALSE \
 
 WORKDIR /var/model
 
+COPY nature nature/
 COPY data data/
 COPY stan-models stan-models/
 COPY utils utils/
