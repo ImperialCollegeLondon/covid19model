@@ -23,5 +23,6 @@ dependencies:
   - r-ggstance
   - r-gridextra
   - r-dfoptim
+  - r-BH
 channels:
   - conda-forge
