@@ -4,9 +4,8 @@ RUN apt-get update
 RUN apt-get install -y build-essential libxml2-dev libcurl4-openssl-dev libssl-dev
 
 RUN apt-get install -y \
-	r-cran-rstan \
-	r-cran-lubridate r-cran-dplyr r-cran-matrixstats r-cran-scales r-cran-gridextra \
-	r-cran-bayesplot r-cran-ggplot2 r-cran-tidyr r-cran-gdata \
+	r-cran-matrixstats r-cran-scales r-cran-gridextra \
+	r-cran-bayesplot r-cran-gdata \
 	r-cran-svglite r-cran-jsonlite r-cran-optparse \
 	fonts-open-sans \
 	fonts-arkpandora \
@@ -15,7 +14,7 @@ RUN apt-get install -y \
 RUN Rscript -e "update.packages(.libPaths()[1])"
 
 RUN install2.r --error --deps FALSE \
-	EnvStats BH ggplot2 isoband ggpubr nortest cowplot\
+	EnvStats BH ggplot2 isoband ggpubr nortest cowplot rstan\
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 WORKDIR /var/model
