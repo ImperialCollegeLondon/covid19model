@@ -12,15 +12,10 @@ RUN apt-get install -y \
 	fonts-arkpandora \
 	fonts-adf-verana
 
-RUN apt-get install -y r-cran-ggpubr
-RUN apt-get install -y r-cran-nortest
-RUN apt-get install -y r-cran-cowplot
-RUN apt-get install -y r-cran-bh
-
 RUN Rscript -e "update.packages(.libPaths()[1])"
 
 RUN install2.r --error --deps FALSE \
-	EnvStats BH ggplot2 isoband \
+	EnvStats BH ggplot2 isoband ggpubr nortest cowplot\
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 WORKDIR /var/model
