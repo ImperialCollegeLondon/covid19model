@@ -1,40 +1,18 @@
 #' @export
 #' @keywords internal
-#' @import tidyr forcats grid ggplot2
-find_childcare_closure_date = function(mobility_data, path_to_data)
+#' @import tidyr grid ggplot2
+find_stats_school_closure_contactmatrix_UK_China = function(pkg.dir)
 {
-	
-	childcare_closure = as.data.table(read.csv(file.path(path_to_data, "coronavirus-child-care-closures-data.csv")))
-	childcare_closure = subset(childcare_closure, !State.Abbreviation %in% c("NYC", "DC") ) # dont include the cities 
-	tmp1 = subset(childcare_closure, !is.na(First.Policy.Date) & State.Status.First.Policy == "State ordered closure / except for children of parents working in essential sectors")
-	tmp1[, close_date := as.Date(First.Policy.Date, format = "%d/%m/%Y")]
-	tmp1[, type := "child-care"]
-	tmp1 = merge(unique(select(mobility_data, loc, dip_date, loc_label)), select(tmp1,-State.Status.First.Policy, -First.Policy.Date ), by.x = "loc", by.y = "State.Abbreviation")
-	
-	# number of states with childcare closure
-	df = subset(childcare_closure, State.Status.First.Policy == "State ordered closure / except for children of parents working in essential sectors")
-	nrow(df) 
-	max(as.Date(df$First.Policy.Date, format = "%d/%m/%Y"))
-	
-	# number of states with climited hildcare 
-	df =  subset(childcare_closure, State.Status.First.Policy == "Remain open with limited group sizes")
-	nrow(df) 
-	max(na.omit(as.Date(df$First.Policy.Date, format = "%d/%m/%Y")))
-	
-}
-
-#' @export
-#' @keywords internal
-#' @import tidyr forcats grid ggplot2
-find_stats_school_closure_contactmatrix_UK_China = function(stan_data, path_to_file_contact_intensities_outbreak_China, path_to_file_contact_intensities_outbreak_UK)
-{
+  
+  path_to_file_contact_intensities_outbreak_China <- file.path(pkg.dir, "data", "estimate_contact_intensities_outbreak_China.rds")
+  path_to_file_contact_intensities_outbreak_UK <- file.path(pkg.dir, "data", "estimate_contact_intensities_outbreak_UK.rds")
 	
 	#
 	# Contact matrices from Zhang et al. Science https://science.sciencemag.org/content/368/6498/1481
 	
 	contact_intensities_outbreak_China <- as.data.table(readRDS(path_to_file_contact_intensities_outbreak_China))
 	
-	children_label = c("0-4", "5-9", "10-14")
+	children_label = c("0-4", "5-9", "10-14", "15-19")
 	
 	#
 	# contacts to children
@@ -56,23 +34,15 @@ find_stats_school_closure_contactmatrix_UK_China = function(stan_data, path_to_f
 	# contacts from child
 	tmp = subset(contact_intensities_outbreak_China, age_index %in% children_label)
 	tmp = tmp[, list(count_pre = mean(count_pre), count_post = mean(count_post) ), by = c("age_contact", "city")]
-	
-	# total contacts 
-	tmp = tmp[, list(count_pre = sum(count_pre),
-					count_post = sum(count_post)), by = "city"]
+	tmp = tmp[, list(count_pre = sum(count_pre), count_post = sum(count_post)), by = "city"]
 	tmp[, multiplier := count_post/count_pre]
 	
-	# average aboth cities
+	# to everyone
 	tmp[, list(cnt_int_pre = mean(count_pre),
 					cnt_int_post = mean(count_post),
 					cnt_int_ratio = mean(multiplier))]
 	
-	
-	# from everyone
-	tmp[, list(cnt_int_pre = mean(count_pre),
-					cnt_int_post = mean(count_post),
-					cnt_int_ratio = mean(multiplier))]
-	
+	children_label = c("0-4", "5-9", "10-14", "15-19")
 	#
 	# maximum contact intensity ratio between the city level and their mean
 	tmp = contact_intensities_outbreak_China[,list(count_post_avg = mean(count_post)), by = c("age_index", "age_contact") ]
@@ -110,11 +80,11 @@ find_stats_school_closure_contactmatrix_UK_China = function(stan_data, path_to_f
 	# mean over cities
 	tmp = contact_intensities_outbreak_China[,list(count_post_avg = mean(count_post)), by = c("age_index", "age_contact") ]
 	tmp = subset(tmp, !age_index %in% children_label & age_contact %in% children_label)
-	# summed the Zhang contacts towards 5-9 and 10-14 and called the new age cat 5-17
-	tmp1 = tmp[age_contact %in% c("5-9", "10-14"), list(count_post_avg = sum(count_post_avg)), by = "age_index"]
+	# summed the Zhang contacts towards 5-9, 10-14 and 15-19 and called the new age cat 5-17
+	tmp1 = tmp[age_contact %in% c("5-9", "10-14", "15-19"), list(count_post_avg = sum(count_post_avg)), by = "age_index"]
 	tmp1[, age_contact := "5-17"]
-	tmp = rbind(subset(tmp, !age_contact %in% c("5-9", "10-14")), tmp1)
-	# mean contacts from everyone expect 0-15 to 0-4 and from everyone expect 0-15 to 5-15
+	tmp = rbind(subset(tmp, !age_contact %in% c("5-9", "10-14", "15-19")), tmp1)
+	# mean contacts from everyone expect 0-19 to 0-4 and from everyone expect 0-19 to 5-19
 	tmp = tmp[, list(count_post_avg = mean(count_post_avg)), by = "age_contact"]
 	
 	# Process Jarvis: 
@@ -128,3 +98,6 @@ find_stats_school_closure_contactmatrix_UK_China = function(stan_data, path_to_f
 	tmp2[, list(max_cnt_int_ratio_city = max(cnt_int_ratio_city), 
 					min_cnt_int_ratio_city = min(cnt_int_ratio_city))]
 }
+
+
+

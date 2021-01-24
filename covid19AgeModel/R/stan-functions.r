@@ -28,7 +28,7 @@ process_make_pop_info <- function(pop_count, pop_by_age, darea)
 	set(tmp, NULL, 'loc_label', tmp[, gsub('_',' ',loc_label)])
 	stopifnot( all( unique(sort(da$loc_label))==unique(sort(tmp$loc_label)) ) )
 	da <- merge( da, tmp, by=c('loc_label'))
-	
+	 
 	#	add land area
 	stopifnot( all(sort(darea$loc_label)==unique(sort(da$loc_label)))  )
 	da <- merge(da, darea, by='loc_label')
@@ -120,12 +120,13 @@ process_make_contact_matrix_by_country_using_logpop_model <- function(pop_info, 
 #' @import data.table ggplot2
 process_make_smoothed_logcases <- function(death_data, plot_dir=NA_character_)
 {	
-	setkey(death_data, state, date)
-	dd <- death_data[, list(date=date,
+  	dd <- as.data.table(death_data)
+	setkey(dd, state, date)
+	tmp <- dd[, list(date=date,
 					dateIdx= seq_along(date),
 					cdeaths=cumsum(Deaths)),
 			by=c('code')]
-	dd <- merge(dd, death_data, by=c('code','date'))
+	dd <- merge(tmp, dd, by=c('code','date'))
 	
 	#	only smooth data from the calendar week with 10 cum deaths onwards
 	dd[, week:=as.integer(strftime(date, format = "%V"))]
@@ -135,6 +136,7 @@ process_make_smoothed_logcases <- function(death_data, plot_dir=NA_character_)
 	#	calculate average cases by week to bypass strong day of the week effects
 	#	calculate log average cases so loess derived confidence intervals are strictly pos on natural scale
 	dd <- dd[, list(wc= mean(Cases)), by=c('code','state','week')]
+	set(dd, which(dd$wc==0), 'wc', 1.)
 	dd[, lwc:= log(wc)]
 	
 	#	get loess smooth with CI from t distribution 
@@ -623,6 +625,8 @@ process_deathByAge = function(deathByAge, range_date, states, path_to_file_pop_u
     stopifnot(all(df$minI <= df$maxI))
     stopifnot(df$minI[1] == 1 & df$maxI[n.age] == n.age)
     stopifnot(all(df$minI == sort(df$minI)) & all(df$maxI == sort(df$maxI)))
+    stopifnot(all(df$age_min >=0))
+    stopifnot(all(df$age_max >=0))
     
     # matrix with age band in analysis by rows and age band specified by state by columns
     # map_age_ij = 1 if j in i
@@ -1085,7 +1089,26 @@ make_bics_age_cat_map <- function(pop_info)
   dages
 }
 
-
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
+make_bics_age_cat_map_inc_children <- function(pop_info)
+{
+  dages <- unique(subset(pop_info, select=c(age.cat.label, age.cat, age.cat.from, age.cat.to)))
+  tmp <- data.table("bics.age.cat" = as.integer(c(1, 2, 3, 4, 5, 6)), 
+                    "bics.age.cat.label" = c("0-17", "18-24", "25-34", "35-44", "45-64", "65+"))
+  tmp[, bics.age.cat.label2:= as.character(bics.age.cat.label)]
+  tmp[, bics.age.lower:= as.integer(gsub('\\+','',gsub('^([0-9\\+]+)-([0-9]+)$','\\1',bics.age.cat.label2)))]
+  tmp[, bics.age.upper:= as.integer(gsub('[0-9]+\\+','99',gsub('^([0-9\\+]+)-([0-9\\+]+)$','\\2',bics.age.cat.label2)))]
+  
+  dages <- dages[, {
+    z <- which( age.cat.to >= tmp$bics.age.lower & age.cat.to <= tmp$bics.age.upper )
+    list(bics.age.cat= ifelse(length(z)>0, tmp$bics.age.cat[z], NA_integer_))
+  }, by=c('age.cat','age.cat.label')]
+  tmp <- unique(subset(tmp, select=c(bics.age.cat, bics.age.cat.label)))
+  dages <- merge(dages, tmp, by= c('bics.age.cat'), all.x=TRUE)
+  dages
+}
 #' @export
 #' @keywords internal
 #' @import data.table tidyr stringr 
@@ -1524,6 +1547,77 @@ stan_data_add_decoupled_mobility_trends_decline_plus_upswing_fsq <- function(pro
 #' @export
 #' @keywords internal
 #' @import data.table tidyr stringr 
+stan_data_add_school_cases <- function(processed_data, upper.bound.multiplier= 10,file_school_cases)
+{		
+  # data
+  last_date = as.Date(max(sapply(processed_data$dates, function(x) as.character(max(x)))))
+  school.cases <- data.table(read.csv(file_school_cases))
+  school.cases = school.cases[,list(number_students=sum(number_students,na.rm = T),
+                                                                cumulative_students=sum(cumulative_students,na.rm = T)),
+                                                          by=c('loc','start','date')]
+  school.cases[,cases_att_rate:=cumulative_students/number_students]
+  school.cases = school.cases[, date := as.Date(date)]
+  school.cases = school.cases[as.Date(date)<=last_date,]
+  school.cases = school.cases[, .SD[which.max(date)], by='loc']
+  setnames(school.cases, c('start','date'),c('date_start','date_end'))
+	# #	data
+	# school.cases <- data.table(
+	# 	loc= c('FL', 'TX'),	
+	# 	date_start= c('2020-09-06', '2020-08-24'),
+	# 	date_end= c('2020-10-24', '2020-10-25'),
+	# 	cases_att_rate= c(0.0025, 0.0034) 
+	# 	)
+	set(school.cases, NULL, 'date_start', school.cases[, as.Date(date_start)])
+	set(school.cases, NULL, 'date_end', school.cases[, as.Date(date_end)])
+	
+	#	translate dates into time indices
+	dates <- data.table(
+		loc= names(processed_data$dates),
+		date_min= as.Date(sapply( processed_data$dates, function(x) min(as.character(x)) )),
+		date_max= as.Date(sapply( processed_data$dates, function(x) max(as.character(x)) ))
+		)
+	school.cases <- merge(school.cases, dates, by='loc')
+	school.cases[, time_start:= as.integer(date_start-date_min+1L)]
+	school.cases[, time_end:= as.integer(date_end-date_min+1L)]
+	
+	#	checks
+	stopifnot( nrow(school.cases)>0 )
+	stopifnot( all(school.cases[, time_start] > 0) ) 
+	stopifnot( all(school.cases[, time_end] < processed_data$stan_data$N2) )
+	
+	states <- names(processed_data$dates)
+	
+	#	make school_case_time_idx
+	school_case_time_idx <- array(-1, dim = c( length(states), 2L) )
+	for(m in 1:length(states))
+	{
+		tmp <- subset(school.cases, loc==states[m])
+		if(nrow(tmp))
+		{
+			school_case_time_idx[m,] <- tmp[,c(time_start, time_end)]
+		}		
+	}
+		
+	#	make school_case_data
+	school_case_data <- array(-1, dim = c( length(states), 4L) )
+	for(m in 1:length(states))
+	{
+		tmp <- subset(school.cases, loc==states[m])
+		if(nrow(tmp))
+		{
+			school_case_data[m,] <- tmp[, c(cases_att_rate, cases_att_rate/10, cases_att_rate*upper.bound.multiplier, (cases_att_rate*upper.bound.multiplier)/10)]			
+		}		
+	}
+	
+	#	add to stan_data
+	processed_data$stan_data$school_case_time_idx <- school_case_time_idx
+	processed_data$stan_data$school_case_data <- school_case_data	
+	processed_data
+}
+	
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
 stan_data_add_smoothed_logcases <- function(processed_data, smoothed_log_cases)
 {
 	
@@ -1601,6 +1695,121 @@ stan_data_add_smoothed_logcases <- function(processed_data, smoothed_log_cases)
 	processed_data
 }
 
+	
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
+stan_data_add_seroprevalence_data = function(processed_data, spd)
+{  
+	states <- names(processed_data$dates)
+  	pop <- processed_data$stan_data$pop
+    
+  	#	define date range across states
+  	dates <- data.table(
+    	loc= names(processed_data$dates),
+    	date_min= as.Date(sapply( processed_data$dates, function(x) min(as.character(x)) )),
+    	date_max= as.Date(sapply( processed_data$dates, function(x) max(as.character(x)) ))
+  		)
+  	dates <- dates[, 
+		list(	
+			date= seq(date_min, date_max, 1),
+			time_idx= seq_along(seq(date_min, date_max, 1))
+		),
+		by='loc']
+  
+  	# merge to seroprevalence study data
+  	spds <- merge(dates, spd, by = c("loc", "date"))
+  
+  	# keep only overall count
+  	spds <- subset(spds, age_band == "overall")
+  
+	# if sample size not known, add 1e3
+	if(!'sample_size'%in%colnames(spds))
+		spds[, sample_size:= 1e3]
+	
+	# transform prevalence estimates to prevalence numbers in sample
+	set(spds, NULL, 'M_obs', spds[, M_obs*sample_size])
+	set(spds, NULL, 'CL_obs', spds[, CL_obs*sample_size])
+	set(spds, NULL, 'CU_obs', spds[, CU_obs*sample_size])
+	
+	# add number of sero-prevalence estimates of a loc
+	spds <- merge(data.table(loc=states), spds, all.x=TRUE, by='loc')
+	tmp <- spds[, list(
+			N_surveys=length(which(!is.na(date))),
+			N_surveys_g18=length(which(!is.na(date) & X18plus==1))
+		), by='loc']
+	spds <- merge(spds, tmp, by = "loc")
+	  	
+  	# create number of surveys per state vector 
+	seroprevalence_surveys_n <- unique(subset(spds, select=c(loc, N_surveys)))
+	seroprevalence_surveys_n <- merge(data.table(loc=states, loc_id=seq_along(states)), seroprevalence_surveys_n, by='loc', all.x=TRUE)
+	seroprevalence_surveys_n <- seroprevalence_surveys_n[order(loc_id), N_surveys]
+	
+	# create date map
+  	seroprevalence_date_map <- matrix(nrow = length(states), ncol = max(spds$N_surveys, na.rm=TRUE), -1)
+	for(m in seq_along(states))
+	{
+		if(seroprevalence_surveys_n[m] > 0)
+		{
+			tmp <- subset(spds, loc == states[m])[, sort(time_idx)]
+			seroprevalence_date_map[m,1:seroprevalence_surveys_n[m]] <- tmp			
+		}		
+	}
+	
+	# create data 
+	seroprevalence_data <- array(dim = c(length(states),max(spds$N_surveys), 3), -1)
+	for(m in seq_along(states))
+	{
+		if(seroprevalence_surveys_n[m] > 0)
+		{
+			tmp <- subset(spds, loc == states[m])
+			seroprevalence_data[m,1:seroprevalence_surveys_n[m],1] <- tmp$CL_obs
+			seroprevalence_data[m,1:seroprevalence_surveys_n[m],2] <- tmp$CU_obs
+			seroprevalence_data[m,1:seroprevalence_surveys_n[m],3] <- tmp$sample_size				
+		}		
+	}
+	
+	# create number of 18+ surveys per state vector 
+	seroprevalence_g18_surveys_n <- unique(subset(spds, select=c(loc, N_surveys_g18)))
+	seroprevalence_g18_surveys_n <- merge(data.table(loc=states, loc_id=seq_along(states)), seroprevalence_g18_surveys_n, by='loc', all.x=TRUE)
+	seroprevalence_g18_surveys_n <- seroprevalence_g18_surveys_n[order(loc_id), N_surveys_g18]
+	
+	# create date map of 18+ surveys
+	seroprevalence_g18_date_map <- matrix(nrow = length(states), ncol = max(spds$N_surveys_g18, na.rm=TRUE), -1)
+	for(m in seq_along(states))
+	{
+		if(seroprevalence_g18_surveys_n[m] > 0)
+		{
+			tmp <- subset(spds, loc == states[m] & X18plus==1)[, sort(time_idx)]
+			seroprevalence_g18_date_map[m,1:seroprevalence_g18_surveys_n[m]] <- tmp			
+		}		
+	}
+	
+	# create index map of 18+ surveys
+	seroprevalence_g18_index_map <- matrix(nrow = length(states), ncol = max(spds$N_surveys_g18, na.rm=TRUE), -1)
+	for(m in seq_along(states))
+	{
+		if(seroprevalence_g18_surveys_n[m] > 0)
+		{
+			tmp <- subset(spds, loc == states[m])[, which(X18plus==1)]
+			seroprevalence_g18_index_map[m,1:seroprevalence_g18_surveys_n[m]] <- tmp			
+		}		
+	}
+		
+	# register new data objects
+	processed_data$stan_data$seroprevalence_surveys_n_max <- max(seroprevalence_surveys_n)
+  	processed_data$stan_data$seroprevalence_surveys_n <- seroprevalence_surveys_n  	
+  	processed_data$stan_data$seroprevalence_date_map <- seroprevalence_date_map
+  	processed_data$stan_data$seroprevalence_data <- seroprevalence_data  
+	processed_data$stan_data$seroprevalence_g18_surveys_n_max <- max(seroprevalence_g18_surveys_n)
+	processed_data$stan_data$seroprevalence_g18_surveys_n <- seroprevalence_g18_surveys_n  	
+	processed_data$stan_data$seroprevalence_g18_date_map <- seroprevalence_g18_date_map
+	processed_data$stan_data$seroprevalence_g18_index_map <- seroprevalence_g18_index_map
+	
+  	return(processed_data)
+}
+
+
 #' @export
 #' @keywords internal
 #' @import data.table tidyr stringr 
@@ -1627,7 +1836,7 @@ stan_data_add_upswing_time_effect <- function(processed_data, mobility_data, eff
 	#	make effect weeks 
 	set(dates, NULL, 'time_effect_id', dates[, ceiling(time_effect_id/effect_weeks)])
 	
-	subset(dates, date<=date.max.non.forecast)
+	#subset(dates, date<=date.max.non.forecast)
 	#	remove last time effect that is not on full effect weeks
 	tmp <- dates[date<=date.max.non.forecast, which(time_effect_id==max(time_effect_id))]
 	if(length(tmp)<effect_weeks*7)
@@ -1637,8 +1846,11 @@ stan_data_add_upswing_time_effect <- function(processed_data, mobility_data, eff
 	}
 	
 	#	remove last time effect due to limited signal
-	tmp <- max(dates$time_effect_id)		
-	set(dates, NULL, 'time_effect_id', pmin(tmp-1L, dates[,time_effect_id]))
+	if(effect_weeks<3)
+	{
+		tmp <- max(dates$time_effect_id)		
+		set(dates, NULL, 'time_effect_id', pmin(tmp-1L, dates[,time_effect_id]))		
+	}
 	
 	#	set total number of time effects
 	processed_data$stan_data$N_IMP <- max(dates$time_effect_id)
@@ -1742,7 +1954,7 @@ stan_data_add_indicator_rebound_date <- function(processed_data, mobility_data)
 {
   states <- names(processed_data$dates)	
   num_days_sim <- processed_data$stan_data$N2
-  TIME_IDX_BEFORE_REBOUND <- matrix(nrow = processed_data$stan_data$M, ncol = processed_data$stan_data$N2, NA_real_)
+  REBOUND_TIME_INDEX = vector(mode = "integer", length = processed_data$stan_data$M)
   
   for(m in 1:length(states))
   {				
@@ -1751,13 +1963,14 @@ stan_data_add_indicator_rebound_date <- function(processed_data, mobility_data)
     tmp <- data.table(date = seq.Date( min(processed_data$dates[[m]]), min(processed_data$dates[[m]])+num_days_sim-1, by = "day"))
     tmp[, before_rebound_date := as.numeric(date < rebound_date)]
     
-    TIME_IDX_BEFORE_REBOUND[m,] = tmp$before_rebound_date
-
+    
+    REBOUND_TIME_INDEX[m] = which(tmp$date == rebound_date)
   }
   
-  processed_data$stan_data$TIME_IDX_BEFORE_REBOUND <- TIME_IDX_BEFORE_REBOUND
+  processed_data$stan_data$REBOUND_TIME_INDEX <- REBOUND_TIME_INDEX
   return(processed_data)
 }
+
 
 #' @export
 #' @keywords internal
@@ -2225,43 +2438,117 @@ stan_data_add_gpprior_betaage = function(processed_data){
 #' @export
 #' @keywords internal
 #' @import data.table tidyr stringr 
-stan_data_add_school_status = function(processed_data, path_to_file_school_intervention, forecast_with_schools_reopened, reopening_Date)
+stan_data_add_school_status <- function(processed_data, 
+	path_to_file_school_intervention, 
+	forecast_with_schools_reopened, 
+	reopening_Date)
 {
+	states = names(processed_data$dates)
+	num_days_sim = processed_data$stan_data$N2
+	
+	#
+	# find school closure dates	
+	dsi <- as.data.table(read.csv(path_to_file_school_intervention))
+	dsi <- subset(dsi, !is.na(RegionName) & !is.na(Date) & RegionName != "" & !is.na(C1_School.closing))
+	dsi[, date := as.Date(as.character(Date), format= "%Y%m%d")]
+	dsi[, loc := gsub("US_(.+)","\\1",RegionCode)]
+	dsi <- subset(dsi, select=c(loc, date, C1_School.closing))	  
+	dsi <- dsi[C1_School.closing != 0, list(closure_date = min(date)), by = c("loc")]
+	
+	#
+	# use NY for NYC
+	tmp <- subset(dsi, loc == "NY")
+	tmp[, loc := "NYC"]
+	dsi <- rbind(dsi,tmp)
+	
+	#
+	# set reopening_date  
+	tmp <- sapply(sapply(processed_data$dates, as.character), max)
+	tmp <- data.table(loc= names(tmp),  first.day.forecast= as.Date(tmp)+1)
+	tmp[, first.day.data:= as.Date(sapply(sapply(processed_data$dates, as.character), min))]
+	tmp[, last.day.forecast := first.day.data+num_days_sim-1]
+	if(forecast_with_schools_reopened)
+	{
+		tmp[, reopening_date:= reopening_Date]	
+	}
+	if(!forecast_with_schools_reopened)
+	{
+		tmp[, reopening_date:= last.day.forecast+1]	
+	}
+	dsi <- merge(dsi, tmp, by='loc')  
+	dsi <- merge(dsi, dsi[, list(date= seq(first.day.data, last.day.forecast, by='day')), by='loc'], by='loc')
+	dsi[, school_closed:= as.integer(closure_date<=date & date<reopening_date)]
+	
+	# define stan data matrix
+	SCHOOL_STATUS <- matrix(nrow = num_days_sim, ncol = processed_data$stan_data$M, NA_integer_)
+	for(m in 1:length(states))
+	{
+		SCHOOL_STATUS[,m] <- subset(dsi, loc==states[m])[, school_closed]    	
+	}
+	
+	processed_data$stan_data$SCHOOL_STATUS = SCHOOL_STATUS
+	
+	return(processed_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
+stan_data_add_school_status_EduWeek = function(processed_data, 
+                                               path_to_file_school_Ox_data, 
+                                               path_to_file_school_EduWeek_data, 
+                                               counterfactual_scenario = 0,
+                                               forecast_with_schools_reopened = 0, 
+                                               default_school_reopening_date = as.Date("2020-08-24"))
+{
+  
   states = names(processed_data$dates)
   num_days_sim = processed_data$stan_data$N2
   
   #
   # find school closure dates	
-  dsi <- as.data.table(read.csv(path_to_file_school_intervention))
+  dsi <- as.data.table(read.csv(path_to_file_school_Ox_data))
   dsi <- subset(dsi, !is.na(RegionName) & !is.na(Date) & RegionName != "" & !is.na(C1_School.closing))
   dsi[, date := as.Date(as.character(Date), format= "%Y%m%d")]
   dsi[, loc := gsub("US_(.+)","\\1",RegionCode)]
   dsi <- subset(dsi, select=c(loc, date, C1_School.closing))	  
   dsi <- dsi[C1_School.closing != 0, list(closure_date = min(date)), by = c("loc")]
-  
-  #
   # use NY for NYC
   tmp <- subset(dsi, loc == "NY")
   tmp[, loc := "NYC"]
   dsi <- rbind(dsi,tmp)
   
   #
-  # set reopening_date  
+  # find school re-opening dates  
   tmp <- sapply(sapply(processed_data$dates, as.character), max)
   tmp <- data.table(loc= names(tmp),  first.day.forecast= as.Date(tmp)+1)
   tmp[, first.day.data:= as.Date(sapply(sapply(processed_data$dates, as.character), min))]
   tmp[, last.day.forecast := first.day.data+num_days_sim-1]
-  if(forecast_with_schools_reopened)
-  {
-    tmp[, reopening_date:= reopening_Date]	
+  
+  # set reopening date for states for which schools re-opened before forecast started
+  ods <- load_EduWeekly_data(path_to_file_school_EduWeek_data, path_to_file_school_Ox_data)
+  df_reopening_dates <- find_reopening_dates(ods, default_school_reopening_date)
+  tmp = as.data.table( merge(tmp, df_reopening_dates, by = c("loc")) )
+  tmp[schools_reopened_before_forecast == 1, reopening_date := reopening_date_Edu_Week]
+  tmp[schools_reopened_before_forecast  == 0, reopening_date := last.day.forecast+1]
+  
+  # forecast scenarios
+  if(forecast_with_schools_reopened){
+    tmp[, reopening_date := default_school_reopening_date]	
   }
-  if(!forecast_with_schools_reopened)
-  {
-    tmp[, reopening_date:= last.day.forecast+1]	
+  
+  if(counterfactual_scenario){
+    
+    tmp1 = copy(tmp)
+    
+    if(!forecast_with_schools_reopened){
+      tmp[, reopening_date:= last.day.forecast+1]
+    }
   }
+  
   dsi <- merge(dsi, tmp, by='loc')  
   dsi <- merge(dsi, dsi[, list(date= seq(first.day.data, last.day.forecast, by='day')), by='loc'], by='loc')
-  dsi[, school_closed:= as.integer(closure_date<=date & date<reopening_date)]
+  dsi[, school_closed := as.integer(closure_date<=date & date<reopening_date)]
   
   # define stan data matrix
   SCHOOL_STATUS <- matrix(nrow = num_days_sim, ncol = processed_data$stan_data$M, NA_integer_)
@@ -2270,15 +2557,146 @@ stan_data_add_school_status = function(processed_data, path_to_file_school_inter
     SCHOOL_STATUS[,m] <- subset(dsi, loc==states[m])[, school_closed]    	
   }
   
+  #
+  # set 'elementary_school_reopening_idx' 
+  reo.tab <- data.table(loc = states, last_obs_idx = sapply(processed_data$dates,length), 
+                        last_obs_date = as.Date(sapply(processed_data$dates, function(x) tail(as.character(x), 1))))
+  reo.idx = merge(reo.tab, tmp, by = "loc")
+  reo.idx[, `:=`(reo_idx, last_obs_idx + as.integer(reopening_date - 
+                                                      last_obs_date))]
+  stopifnot(all(reo.idx$reo_idx <= processed_data$stan_data$N2 + 1))
+  reo.idx = reo.idx[match(states, reo.idx$loc)]
   processed_data$stan_data$SCHOOL_STATUS = SCHOOL_STATUS
+  processed_data$stan_data$elementary_school_reopening_idx <- reo.idx$reo_idx
+  
+  # save school reopening date index from the re-opening school scenario
+  if(counterfactual_scenario){
+    tmp1[schools_reopened_before_forecast == 0, reopening_date := first.day.forecast]
+    elt_reopening_index = merge(reo.tab, tmp1, by = "loc")
+    elt_reopening_index[, `:=`(elt_reopening_index, last_obs_idx + as.integer(reopening_date -last_obs_date))]
+    stopifnot(all(elt_reopening_index$elt_reopening_index <= processed_data$stan_data$N2 + 1))
+    processed_data$stan_data$elt_reopening_index <- elt_reopening_index$elt_reopening_index
+  } else {
+    processed_data$stan_data$elt_reopening_index = reo.idx$reo_idx
+  }
   
   return(processed_data)
 }
   
+
 #' @export
 #' @keywords internal
 #' @import data.table tidyr stringr 
-stan_data_add_contact_school_closure = function(processed_data, dcontact, path_to_file_contact_intensities_outbreak_China, multiplier_cntct_school_closure, with_average_cntnt_child_outbreak = FALSE, min_pc_contacts=0.05)
+stan_data_add_school_status_EduWeek_with_closure2 = function(processed_data, 
+                                               path_to_file_school_Ox_data, 
+                                               path_to_file_school_EduWeek_data, 
+                                               counterfactual_scenario = 0,
+                                               forecast_with_schools_reopened = 0, 
+                                               forecast_with_schools_closure_2 = 0,
+                                               default_school_reopening_date = as.Date("2020-08-24"),
+                                               default_school_closure_2_date = as.Date("2021-01-01"))
+{
+  
+  states = names(processed_data$dates)
+  num_days_sim = processed_data$stan_data$N2
+  
+  #
+  # find school closure dates	
+  dsi <- as.data.table(read.csv(path_to_file_school_Ox_data))
+  dsi <- subset(dsi, CountryName == 'United States')
+  dsi <- subset(dsi, !is.na(RegionName) & !is.na(Date) & RegionName != "" & !is.na(C1_School.closing))
+  dsi[, date := as.Date(as.character(Date), format= "%Y%m%d")]
+  dsi[, loc := gsub("US_(.+)","\\1",RegionCode)]
+  dsi <- subset(dsi, select=c(loc, date, C1_School.closing))	  
+  dsi <- dsi[C1_School.closing != 0, list(closure_date = min(date)), by = c("loc")]
+  # use NY for NYC
+  tmp <- subset(dsi, loc == "NY")
+  tmp[, loc := "NYC"]
+  dsi <- rbind(dsi,tmp)
+  
+  #
+  # find school re-opening dates  
+  tmp <- sapply(sapply(processed_data$dates, as.character), max)
+  tmp <- data.table(loc= names(tmp),  first.day.forecast= as.Date(tmp)+1)
+  tmp[, first.day.data:= as.Date(sapply(sapply(processed_data$dates, as.character), min))]
+  tmp[, last.day.forecast := first.day.data+num_days_sim-1]
+  
+  # load and cure edu weekly data
+  ods <- load_EduWeekly_data(path_to_file_school_EduWeek_data, path_to_file_school_Ox_data)
+  
+  # set reopening date 
+  df_reopening_dates <- find_reopening_dates(ods, default_school_reopening_date)
+  tmp = as.data.table( merge(tmp, df_reopening_dates, by = c("loc")) )
+  tmp[schools_reopened_before_forecast == 1, reopening_date := reopening_date_Edu_Week]
+  tmp[schools_reopened_before_forecast  == 0, reopening_date := last.day.forecast+1]
+  
+  # set closure date 2
+  df_closure_2_dates <- find_closure_2_dates(ods, default_school_closure_2_date, df_reopening_dates)
+  tmp = as.data.table( merge(tmp, df_closure_2_dates, by = c("loc")) )
+  tmp[schools_close_2_before_forecast  == 1, closure_2_date := closure_2_date_Edu_Week]
+  tmp[schools_close_2_before_forecast  == 0, closure_2_date := last.day.forecast+1]
+  
+  # forecast scenarios
+  if(forecast_with_schools_reopened){
+    tmp[, reopening_date := default_school_reopening_date]	
+  }
+  
+  if(forecast_with_schools_closure_2){
+    tmp[, closure_2_date:= default_school_closure_2_date]
+  }
+  
+  if(counterfactual_scenario){
+    
+    tmp1 = copy(tmp)
+    
+    if(!forecast_with_schools_reopened){
+      tmp[, reopening_date:= last.day.forecast+1]
+    }
+    
+  }
+  
+  dsi <- merge(dsi, tmp, by='loc')  
+  dsi <- merge(dsi, dsi[, list(date= seq(first.day.data, last.day.forecast, by='day')), by='loc'], by='loc')
+  dsi[, school_closed := as.integer((date >=closure_date & date<reopening_date) | (date >= closure_2_date))]
+  
+  # define stan data matrix
+  SCHOOL_STATUS <- matrix(nrow = num_days_sim, ncol = processed_data$stan_data$M, NA_integer_)
+  for(m in 1:length(states))
+  {
+    SCHOOL_STATUS[,m] <- subset(dsi, loc==states[m])[, school_closed]    	
+  }
+  
+  #
+  # set 'elementary_school_reopening_idx' 
+  reo.tab <- data.table(loc = states, last_obs_idx = sapply(processed_data$dates,length), 
+                        last_obs_date = as.Date(sapply(processed_data$dates, function(x) tail(as.character(x), 1))))
+  reo.idx = merge(reo.tab, tmp, by = "loc")
+  reo.idx[, `:=`(reo_idx, last_obs_idx + as.integer(reopening_date - 
+                                                      last_obs_date))]
+  stopifnot(all(reo.idx$reo_idx <= processed_data$stan_data$N2 + 1))
+  reo.idx = reo.idx[match(states, reo.idx$loc)]
+  processed_data$stan_data$SCHOOL_STATUS = SCHOOL_STATUS
+  processed_data$stan_data$elementary_school_reopening_idx <- reo.idx$reo_idx
+  
+  # save school reopening date index from the re-opening school scenario
+  if(counterfactual_scenario){
+    tmp1[schools_reopened_before_forecast == 0, reopening_date := first.day.forecast]
+    elt_reopening_index = merge(reo.tab, tmp1, by = "loc")
+    elt_reopening_index[, `:=`(elt_reopening_index, last_obs_idx + as.integer(reopening_date -last_obs_date))]
+    stopifnot(all(elt_reopening_index$elt_reopening_index <= processed_data$stan_data$N2 + 1))
+    processed_data$stan_data$elt_reopening_index <- elt_reopening_index$elt_reopening_index
+  } else {
+    processed_data$stan_data$elt_reopening_index = reo.idx$reo_idx
+  }
+  
+  return(processed_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
+stan_data_add_contact_school_closure = function(processed_data, dcontact, path_to_file_contact_intensities_outbreak_China, multiplier_cntct_school_closure, 
+                                                with_average_cntnt_child_outbreak = FALSE, min_pc_contacts=0.05)
 {
   contact_intensities_outbreak_zhang <- as.data.table(readRDS(path_to_file_contact_intensities_outbreak_China))
   
@@ -2356,7 +2774,86 @@ stan_data_add_contact_school_closure = function(processed_data, dcontact, path_t
 #' @export
 #' @keywords internal
 #' @import data.table tidyr stringr 
-stan_data_add_contact_school_opening <- function(processed_data, dcontact, path_to_file_contact_intensities_outbreak_China, multiplier_cntct_school_closure=1, multiplier_cntct_school_opening=0.5, min_pc_contacts=0.05, reopening_date="2020-08-24")
+stan_data_add_contact_elementary_high_school_closure = function(processed_data, dcontact, path_to_file_contact_intensities_outbreak_China, 
+                                                                multiplier_cntct_school_closure, min_pc_contacts=0.05)
+{
+  contact_intensities_outbreak_zhang <- as.data.table(readRDS(path_to_file_contact_intensities_outbreak_China))
+  
+  age_category = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
+  
+  #
+  # age categories as factor
+  contact_intensities_outbreak_zhang[, age_index := factor(age_index, levels = age_category)]
+  contact_intensities_outbreak_zhang[, age_contact := factor(age_contact, levels = age_category)]
+  
+  #
+  # aggregate over both cities
+  cnt.zhang = contact_intensities_outbreak_zhang[, list(count_post = mean(count_post)), by = c("age_index", "age_contact")]
+  
+  #
+  # break 65+ age band into 65-69, 70-74, 75-79, 80-84, 85+
+  old_age_label = "65+"
+  new_age_label = c("65-69", "70-74", "75-79", "80-84", "85+")
+  new_age_category = c(age_category[-length(age_category)], new_age_label)
+  # age index
+  df = cnt.zhang[age_index %in% old_age_label,]
+  df = df[rep(seq_len(nrow(df)), each = length(new_age_label)),]
+  df[,age_index := rep(new_age_label, length(age_category))]
+  cnt.zhang = rbind(subset(cnt.zhang, !age_index %in% old_age_label), df)
+  # age contact
+  df2 = cnt.zhang[age_contact %in% old_age_label,]
+  df2 = df2[rep(seq_len(nrow(df2)), each = length(new_age_label)),]
+  df2[, age_contact := rep(new_age_label, length(new_age_category))]
+  df2[, count_post := count_post/length(new_age_label)] # take average
+  cnt.zhang = rbind(subset(cnt.zhang, !age_contact %in% old_age_label), df2)
+  setnames(cnt.zhang, c('age_index','age_contact','count_post'),c('part.age.cat.label','cont.age.cat.label','m_zhang'))
+  
+  #
+  # prepare contact matrices during school closure for each state  		
+  cnt.zhang <- merge(dcontact, cnt.zhang, by=c('part.age.cat.label','cont.age.cat.label'))
+  cnt.zhang[, m_pc:= min_pc_contacts*m]
+  cnt.zhang[, m_model:= pmin(m ,multiplier_cntct_school_closure * pmax(m_pc, m_zhang))]
+  #	on weekdays, use m_model for 0-19 -> any, any-> 0-19, otherwise m*trends
+  tmp <- cnt.zhang[, which(type=='weekday' & part.age.cat>4 & cont.age.cat>4 )]
+  set(cnt.zhang, tmp, 'm_model', cnt.zhang[tmp,m])
+  #	on weekend days, use m_model for 0-19 -> any, any-> 0-19, otherwise m*trends
+  tmp <- cnt.zhang[, which(type=='weekend' & part.age.cat>4 & cont.age.cat>4 )]
+  set(cnt.zhang, tmp, 'm_model', cnt.zhang[tmp,m])
+  
+  
+  states = names(processed_data$dates)
+  cntct_school_closure_weekdays = vector('list', length(states))
+  cntct_school_closure_weekends = vector('list', length(states))
+  for(i in 1:length(states))
+  {
+    tmp <- dcast.data.table(subset(cnt.zhang, loc==states[i] & type=="weekday"), part.age.cat~cont.age.cat, value.var='m_model')
+    tmp <- unname(as.matrix(tmp)[,-1])	  
+    cntct_school_closure_weekdays[[i]] <- tmp	  	  
+    tmp <- dcast.data.table(subset(cnt.zhang, loc==states[i] & type=="weekend"), part.age.cat~cont.age.cat, value.var='m_model')
+    tmp <- unname(as.matrix(tmp)[,-1])
+    cntct_school_closure_weekends[[i]] <- tmp	  
+  }  
+  
+  processed_data$stan_data$A_CHILD = 4L
+  processed_data$stan_data$AGE_CHILD = c(1L,2L,3L,4L)
+  processed_data$stan_data$A_ADULT = 7L
+  processed_data$stan_data$AGE_ADULT = c(5L,6L,7L,8L, 9L,10L,11L)
+  processed_data$stan_data$cntct_school_closure_weekdays = cntct_school_closure_weekdays
+  processed_data$stan_data$cntct_school_closure_weekends = cntct_school_closure_weekends
+  
+  return(processed_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
+stan_data_add_contact_school_opening <- function(processed_data, 
+	dcontact, 
+	path_to_file_contact_intensities_outbreak_China, 
+	multiplier_cntct_school_closure=1, 
+	multiplier_cntct_school_opening=1, 
+	min_pc_contacts=0.05, 
+	reopening_date="2020-08-24")
 {
 	contact_intensities_outbreak_zhang <- as.data.table(readRDS(path_to_file_contact_intensities_outbreak_China))
 	
@@ -2371,7 +2868,7 @@ stan_data_add_contact_school_opening <- function(processed_data, dcontact, path_
 	#
 	# aggregate over both cities
 	cnt.zhang = contact_intensities_outbreak_zhang[, list(count_post = mean(count_post)), by = c("age_index", "age_contact")]
-		
+	
 	#
 	# break 65+ age band into 65-69, 70-74, 75-79, 80-84, 85+
 	old_age_label = "65+"
@@ -2406,7 +2903,7 @@ stan_data_add_contact_school_opening <- function(processed_data, dcontact, path_
 	tmp <- cnt.zhang[, which( part.age.cat==3 | cont.age.cat==3 )]
 	set(cnt.zhang, tmp, 'm_model', 2/5*pmax(cnt.zhang[tmp,m_zhang2], multiplier_cntct_school_opening*cnt.zhang[tmp,m]) + 
 					3/5*cnt.zhang[tmp,m_zhang2])
-				
+	
 	states = names(processed_data$dates)
 	cntct_elementary_school_reopening_weekdays = vector('list', length(states))
 	cntct_elementary_school_reopening_weekends = vector('list', length(states))
@@ -2425,9 +2922,9 @@ stan_data_add_contact_school_opening <- function(processed_data, dcontact, path_
 	#
 	# set 'elementary_school_reopening_idx'
 	reo.idx <- data.table(
-		last_obs_idx = sapply( processed_data$dates, length ), 
-		last_obs_date = as.Date(sapply( processed_data$dates, function(x) tail(as.character(x),1) ))
-		)
+			last_obs_idx = sapply( processed_data$dates, length ), 
+			last_obs_date = as.Date(sapply( processed_data$dates, function(x) tail(as.character(x),1) ))
+	)
 	reo.idx[, reo_idx:= last_obs_idx + as.integer(as.Date(reopening_date)-last_obs_date)]
 	stopifnot( all(reo.idx$reo_idx<=processed_data$stan_data$N2) )
 	
@@ -2435,6 +2932,160 @@ stan_data_add_contact_school_opening <- function(processed_data, dcontact, path_
 	
 	return(processed_data)
 }
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
+stan_data_add_contact_school_opening_EduWeek <- function(processed_data, 
+                                                 dcontact, 
+                                                 path_to_file_contact_intensities_outbreak_China, 
+                                                 multiplier_cntct_school_closure=1, 
+                                                 multiplier_cntct_school_opening=1, 
+                                                 min_pc_contacts=0.05)
+{
+  contact_intensities_outbreak_zhang <- as.data.table(readRDS(path_to_file_contact_intensities_outbreak_China))
+  
+  age_category = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
+  children_label = c("0-4", "5-9", "10-14")
+  
+  #
+  # age categories as factor
+  contact_intensities_outbreak_zhang[, age_index := factor(age_index, levels = age_category)]
+  contact_intensities_outbreak_zhang[, age_contact := factor(age_contact, levels = age_category)]
+  
+  #
+  # aggregate over both cities
+  cnt.zhang = contact_intensities_outbreak_zhang[, list(count_post = mean(count_post)), by = c("age_index", "age_contact")]
+  
+  #
+  # break 65+ age band into 65-69, 70-74, 75-79, 80-84, 85+
+  old_age_label = "65+"
+  new_age_label = c("65-69", "70-74", "75-79", "80-84", "85+")
+  new_age_category = c(age_category[-length(age_category)], new_age_label)
+  # age index
+  df = cnt.zhang[age_index %in% old_age_label,]
+  df = df[rep(seq_len(nrow(df)), each = length(new_age_label)),]
+  df[,age_index := rep(new_age_label, length(age_category))]
+  cnt.zhang = rbind(subset(cnt.zhang, !age_index %in% old_age_label), df)
+  # age contact
+  df2 = cnt.zhang[age_contact %in% old_age_label,]
+  df2 = df2[rep(seq_len(nrow(df2)), each = length(new_age_label)),]
+  df2[, age_contact := rep(new_age_label, length(new_age_category))]
+  df2[, count_post := count_post/length(new_age_label)] # take average
+  cnt.zhang = rbind(subset(cnt.zhang, !age_contact %in% old_age_label), df2)
+  setnames(cnt.zhang, c('age_index','age_contact','count_post'),c('part.age.cat.label','cont.age.cat.label','m_zhang'))
+  
+  #
+  # prepare contact matrices during school opening forecast period for each state  		
+  cnt.zhang <- merge(dcontact, cnt.zhang, by=c('part.age.cat.label','cont.age.cat.label'))
+  cnt.zhang[, m_pc:= min_pc_contacts*m]
+  cnt.zhang[, m_zhang2:= pmin(m , multiplier_cntct_school_closure * pmax(m_pc, m_zhang))]
+  cnt.zhang[, m_model:= m]
+  #	now use for both weekends and weekdays:
+  #	baseline intensities for 15+ & 15+
+  #	reduced baseline intensities for 0-9 -> any, any-> 0-9
+  #	mixture baseline intensities for 10-14 -> any, any-> 10-14
+  tmp <- cnt.zhang[, which( part.age.cat<3 | cont.age.cat<3 )]
+  set(cnt.zhang, tmp, 'm_model', multiplier_cntct_school_opening * cnt.zhang[tmp,m])
+  set(cnt.zhang, tmp, 'm_model', pmax(cnt.zhang[tmp,m_zhang2], cnt.zhang[tmp,m_model]))
+  tmp <- cnt.zhang[, which( part.age.cat==3 | cont.age.cat==3 )]
+  set(cnt.zhang, tmp, 'm_model', 2/5*pmax(cnt.zhang[tmp,m_zhang2], multiplier_cntct_school_opening*cnt.zhang[tmp,m]) + 
+        3/5*cnt.zhang[tmp,m_zhang2])
+  
+  states = names(processed_data$dates)
+  cntct_elementary_school_reopening_weekdays = vector('list', length(states))
+  cntct_elementary_school_reopening_weekends = vector('list', length(states))
+  for(i in 1:length(states))
+  {
+    tmp <- dcast.data.table(subset(cnt.zhang, loc==states[i] & type=="weekday"), part.age.cat~cont.age.cat, value.var='m_model')
+    tmp <- unname(as.matrix(tmp)[,-1])	  
+    cntct_elementary_school_reopening_weekdays[[i]] <- tmp	  	  
+    tmp <- dcast.data.table(subset(cnt.zhang, loc==states[i] & type=="weekend"), part.age.cat~cont.age.cat, value.var='m_model')
+    tmp <- unname(as.matrix(tmp)[,-1])
+    cntct_elementary_school_reopening_weekends[[i]] <- tmp	  
+  }  	
+  processed_data$stan_data$cntct_elementary_school_reopening_weekdays = cntct_elementary_school_reopening_weekdays
+  processed_data$stan_data$cntct_elementary_school_reopening_weekends = cntct_elementary_school_reopening_weekends
+  
+  return(processed_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr stringr 
+stan_data_add_contact_elementary_high_school_opening_EduWeek <- function(processed_data, 
+                                                         dcontact, 
+                                                         path_to_file_contact_intensities_outbreak_China, 
+                                                         multiplier_cntct_school_closure=1, 
+                                                         multiplier_cntct_school_opening=1, 
+                                                         min_pc_contacts=0.05)
+{
+  contact_intensities_outbreak_zhang <- as.data.table(readRDS(path_to_file_contact_intensities_outbreak_China))
+  
+  age_category = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
+  
+  #
+  # age categories as factor
+  contact_intensities_outbreak_zhang[, age_index := factor(age_index, levels = age_category)]
+  contact_intensities_outbreak_zhang[, age_contact := factor(age_contact, levels = age_category)]
+  
+  #
+  # aggregate over both cities
+  cnt.zhang = contact_intensities_outbreak_zhang[, list(count_post = mean(count_post)), by = c("age_index", "age_contact")]
+  
+  #
+  # break 65+ age band into 65-69, 70-74, 75-79, 80-84, 85+
+  old_age_label = "65+"
+  new_age_label = c("65-69", "70-74", "75-79", "80-84", "85+")
+  new_age_category = c(age_category[-length(age_category)], new_age_label)
+  # age index
+  df = cnt.zhang[age_index %in% old_age_label,]
+  df = df[rep(seq_len(nrow(df)), each = length(new_age_label)),]
+  df[,age_index := rep(new_age_label, length(age_category))]
+  cnt.zhang = rbind(subset(cnt.zhang, !age_index %in% old_age_label), df)
+  # age contact
+  df2 = cnt.zhang[age_contact %in% old_age_label,]
+  df2 = df2[rep(seq_len(nrow(df2)), each = length(new_age_label)),]
+  df2[, age_contact := rep(new_age_label, length(new_age_category))]
+  df2[, count_post := count_post/length(new_age_label)] # take average
+  cnt.zhang = rbind(subset(cnt.zhang, !age_contact %in% old_age_label), df2)
+  setnames(cnt.zhang, c('age_index','age_contact','count_post'),c('part.age.cat.label','cont.age.cat.label','m_zhang'))
+  
+  #
+  # prepare contact matrices during school opening forecast period for each state  		
+  cnt.zhang <- merge(dcontact, cnt.zhang, by=c('part.age.cat.label','cont.age.cat.label'))
+  cnt.zhang[, m_pc:= min_pc_contacts*m]
+  cnt.zhang[, m_zhang2:= pmin(m , multiplier_cntct_school_closure * pmax(m_pc, m_zhang))]
+  cnt.zhang[, m_model:= m]
+  #	now use for both weekends and weekdays:
+  #	baseline intensities for 15+ & 15+
+  #	reduced baseline intensities for 0-14 -> any, any-> 0-14
+  #	mixture baseline intensities for 15-19 -> any, any-> 15-19
+  tmp <- cnt.zhang[, which( part.age.cat<4 | cont.age.cat<4 )]
+  set(cnt.zhang, tmp, 'm_model', multiplier_cntct_school_opening * cnt.zhang[tmp,m])
+  set(cnt.zhang, tmp, 'm_model', pmax(cnt.zhang[tmp,m_zhang2], cnt.zhang[tmp,m_model]))
+  tmp <- cnt.zhang[, which( part.age.cat==4 | cont.age.cat==4 )]
+  set(cnt.zhang, tmp, 'm_model', 4/5*pmax(cnt.zhang[tmp,m_zhang2], multiplier_cntct_school_opening*cnt.zhang[tmp,m]) + 
+        1/5*cnt.zhang[tmp,m_zhang2])
+  
+  states = names(processed_data$dates)
+  cntct_elementary_school_reopening_weekdays = vector('list', length(states))
+  cntct_elementary_school_reopening_weekends = vector('list', length(states))
+  for(i in 1:length(states))
+  {
+    tmp <- dcast.data.table(subset(cnt.zhang, loc==states[i] & type=="weekday"), part.age.cat~cont.age.cat, value.var='m_model')
+    tmp <- unname(as.matrix(tmp)[,-1])	  
+    cntct_elementary_school_reopening_weekdays[[i]] <- tmp	  	  
+    tmp <- dcast.data.table(subset(cnt.zhang, loc==states[i] & type=="weekend"), part.age.cat~cont.age.cat, value.var='m_model')
+    tmp <- unname(as.matrix(tmp)[,-1])
+    cntct_elementary_school_reopening_weekends[[i]] <- tmp	  
+  }  	
+  processed_data$stan_data$cntct_elementary_school_reopening_weekdays = cntct_elementary_school_reopening_weekdays
+  processed_data$stan_data$cntct_elementary_school_reopening_weekends = cntct_elementary_school_reopening_weekends
+  
+  return(processed_data)
+}
+
 
 #' @export
 #' @keywords internal
@@ -2665,4 +3316,248 @@ gqs_add_stan_data_for_iar <- function(stan_data){
 	return(stan_data)  
 }
 
+#' @export
+#' @keywords internal
+gqs_add_stan_data_for_new_strain = function(stan_data,
+                                            dates,
+                                            rel_transmissibility_new_strain = 1.7,
+                                            prop_cases_new_strain_first_day = 0.01,
+                                            first_date_new_strain = as.Date('2020-12-15')){
+  
+  # time index of the introduction of the new strain
+  timeidx_introduction_new_strain = vector(mode = 'integer', length = length(dates))
+  for(m in seq_along(names(dates))){
+    # m = 1
+    dates_m = data.table(date = seq.Date(min(dates[[m]]), min(dates[[m]]) + stan_data$N2 - 1, by = 'day'), 
+                         time_idx = 1:stan_data$N2)
+
+    timeidx_introduction_new_strain[m] = subset(dates_m, date == first_date_new_strain)$time_idx[1]
+  }
+  stan_data$INTRO_NEW_STRAIN_TIME_IDX = timeidx_introduction_new_strain
+  
+  # total number of SARS-CoV-2 strains
+  stan_data$N_STRAINS = 2
+  
+  # transmissibility multiplier new SARS-CoV-2 strains
+  stan_data$rel_transmissibility_new_strain = rel_transmissibility_new_strain
+  
+  # proportion of new strain among cases on introduction day
+  stan_data$prop_cases_new_strain_first_day = prop_cases_new_strain_first_day
+  
+  return(stan_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr  
+gqs_add_stan_data_for_shield <- function(stan_data, return_age_band,shielded_age_band,shielded_contacts,shielded_date, dates)
+{
+  # find indices for age bands
+  return_age_band = as.numeric(strsplit(return_age_band, '-')[[1]])
+  shielded_age_band = as.numeric(strsplit(shielded_age_band, '-')[[1]])
+  age_breaks = c(seq(0,85,5),100)
+  return_age_band_index = max(which(age_breaks[1:(length(age_breaks)-1)] <= return_age_band[1])): min(which(age_breaks[2:(length(age_breaks))]  >= return_age_band[2]))
+  shielded_age_band_index = max(which(age_breaks[1:(length(age_breaks)-1)] <= shielded_age_band[1])): min(which(age_breaks[2:(length(age_breaks))] >= shielded_age_band[2]))
+  
+  # indices for adult age groups which have no_impact_intv or impact_intv
+  stan_data$no_impact_intv_idx <- c(return_age_band_index, shielded_age_band_index)
+  stan_data$N_no_impact_intv_idx <-length(stan_data$no_impact_intv_idx)
+  stan_data$impact_intv_idx <- setdiff(1:(length(age_breaks)-1), stan_data$no_impact_intv_idx)
+  stan_data$impact_intv_idx <- setdiff(stan_data$impact_intv_idx, (1:stan_data$A_CHILD))
+  stan_data$N_impact_intv_idx <-length(stan_data$impact_intv_idx)
+  
+  # set shielded age band contacts to shielded_contacts
+  stan_data$cntct_weekdays_mean_shielded_age_band <-  copy(stan_data$cntct_weekdays_mean)
+  stan_data$cntct_weekdays_mean_shielded_age_band <- lapply(stan_data$cntct_weekdays_mean_shielded_age_band, function(x){
+    x[shielded_age_band_index, ] = min(shielded_contacts, x[shielded_age_band_index, ])
+    x[,shielded_age_band_index] = min(shielded_contacts, x[shielded_age_band_index, ])
+    return(x)
+  })
+  
+  stan_data$cntct_weekends_mean_shielded_age_band <-  copy(stan_data$cntct_weekends_mean)
+  stan_data$cntct_weekends_mean_shielded_age_band <- lapply(stan_data$cntct_weekends_mean_shielded_age_band, function(x){
+    x[shielded_age_band_index, ] = min(shielded_contacts, x[shielded_age_band_index, ])
+    x[,shielded_age_band_index] = min(shielded_contacts, x[shielded_age_band_index, ])
+    return(x)
+  })
+  
+  stan_data$cntct_school_closure_weekdays_shielded_age_band <-  copy(stan_data$cntct_school_closure_weekdays)
+  stan_data$cntct_school_closure_weekdays_shielded_age_band <- lapply(stan_data$cntct_school_closure_weekdays_shielded_age_band, function(x){
+    x[shielded_age_band_index, ] = min(shielded_contacts, x[shielded_age_band_index, ])
+    x[,shielded_age_band_index] = min(shielded_contacts, x[shielded_age_band_index, ])
+    return(x)
+  })
+  
+  stan_data$cntct_school_closure_weekends_shielded_age_band <-  copy(stan_data$cntct_school_closure_weekends)
+  stan_data$cntct_school_closure_weekends_shielded_age_band <- lapply(stan_data$cntct_school_closure_weekends_shielded_age_band, function(x){
+    x[shielded_age_band_index, ] = min(shielded_contacts, x[shielded_age_band_index, ])
+    x[,shielded_age_band_index] = min(shielded_contacts, x[shielded_age_band_index, ])
+    return(x)
+  })
+  
+  stan_data$cntct_elementary_school_reopening_weekdays_shielded_age_band <-  copy(stan_data$cntct_elementary_school_reopening_weekdays)
+  stan_data$cntct_elementary_school_reopening_weekdays_shielded_age_band <- lapply(stan_data$cntct_elementary_school_reopening_weekdays_shielded_age_band, function(x){
+    x[shielded_age_band_index, ] = min(shielded_contacts, x[shielded_age_band_index, ])
+    x[,shielded_age_band_index] = min(shielded_contacts, x[shielded_age_band_index, ])
+    return(x)
+  })
+  
+  stan_data$cntct_elementary_school_reopening_weekends_shielded_age_band <-  copy(stan_data$cntct_elementary_school_reopening_weekends)
+  stan_data$cntct_elementary_school_reopening_weekends_shielded_age_band <- lapply(stan_data$cntct_elementary_school_reopening_weekends_shielded_age_band, function(x){
+    x[shielded_age_band_index, ] = min(shielded_contacts, x[shielded_age_band_index, ])
+    x[,shielded_age_band_index] = min(shielded_contacts, x[shielded_age_band_index, ])
+    return(x)
+  })
+  
+  # date of shielding (start of forecast)
+  stan_data$age_band_shielded_idx <- as.vector(sapply(dates,function(x)which(x==shielded_date)))
+
+  return(stan_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table 
+find_reopening_dates = function(ods, default_school_reopening_date){
+  
+  # states that have re-opened their schools before end of Edu data 
+  tmp = ods[!School_Status %in% c("State ordered closure in effect (including states where openings are delayed)", "Full closure", 'Full closure in effect'), ]
+  tmp[, schools_reopened_before_forecast := 1]
+  tmp[, reopening_date_Edu_Week := min(date_EduWeek_data), by = "loc"]
+  # if schools were opened at the beginning of the data set, school reopening date is fixed to the default
+  tmp[reopening_date_Edu_Week == min(ods$date_EduWeek_data), reopening_date_Edu_Week := default_school_reopening_date]
+  
+  # states that have not re-opened their schools before end of Edu data 
+  tmp1 = ods[!loc %in% tmp$loc]
+  tmp1[,schools_reopened_before_forecast := 0]
+  tmp1[, reopening_date_Edu_Week := default_school_reopening_date] # need to have a date format, will be overwitten
+  
+  tmp = rbind(tmp, tmp1)
+  tmp = select(tmp, - c("School_Status", "date_EduWeek_data"))
+  tmp = unique(tmp)
+  
+  return(tmp)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table 
+find_closure_2_dates = function(ods, default_school_closure_2_date, df_reopening_dates){
+  
+  # states that have re-opened their schools before end of Edu data 
+  tmp = ods[School_Status %in% c("State ordered closure in effect (including states where openings are delayed)", "Full closure", "Full closure in effect"), ]
+  tmp = tmp[date_EduWeek_data > max(df_reopening_dates$reopening_date_Edu_Week)] # keep only date after school reopening
+  tmp = tmp[!loc_label %in% df_reopening_dates[schools_reopened_before_forecast == F]$loc_label] # keep only state that reopened
+  tmp[, schools_close_2_before_forecast := 1]
+  tmp[, closure_2_date_Edu_Week := min(date_EduWeek_data), by = "loc"]
+  
+  # states that have not re-opened their schools before end of Edu data 
+  tmp1 = ods[!loc %in% tmp$loc]
+  tmp1[, schools_close_2_before_forecast := 0]
+  tmp1[, closure_2_date_Edu_Week := default_school_closure_2_date] # need to have a date format, will be overwitten
+  
+  tmp = rbind(tmp, tmp1)
+  tmp = select(tmp, - c("School_Status", "date_EduWeek_data"))
+  tmp = unique(tmp)
+  
+  return(tmp)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr
+aggregate_ifr_data_by_age = function(ifr.by.age, path_to_file_pop_us = GFNAME_us_population,  max_age){
+
+ifr.by.age <- ifr.by.age %>% 
+  dplyr::select(age, ifr_mean, ifr_cl, ifr_cu)
+#    aggregate data on contacts by 1-year bands to data by desired age bands
+pop_by_age <- readRDS(path_to_file_pop_us)
+age_bands <- dplyr::select(pop_by_age[which(!is.na(pop_by_age$code)),], -Total) %>%
+  reshape2::melt(id.vars = c("Region", "code")) %>% 
+  dplyr::rename(age = variable, pop = value, state = Region) %>% dplyr::select(age) %>% dplyr::distinct()
+age.cat <- sapply(strsplit(gsub("\\[|\\]|\\(|\\+", "", age_bands$age), "-"), as.numeric)
+if (is.na(age.cat[[length(age.cat)]][2])) age.cat[[length(age.cat)]][2] <- 99
+age.cat <- matrix(unlist(age.cat), ncol = 2, byrow = TRUE)
+
+ifr.by.age <- ifr.by.age[1:which(ifr.by.age$age == max_age),] %>% # 0 to max_age
+  dplyr::mutate(age.agg:= cut(age, breaks=c(age.cat[,1],100), right=FALSE, labels=seq_len(length(c(age.cat[,1],100))-1L))) %>%
+  dplyr::group_by(age.agg) %>%
+  dplyr::summarise(ifr_mean:= mean(ifr_mean), 
+            ifr_cl:= mean(ifr_cl), 
+            ifr_cu:= mean(ifr_cu)) %>%            
+  dplyr::ungroup() %>%
+  dplyr::rename(age= age.agg)
+
+return(ifr.by.age)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr
+stan_data_add_ifr_fixed_decay_rate = function(processed_data, ifr_decay_total, ifr_decay_month_start){
+  
+  states <- names(processed_data$dates) 
+  
+  dates = processed_data$dates
+  
+  timeidx_start_ifr_decay = vector(mode = 'integer', length = length(dates))
+  
+  # find time index start
+  for(m in seq_along(names(dates))){
+    # m = 1
+    dates_m = data.table(date = dates[[m]], time_idx = 1:length(dates[[m]]))
+    dates_m[, month := format(date, '%m')]
+    timeidx_start_ifr_decay[m] = subset(dates_m, month == ifr_decay_month_start)$time_idx[1]
+  }
+  processed_data$stan_data$timeidx_start_ifr_decay = timeidx_start_ifr_decay
+  
+  # fix ifr total decay
+  processed_data$stan_data$log_ifr_overall_upswing_effect = log(1 - ifr_decay_total)
+  
+  return(processed_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table tidyr
+stan_data_add_ifr_var_decay_rate = function(processed_data, ifr_decay_total, ifr_decay_month_start){
+  
+  states <- names(processed_data$dates) 
+  
+  dates = processed_data$dates
+  
+  timeidx_start_ifr_decay = vector(mode = 'integer', length = length(dates))
+  
+  # find time index start
+  for(m in seq_along(names(dates))){
+    # m = 1
+    dates_m = data.table(date = dates[[m]], time_idx = 1:length(dates[[m]]))
+    dates_m[, month := format(date, '%m')]
+    timeidx_start_ifr_decay[m] = subset(dates_m, month == ifr_decay_month_start)$time_idx[1]
+  }
+  processed_data$stan_data$timeidx_start_ifr_decay = timeidx_start_ifr_decay
+  
+  # fix ifr total decay
+  processed_data$stan_data$lambda_log_ifr_overall_upswing_effect = -100*log(1 - ifr_decay_total)
+  
+  return(processed_data)
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table
+stan_data_add_rebound_mobility_zero = function(processed_data, default_rebound_mobility_zero_date){
+  
+  dates = processed_data$dates
+  
+  # find time index start
+  for(m in seq_along(names(dates))){
+    # m = 1
+    dates_m = data.table(date = seq.Date(min(dates[[m]]), min(dates[[m]]) + processed_data$stan_data$N2 - 1, by = 'day'), time_idx = 1:processed_data$stan_data$N2)
+    dates_idx_rebound_zero = dates_m[date == default_rebound_mobility_zero_date]$time_idx
+    processed_data$stan_data$covariates[m,3,dates_idx_rebound_zero:processed_data$stan_data$N2,] = 0
+  }
+
+  return(processed_data)
+}
 

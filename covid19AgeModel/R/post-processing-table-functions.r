@@ -88,7 +88,7 @@ make_flow_onward_table <- function(flow, dates, pop_info, outfile.base)
 make_attack_rate_table <- function(attackrate_byage_c,attackrate_overall_c,pop_info,dates,outfile.base){
   cat("\n ----------- make attack rate tables ----------- \n")
   
-  attackrate_byage_c[, L:= paste0(sprintf("%.2f", M*100),' [',sprintf("%.2f", CL*100),'-',sprintf("%.2f", CU*100),']')]
+  attackrate_byage_c[, L:= paste0(sprintf("%.1f", M*100), '\\%',' [',sprintf("%.1f", CL*100), '\\%','-',sprintf("%.1f", CU*100), '\\%',']')]
   tmp <- attackrate_byage_c[, list( ALL_LOC=length(unique(loc))==length(unique(attackrate_byage_c$loc)) ), by='date']
   tmp <- subset(tmp, ALL_LOC)
   tmp <- tmp[, list(ALL_NON_FORECAST= all(sapply(dates, function(x) any(x==date)))), by='date']
@@ -99,7 +99,7 @@ make_attack_rate_table <- function(attackrate_byage_c,attackrate_overall_c,pop_i
   ans <- attackrate_byage_c[date==last.common.date]
   
   # add overall 
-  attackrate_overall_c[, L:= paste0(sprintf("%.2f", M*100),' [',sprintf("%.2f", CL*100),'-',sprintf("%.2f", CU*100),']')]
+  attackrate_overall_c[, L:= paste0(sprintf("%.1f", M*100), '\\%',' [',sprintf("%.1f", CL*100), '\\%','-',sprintf("%.1f", CU*100), '\\%',']')]
   tmp <- attackrate_overall_c[date==last.common.date]
   tmp[,age_cat:= 'overall']
   tmp[,age_band:= 'overall']

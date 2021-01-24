@@ -185,7 +185,7 @@ knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MD"))
 }
 ```
 
-`r if ('MA' %in% args$states) '#### Masschusetts'`
+`r if ('MA' %in% args$states) '#### Massachusetts'`
 ```{r, include=('MA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
 if(file.exists(file.to.figure("E_deathsByAge_panel-MA"))){
 knitr::include_graphics(file.to.figure("E_deathsByAge_panel-MA"))
@@ -1052,7 +1052,7 @@ knitr::include_graphics(file.to.figure("five_panel_plot_new-MA"))
 `r if ('MA' %in% args$states) '##### Flows between age bands'`
 ```{r, include=('MA' %in% args$states), out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
 if(all(c(file.exists(file.to.figure("flow_summary-MA")),file.exists(file.to.figure("reduced_flow_sourcesonwardabs-MA")),file.exists(file.to.figure("reduced_flow_sourcesonwardprop-MA"))))){
-knitr::include_graphics(c(file.to.figure("flow_summary-MA"),file.to.figure("reduced_flow_sourcesonwardabs-MA"),file.to.figure("reduced_flow_sourcesonwardprop-MD")))
+knitr::include_graphics(c(file.to.figure("flow_summary-MA"),file.to.figure("reduced_flow_sourcesonwardabs-MA"),file.to.figure("reduced_flow_sourcesonwardprop-MA")))
 }
 ```
 
@@ -1981,6 +1981,31 @@ knitr::include_graphics(file.to.figure("ifr_age_base"))
 }
 ```
 
+```{r, include=TRUE, out.width="50%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("log_ifr_age_base_prior_posterior"))){
+knitr::include_graphics(file.to.figure("log_ifr_age_base_prior_posterior"))
+}
+```
+
+```{r, include=TRUE, out.width="60%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("log_ifr_age_prior_posterior_1"))){
+knitr::include_graphics(file.to.figure("log_ifr_age_prior_posterior_1"))
+}
+```
+
+```{r, include=TRUE, out.width="60%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("log_ifr_age_prior_posterior_2"))){
+knitr::include_graphics(file.to.figure("log_ifr_age_prior_posterior_2"))
+}
+```
+
+##### Age shift
+```{r, include=TRUE, out.width="60%",  fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("timeeff_shift_age"))){
+knitr::include_graphics(file.to.figure("timeeff_shift_age"))
+}
+```
+
 ##### Susceptibility by age
 ###### Posterior
 ```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
@@ -2033,18 +2058,43 @@ knitr::include_graphics(file.to.figure("phi"))
 }
 ```
 
-##### Intervention effects on mobility at school
+#### Upswing space time random effects
+##### Spatial effects
 ```{r, include=TRUE, out.width="40%", fig.show='hold', fig.align='centre', echo=FALSE}
-if(file.exists(file.to.figure("elt_school_intv_effect"))){
-knitr::include_graphics(file.to.figure("elt_school_intv_effect"))
+if(file.exists(file.to.figure("upswing_rnde_density"))){
+knitr::include_graphics(file.to.figure("upswing_rnde_density"))
+}
+```
+
+##### Time effects
+```{r, include=TRUE, out.width="80%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("upswing_timeeff_reduced"))){
+knitr::include_graphics(file.to.figure("upswing_timeeff_reduced"))
+}
+```
+```{r, include=TRUE, out.width="80%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("sd_upswing_timeeff_reduced"))){
+knitr::include_graphics(file.to.figure("sd_upswing_timeeff_reduced"))
+}
+```
+
+
+#### School attack rates
+```{r,echo = FALSE}
+file <- file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-","summary-attackrate-school.RDS") )
+if(file.exists(file)){
+  attackrate_school <- readRDS(file)
+  kable(attackrate_school,caption = 'school attack rate')
 }
 ```
 
 #### Sampler diagnostics
 ```{r, echo = FALSE}
 file <- file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-","sampler_diagnostics.rds") )
-diagostics <- readRDS(file)
-diagostics
+if(file.exists(file)){
+  diagostics <- readRDS(file)
+  diagostics
+}
 ```
 
 #### Convergence diagnostics
@@ -2052,8 +2102,10 @@ We present below the parameters which had a smaller effective sample size than 5
 
 ```{r, echo = FALSE}
 file <- file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-","pars-with-small-neff.rds") )
-neff <- readRDS(file)
-neff[which(neff[,9]<500), c(1, 2, 9, 10)]
+if(file.exists(file)){
+  neff <- readRDS(file)
+  neff[which(neff[,9]<500), c(1, 2, 9, 10)]
+}
 ```
 
 ### Effect of age-specific mobility trends on changes in baseline contact intensities

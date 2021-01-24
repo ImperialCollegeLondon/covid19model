@@ -9,17 +9,11 @@ args <- list(
   stanModelFile= 'base_age_fsq_mobility_200821b4_cmdstanv',
   seed= 42,
   chain= 1,
-  #outdir= "~/figures",
-  outdir= "~/sandbox",
+  outdir= "~/Downloads",
   job_tag= '4states_014cnt',
   cmdstan = 0L,
   multiplier_cntct_school_closure = 1,
   forecast_with_schools_reopened = 0,
-  #countries= "CO,CT,FL,NYC"
-  #countries= "DC,CO,CT,ID,FL,NYC"
-  #countries= "AL,AZ,CA,CO,CT,FL,GA,IL,IN,LA,MA,MD,MI,MS,NC,NJ,NYC,TN,UT,WA"
-  #countries= "AL,AZ,CA,CO,CT,DC,DE,FL,GA,IA,IL,IN,KS,KY,LA,MA,MD,ME,MI,MO,MS,NC,NH,NJ,NM,NV,NYC,OK,OR,PA,RI,SC,TN,TX,UT,VA,VT,WA,WI"
-  #countries= "AL,AZ,CA,DC,DE,FL,GA,IA,ID,IL,IN,KS,KY,LA,MA,MD,MI,MS,NC,ND,NH,NJ,NV,NYC,OK,OR,SC,WA,WI"
   countries= "AK,AL,AZ,CA,CO,CT,DC,DE,FL,GA,IA,ID,IL,IN,KS,KY,LA,MA,MD,ME,MI,MO,MS,NC,ND,NH,NJ,NM,NV,NYC,OK,OR,PA,RI,SC,TN,TX,UT,VA,VT,WA,WI",
   ifr_by_age_prior = "BetaBinomial"
 )
@@ -55,34 +49,35 @@ if(length(args_line) > 0)
 ## set other args
 args$cntct_by <- 5L	
 args$file_stanModel <- file.path(pkg.dir, 'stan-models',paste0(args$stanModelFile,'.stan'))
-args$file_jhu_death_data_padded <- file.path(pkg.dir,"data","jhu_death_data_padded_200902.rds")
-args$file_nyt_death_data_padded <- file.path(pkg.dir,"data","nyt_death_data_padded_200902.rds")
-args$file_nyc_death_data_padded <- file.path(pkg.dir,"data","NYC_deaths_200902.csv")
-args$file_death_data_by_age <- file.path(pkg.dir,"data","DeathsByAge_US_200909.csv")
-args$file_ihme_hospitalization <- file.path(pkg.dir,"data","Hospitalization_all_locs.csv")
-args$file_states <- file.path(pkg.dir,"data","states.csv")
-args$file_weighted_ifr <- file.path(pkg.dir, "data","weighted_ifr.RDS")
-#args$file_global_mobility_report <- file.path(pkg.dir,'data','Global_Mobility_Report_200602.csv')
-args$file_fsq_mobility <- file.path(pkg.dir,'data','fsq_visit_data_aug_refresh_200829.csv')
-#args$file_resnonres_trends <- file.path(pkg.dir,'data','google_Mobility_Multipliers_US_by_state_200602.rds') 
-args$file_grouped <- file.path(pkg.dir,"data","grouped.csv")
-args$file_us_population <- file.path(pkg.dir,"data","us_population_withnyc.rds")
-args$file_serial_interval <- file.path(pkg.dir,'data','serial_interval.csv')
-args$file_covariates <- file.path(pkg.dir,"data","covariates.RDS")
-args$file_contact_weekday <- file.path(pkg.dir,'data','polymod.tab.bin_GB_weekday.rda') 
-args$file_contact_weekend <- file.path(pkg.dir,'data','polymod.tab.bin_GB_weekend.rda') 
-args$file_polymod_data <- file.path(pkg.dir,'data','polymod_data_with_covariates_200623.rds')
-args$file_pop_age <- file.path(pkg.dir,'data','popByAge_v200421.csv')
-args$file_us_area <- file.path(pkg.dir,"data","us_states_area_measurements.csv")
-args$file_ifr_by_age_prior_Verity <- file.path(pkg.dir,'data','ifr-by-age-prior_Verity_200624.csv') # prior with smooth spline on Verity estimates https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(20)30243-7/fulltext
-args$file_ifr_by_age_prior_Levin <- file.path(pkg.dir,'data','ifr-by-age-prior_Levin_200904.csv') # lognormal prior from Levin et al. https://www.medrxiv.org/content/10.1101/2020.07.23.20160895v5
-args$file_ifr_by_age_prior_BetaBinomial <- file.path(pkg.dir,'data','ifr-by-age-prior_BetaBinomial_200902.csv') # prior estimated with a betabinomial, logit link with gp (in ifr-by-age/) https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1
-args$file_CI_OR <- file.path(pkg.dir, "data", "CI_OR_age_Zhang.csv")
-args$file_region <- file.path(pkg.dir,"data", "usa-regions.csv")
-args$file_dcontact <- file.path(pkg.dir, "data", "contact_predictions.rds")
-args$file_contact_intensities_outbreak_China <- file.path(pkg.dir, "data", "estimate_contact_intensities_outbreak_China.rds")
-args$file_contact_intensities_outbreak_UK <- file.path(pkg.dir, "data", "estimate_contact_intensities_outbreak_UK.rds")
-args$file_school_intervention <- file.path(pkg.dir, "data", "OxCGRT_US_subnational_09Sept2020.csv") 
+args$file_jhu_death_data_padded <- file.path(pkg.dir,"data-Report32-200917","jhu_death_data_padded_200902.rds")
+args$file_nyt_death_data_padded <- file.path(pkg.dir,"data-Report32-200917","nyt_death_data_padded_200902.rds")
+args$file_nyc_death_data_padded <- file.path(pkg.dir,"data-Report32-200917","NYC_deaths_200902.csv")
+args$file_death_data_by_age <- file.path(pkg.dir,"data-Report32-200917","DeathsByAge_US_200909.csv")
+args$file_ihme_hospitalization <- file.path(pkg.dir,"data-Report32-200917","Hospitalization_all_locs.csv")
+args$file_states <- file.path(pkg.dir,"data-Report32-200917","states.csv")
+args$file_weighted_ifr <- file.path(pkg.dir, "data-Report32-200917","weighted_ifr.RDS")
+#args$file_global_mobility_report <- file.path(pkg.dir,'data-Report32-200917','Global_Mobility_Report_200602.csv')
+args$file_fsq_mobility <- file.path(pkg.dir,'data-Report32-200917','fsq_visit_data_aug_refresh_200829.csv')
+#args$file_resnonres_trends <- file.path(pkg.dir,'data-Report32-200917','google_Mobility_Multipliers_US_by_state_200602.rds') 
+args$file_grouped <- file.path(pkg.dir,"data-Report32-200917","grouped.csv")
+args$file_us_population <- file.path(pkg.dir,"data-Report32-200917","us_population_withnyc.rds")
+args$file_serial_interval <- file.path(pkg.dir,'data-Report32-200917','serial_interval.csv')
+args$file_covariates <- file.path(pkg.dir,"data-Report32-200917","covariates.RDS")
+args$file_contact_weekday <- file.path(pkg.dir,'data-Report32-200917','polymod.tab.bin_GB_weekday.rda') 
+args$file_contact_weekend <- file.path(pkg.dir,'data-Report32-200917','polymod.tab.bin_GB_weekend.rda') 
+args$file_polymod_data <- file.path(pkg.dir,'data-Report32-200917','polymod_data_with_covariates_200623.rds')
+args$file_pop_age <- file.path(pkg.dir,'data-Report32-200917','popByAge_v200421.csv')
+args$file_us_area <- file.path(pkg.dir,"data-Report32-200917","us_states_area_measurements.csv")
+args$file_ifr_by_age_prior_Verity <- file.path(pkg.dir,'data-Report32-200917','ifr-by-age-prior_Verity_200624.csv') # prior with smooth spline on Verity estimates https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(20)30243-7/fulltext
+args$file_ifr_by_age_prior_Levin <- file.path(pkg.dir,'data-Report32-200917','ifr-by-age-prior_Levin_200904.csv') # lognormal prior from Levin et al. https://www.medrxiv.org/content/10.1101/2020.07.23.20160895v5
+args$file_ifr_by_age_prior_BetaBinomial <- file.path(pkg.dir,'data-Report32-200917','ifr-by-age-prior_BetaBinomial_200902.csv') # prior estimated with a betabinomial, logit link with gp (in ifr-by-age/) https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1
+args$file_CI_OR <- file.path(pkg.dir, "data-Report32-200917", "CI_OR_age_Zhang.csv")
+args$file_region <- file.path(pkg.dir,"data-Report32-200917", "usa-regions.csv")
+args$file_dcontact <- file.path(pkg.dir, "data-Report32-200917", "contact_predictions.rds")
+args$file_contact_intensities_outbreak_China <- file.path(pkg.dir, "data-Report32-200917", "estimate_contact_intensities_outbreak_China.rds")
+args$file_contact_intensities_outbreak_UK <- file.path(pkg.dir, "data-Report32-200917", "estimate_contact_intensities_outbreak_UK.rds")
+args$file_school_closure_data <- file.path(pkg.dir, "data-Report32-200917", "OxCGRT_US_subnational_09Sept2020.csv") 
+args$file_school_reopening_data <- file.path(pkg.dir, "data-Report32-200917", "coronavirus-school-re-opening-data.csv") 
 tmp <- Sys.getenv("PBS_JOBID")
 args$job_id <- ifelse(tmp!='', tmp, as.character(abs(round(rnorm(1) * 1e6))) )
 args$job_dir <- file.path(args$outdir,paste0(args$stanModelFile,'-',args$job_tag,'-',args$job_id)) 
@@ -101,6 +96,8 @@ args$decouple_mobility_trends_into_baseline_plus_decline_plus_upswing_parts <- 0
 args$with_dip_rnde <- 0
 args$with_upswing_rnde <- 0
 args$with_biweekly_upswing_time_effect <- 0
+args$with_biweekly_upswing_time_effect_for_all_loc <- 0
+args$effect_weeks <- 2
 args$with_estimated_pairwise_mobility_trends <- 0
 
 ## start script
@@ -128,6 +125,7 @@ args$with_polynomial_prior_on_ifr_by_age <- 0
 args$with_logitincrements_prior_on_ifr_by_age <- 0
 args$with_ifr_rnde_mid1_mid2_old <- 0
 args$with_ifr_rnde_mid1_mid2_expold <- 0
+args$with_ifr_fixed_decay <- 0
 # what prior do you want to use on beta age (if both 0, beta age is not used)
 args$with_truncatednormal_on_each_beta_age_by_age_band <- 0
 args$with_splines_prior_on_beta_age <- 0
@@ -150,14 +148,26 @@ args$scale_contactmatrix_bystate <- 0
 args$scale_contactmatrix_bystateandage <- 0
 # with week effects
 args$with_week_effects <- 0
+# add random effect before and after rebound
+args$with_timeidx_rebound <- 0
 # apply mobility trends to both rows and cols of baseline contact matrix
 args$with_eta2 <- 0
 # distribute initial cases before N0 among individuals aged 20 to 54
-args$with_inits_20_54 <- 0
+args$with_inits_20_54 <- 1
+# distribute initial cases before N0 among individuals aged 5 to 29
+args$with_inits_5_29 <- 0
 # use zhang et al. values for outbreak contact matrix
 args$with_contact_intensities_zhang <- 0
 # fix beta1 
 args$fix_beta_baseline <- 0
+# with Edu weekly data to find state that re-opened schools
+args$with_EduWeek_data <- 0
+# closing and opening kindergartens and elementary schools
+args$with_elementary_schools_status <- 1
+# closing and opening kindergartens, elementary, primary and high schools
+args$with_elementary_high_schools_status <- 0
+# add soft bounds on attack rate in schools
+args$with_school_case_lkl <- 0
 # set US states to include in inference 
 args$states <- strsplit(args$countries,',')[[1]]
 args$countries <- NULL
@@ -190,7 +200,37 @@ if(grepl("fsq_mobility_200821b|fsq_mobility_200821e|covid19AgeModel_report32", a
 	args$with_contact_intensities_zhang <- 1
 	args$with_dip_rnde <- 1
 }
-
+if(grepl("fsq_mobility_200929b", args$file_stanModel))
+{
+  args$with_fsq_mobility <- 1
+  args$with_google_mobility <- 0	
+  args$with_lognormal_prior_on_each_ifr_by_age_band <- 1
+  args$decouple_mobility_trends_into_baseline_plus_decline_plus_upswing_parts <- 1
+  args$with_ifr_rnde_mid1_mid2_expold <- 1
+  args$with_upswing_rnde <- 1
+  args$with_eta2 <- 1
+  args$with_biweekly_upswing_time_effect <- 1
+  args$with_contact_intensities_zhang <- 1
+  args$with_dip_rnde <- 1
+  args$with_timeidx_rebound <- 1
+  args$with_inits_20_54 <- 1
+}
+if(grepl("fsq_mobility_200923c1", args$file_stanModel))
+{
+  args$with_fsq_mobility <- 1
+  args$with_google_mobility <- 0	
+  args$with_lognormal_prior_on_each_ifr_by_age_band <- 1
+  args$decouple_mobility_trends_into_baseline_plus_decline_plus_upswing_parts <- 1
+  args$with_ifr_rnde_mid1_mid2_expold <- 1
+  args$with_upswing_rnde <- 1
+  args$with_eta2 <- 1
+  args$with_biweekly_upswing_time_effect <- 1
+  args$with_contact_intensities_zhang <- 1
+  args$with_school_status <- 1
+  args$with_dip_rnde <- 1
+  args$with_smoothed_case_data <- 1
+  args$with_inits_20_54 <- 1
+}
 
 str(args)
 set.seed(args$seed)
@@ -483,7 +523,12 @@ if( args$with_fsq_mobility==1 &&
 	cat('\nAdding decoupled FSQ mobility trends (baseline + decline + upswing) to stan_data ... ')
 	processed_data <- stan_data_add_decoupled_mobility_trends_3_parts_fsq(processed_data, mobility_data, log=TRUE)	
 }
-
+if( args$with_fsq_mobility==1 && 
+    args$with_timeidx_rebound==1 )
+{		
+  cat('\nAdding indicator for rebound date ... ')
+  processed_data <- stan_data_add_indicator_rebound_date(processed_data, mobility_data)	
+}
 if( args$with_estimated_pairwise_mobility_trends)
 {	
   # process_chi_emodo_mobilty(mobility_data,pop_info,infile_emodo='~/contacts_and_mobility/contacts_by_age_20200729.csv')
@@ -557,6 +602,11 @@ if( args$with_inits_20_54 )
 	cat('\nAdding inits A array for 20 to 54 year olds ... ')
 	processed_data <- stan_data_add_initA_array_20_54(processed_data)	 	
 }
+if( args$with_inits_5_29 )
+{
+  cat('\nAdding inits A array for 5 to 29 year olds ... ')
+  processed_data <- stan_data_add_initA_array_5_29(processed_data)	 	
+}
 if( args$with_biweekly_upswing_time_effect )
 {
 	cat('\nAdding upswing time effects ... ')
@@ -565,20 +615,33 @@ if( args$with_biweekly_upswing_time_effect )
 
 if( args$with_contact_intensities_zhang)
 {
- cat('\nAdding contact intensities during outbreak from Zhang et al. and mutliplier... ')
-  processed_data <- stan_data_add_school_status(processed_data, args$file_school_intervention, args$forecast_with_schools_reopened, reopening_Date=as.Date("2020-08-24"))	 	
-	processed_data <- stan_data_add_contact_school_closure(processed_data, 
-			dcontact, 
-			args$file_contact_intensities_outbreak_China, 
-			args$multiplier_cntct_school_closure)
-	processed_data <- stan_data_add_contact_school_opening(processed_data, 
-			dcontact, 
-			args$file_contact_intensities_outbreak_China, 
-			args$multiplier_cntct_school_closure, 
-			multiplier_cntct_school_opening=1.0, 
-			min_pc_contacts=0.05, 
-			reopening_date="2020-08-24")
+  reopening_date <- as.Date("2020-08-24")
+  cat('\nAdding school status. ... ')
+  processed_data <- stan_data_add_school_status(
+    processed_data, 
+    args$file_school_closure_data, 
+    args$forecast_with_schools_reopened, 
+    reopening_Date= reopening_date
+  )    
+  cat('\nAdding contact intensities during school closure from Zhang et al. and mutliplier... ')
+  processed_data <- stan_data_add_contact_school_closure(
+    processed_data, 
+    dcontact, 
+    args$file_contact_intensities_outbreak_China, 
+    args$multiplier_cntct_school_closure
+  )
+  cat('\nAdding contact intensities after school re-opening from Zhang et al. and mutliplier... ')
+  processed_data <- stan_data_add_contact_school_opening(
+    processed_data, 
+    dcontact, 
+    args$file_contact_intensities_outbreak_China, 
+    args$multiplier_cntct_school_closure, 
+    multiplier_cntct_school_opening=1.0, 
+    min_pc_contacts=0.05,
+    reopening_date= reopening_date
+  )	   
 }
+
 if( args$fix_beta_baseline )
 {
   cat('\n Add beta1 ... ')

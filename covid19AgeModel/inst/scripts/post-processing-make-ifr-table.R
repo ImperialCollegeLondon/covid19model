@@ -144,3 +144,5 @@ if(!file.exists(file) | args_dir[['overwrite']])
 	saveRDS(ifr_allstates, file=file)		
 }
 
+cat(" \n -------------------------------- \n \n Completed post-processing-ifr-table.R \n \n -------------------------------- \n")
+

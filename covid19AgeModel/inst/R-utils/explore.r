@@ -20,7 +20,159 @@ explore.manuscript.Rta.table <- function()
 	rta.ntl4 <- paste0(as.character(rta.ntl[rta.ntl2]), collapse=', ')
 }
 
-eplore.ecases.prior <- function()
+explore.B117.schools <- function()
+{
+	library(tidyverse)
+	library(here)
+	library(data.table)
+	library(covid19AgeModel)
+	library(ggsci)
+	
+	indir.voc <- '~/git/covid19variant'
+	indir.age <- '/Users/or105/Box/OR_Work/2020/2020_covid/age_renewal_usa/base_age_fsq_mobility_201015i4_cmdstanv-40states_Oct29_Levin7_schoolbound6_v2'
+	outdir <- '~/Box/OR_Work/2020/2020_covid_new_variant'
+	lockdown_start <- (45 + 4/7)
+	lockdown_end <- (49 + 2/7)	
+	
+	stp_rt <- readRDS(file.path(indir.voc,"data/combine_rt_stp_all_neg_pos.rds")) 
+	sgss <- readRDS(file.path(indir.voc,"data/sgss_stp.rds"))
+	
+	# prepare data set with ratio of Rt estimates
+	sgss.to.areas <- fread(file.path(indir.voc,"data/ltla-nhser-stp.csv")) %>% select("stp_name","nhser_name")
+	sgss.to.areas <- sgss.to.areas[, list(nhser_name = nhser_name[1]),by=stp_name]
+	sgss <- left_join(sgss,sgss.to.areas,by=c("area"="stp_name"))
+	stp_rt <- left_join(stp_rt,sgss,by=c("epiweek","area"))
+	
+	stp_rt$freq <- 100*stp_rt$sgss_s_negative_corrected / (stp_rt$sgss_s_negative_corrected+stp_rt$sgss_s_positive_corrected)	
+	stp_rt <- stp_rt %>% 
+		filter(epiweek >= 45 & epiweek <= 50) %>% 
+		select(area, epiweek, Rt, Difference, Ratio, `R(S+)`,`R(S-)`, nhser_name, freq) %>%
+		rename(Rt_Splus := `R(S+)`, Rt_Sminus := `R(S-)`, Rt_diff := Difference, Rt_ratio := Ratio)
+		
+	stp_rt_2 <- subset(as.data.table(stp_rt), select=c(Rt_diff=Rt_diff, Rt_ratio=Rt_ratio)) 
+	stp_rt_2[, stpw_idx := seq_len(nrow(stp_rt_2))]
+	
+	# load 
+	file <- file.path(indir.age, paste0(basename(indir.age),'-stanout-basic.RDS'))
+	cat("\n read RDS:", file)
+	plot.pars.basic <- readRDS(file)
+	
+	file <- file.path(indir.age, paste0(basename(indir.age),'-stanout-E_effcasesByAge-gqs.RDS'))
+	cat("\n read RDS:", file)
+	E_effcasesByAge <- readRDS(file)
+	
+	file <- file.path(indir.age, paste0(basename(indir.age),'-stanout-RtByAge-gqs.RDS'))
+	cat("\n read RDS:", file)
+	RtByAge <- readRDS(file)
+	
+	pop_info <- plot.pars.basic$pop_info 
+	dates <- plot.pars.basic$dates
+	regions <- plot.pars.basic$regions
+	age_cat_map <- covid19AgeModel::make_age_cat_map_7(pop_info)
+	age_cat_map <- subset(age_cat_map, age.cat2.label=='0-9' | age.cat2.label=='10-19')
+	
+	ps <- c(0.5, 0.025, 0.975)
+	p_labs <- c('M','CL','CU')	
+	stopifnot( dim(RtByAge)[2]==length(regions) )
+	stopifnot( dim(E_effcasesByAge)[2]==length(regions) )
+	
+	ans <- vector('list',length(regions))  	  
+	#	loop over locations for speed. very hard to take quantiles on such large data
+	for(m in seq_along(regions))
+	{		
+		#m <- 1	  
+		cat('\nProcessing state',m,' ',regions[m])
+		
+		#	select data from large table here
+		#	no reshape outside the loop 
+		dt <- as.data.table( reshape2::melt( E_effcasesByAge[,m,,] ) )
+		setnames(dt, 1:4, c('iteration','time','age_index','value_effcases_a'))
+		tmp <- as.data.table( reshape2::melt( RtByAge[,m,,] ) )
+		setnames(tmp, 1:4, c('iteration','time','age_index','value_Rt_a'))
+		dt <- cbind(dt, select(tmp, "value_Rt_a"))
+		
+		# select time indices from 2020-08-24 to 2020-10-29
+		tmp <- unique(subset(dt, select=time))
+		tmp[, date:= dates[[m]][tmp$time[1]] + tmp$time - tmp$time[1]]
+		tmp[, day := weekdays(date)]
+		tmp <- subset(tmp, date>'2020-08-23' & date<='2020-10-29', select=time)
+		dt <- merge(dt, tmp, by='time')
+		
+		#	minimise merging. so we make a few low dim steps now
+		#	we also only take the absolute minimum columns that we need
+		#	ie the age.cat.labels are just exhausting memory
+		tmp <- subset(age_cat_map, select=c(age.cat2, age.cat))
+		setnames(tmp, colnames(tmp), gsub('\\.','_',colnames(tmp)))
+		setnames(tmp, c('age_cat','age_cat2'), c('age_index','age_index2'))
+		dt <- merge(dt, tmp, by='age_index')
+		
+		# 	take the sum of effective cases over age group2
+		tmp <- dt[, list(value_effcases_c=sum(value_effcases_a)), by=c('time','iteration', 'age_index2')]	
+		dt <- merge(dt, tmp, by=c('time','iteration', 'age_index2'))
+		
+		# 	aggregate Rt by age groups c
+		tmp <- dt[value_effcases_c == 0, list(value_Rt_c = 0 ), by=c('age_index2', 'time','iteration')]
+		dt <- dt[value_effcases_c != 0, list(value_Rt_c = sum(value_Rt_a*value_effcases_a / value_effcases_c) ), by=c('age_index2', 'time','iteration')]
+		dt <- rbind(tmp, dt)
+		
+		#	average Rt over time
+		dt <- dt[, list(value_Rt_c=mean(value_Rt_c)), by=c('age_index2','iteration')]	
+	
+		#	merge VOC additive and multiplicative effects
+		tmp <- as.data.table(expand.grid(iteration=unique(dt$iteration), stpw_idx=stp_rt_2$stpw_idx ))
+		tmp <- merge(tmp, stp_rt_2, by=c('stpw_idx'))
+		dt <- merge(dt, tmp, by=c('iteration'),allow.cartesian=TRUE)
+		dt[, Sm_Rt_add := value_Rt_c + Rt_diff]
+		dt[, Sm_Rt_mul := value_Rt_c * Rt_ratio]
+		setnames(dt, 'value_Rt_c', 'Rt')
+		dt <- melt(dt, id.vars=c('iteration','age_index2','stpw_idx'), measure.vars=c('Sm_Rt_add','Sm_Rt_mul', 'Rt'))
+		
+		#	summarise and take 100 random samples
+		dt <- dt[, list(value= quantile(value, prob=ps), stat= p_labs), by=c('age_index2', "variable")]
+
+		#tmp <- dt[, list(value= quantile(value, prob=ps), iteration= -1*(1:3)), by=c('age_index2', "variable")]
+		#tmp[, stpw_idx := 0L ]
+		#dt <- merge(dt, data.table(iteration=sample(max(dt$iteration), 1e2)), by='iteration')
+		#dt <- rbind(dt, tmp)
+		
+		#	add loc 
+		dt[, loc:= regions[m]]
+						
+		# build new data object only after summarised
+		ans[[m]] <- copy(dt)		
+	}
+	ans <- do.call('rbind',ans)	
+	
+	#	make human readable loc labels
+	tmp <- unique(subset(pop_info, select=c(loc, loc_label)))
+	ans <- merge(ans, tmp, by='loc')	
+	ans <- merge(unique(subset(age_cat_map,select=c('age.cat2','age.cat2.label'))), ans, by.y=c('age_index2'), by.x=c('age.cat2'))
+	setnames(ans, c('age.cat2','age.cat2.label'), c('age_cat','age_band'))
+	ans <- dcast.data.table(ans, age_cat+age_band+loc+loc_label+variable~stat, value.var='value')
+	set(ans, NULL, 'variable', ans[, factor(variable, levels=c('Rt','Sm_Rt_mul','Sm_Rt_add'))])
+	set(ans, NULL, 'age_band', ans[, factor(age_band, levels=c('0-9','10-19'), labels=c('ages 0-9','ages 10-19'))])
+	
+	#	make subset to a few states
+	ans2 <- subset(ans, loc%in%c('GA', 'FL', 'CA', 'NYC', 'TX') & variable!='Sm_Rt_add')	
+
+	p <- ggplot(ans2, aes(x=loc_label, fill=variable)) +
+		geom_hline(yintercept=1, colour='black', linetype='dotted') +
+		geom_bar(aes(y=M), position=position_dodge(width=0.9), width=0.9, stat='identity') +
+		geom_errorbar(aes(ymin=CL, ymax=CU), position=position_dodge(width=0.9), width=0.5, alpha=0.4) +
+		scale_y_continuous(lim=c(0, max(ans$CU)*1.1), expand=c(0,0)) +
+		scale_fill_nejm() +
+		theme_bw() +
+		theme(
+			legend.position='bottom',
+			panel.background = element_blank(),
+			strip.background = element_rect(color="white", fill="white", size=1, linetype="solid")
+			) +
+		facet_grid(~age_band, scales='free_y') +
+		labs(y='reproduction number', x='', fill='SARS-CoV-2 variant') 
+	ggsave(file=file.path(outdir, 'US_Rt_prediction_0_to_20_v2.pdf'), p, w=8, h=4)
+}
+
+explore.ecases.prior <- function()
 {
 	n <- 1e5
 	tau <- rexp(n, 0.02)
@@ -285,6 +437,55 @@ explore.cellphone.data.200622 <- function()
 			labs(x='idx age -> cntct age', y='avg_contacts (cell) <= 02-26  / expected contacts (survey)')
 	ggsave(file=file.path(outdir, 'emodo_200622_correspondence_to_number_exp_contacts_Polymod_weekday.pdf'), w=12, h=15)
 	write.csv(dcbc, file=file.path(outdir, 'emodo_200622_correspondence_to_number_exp_contacts_Polymod.csv'), row.names=FALSE)
+}
+
+explore.cellphone.interstate.data.201021 <- function()
+{
+	#	read mobility data original
+	infile <- '~/Box/OR_Work/2020/2020_covid/data_examples/US_county_to_county_2020_08_16.csv'
+	mi <- as.data.table(read.csv(infile, stringsAsFactors = FALSE))
+	setnames(mi, colnames(mi), toupper(colnames(mi)))
+	set(mi, NULL, 'DAY', mi[, as.Date(DAY)])
+	set(mi, NULL, c('NAME','NEXT_NAME'), NULL)
+	
+	#	read mobility data update
+	infile <- '~/Box/OR_Work/2020/2020_covid/data_examples/US_county_to_county_2020_08_01_2020_10_13.csv'
+	tmp <- as.data.table(read.csv(infile, stringsAsFactors = FALSE))
+	setnames(tmp, colnames(tmp), toupper(colnames(tmp)))
+	set(tmp, NULL, 'DAY', tmp[, as.Date(DAY)])
+	set(tmp, NULL, c('NAME','NEXT_NAME'), NULL)
+	
+	stopifnot( max(mi$DAY)+1L >= min(tmp$DAY) )
+	tmp <- subset(tmp, DAY>max(mi$DAY))
+	mi <- rbind(mi, tmp)
+	
+	#	investigate how many individuals sampled, and at sampling coverage
+	si <- unique(subset(mi, select=c(DAY, FIPS, CNT_IDS)))
+	infile.county.pop <- '~/Box/OR_Work/2020/2020_covid/data_examples/covid_county_population_usafacts.csv'
+	tmp <- as.data.table(read.csv(infile.county.pop, stringsAsFactors = FALSE))
+	tmp <- subset(tmp, select=c(countyFIPS, population))
+	setnames(tmp, c('countyFIPS','population'), c('FIPS','POP'))
+	si <- merge(si, tmp, by='FIPS', all.x=TRUE)
+	
+	tmp <- subset(si, is.na(POP))[, unique(FIPS)]
+	warning('Unknown FIPS:', paste(tmp, collapse=', '))
+	si <- subset(si, !is.na(POP))
+	si[, COV:= CNT_IDS/POP]
+	set(si, NULL, 'CNT_IDS', NULL)
+	
+	#	adjust travellers by sampling coverage
+	mi <- merge(mi, si, by=c('DAY','FIPS'))
+	mi[, CNT_TRAVELERS_ADJ:= CNT_TRAVELERS/COV]
+	
+	#	count outgoing travellers per day
+	mi_outtravel <- mi[ FIPS!=NEXT_FIPS, 
+			list(CNT_TRAVELERS_ADJ_OUT= sum(CNT_TRAVELERS_ADJ)), 
+			by=c('STATE_NAME','STATEFP','FIPS','DAY')]
+	
+	file <- '~/Box/OR_Work/2020/2020_covid/data_examples/US_county_to_county_2020-01-30_2020-10-14_outtravel.rds'
+	saveRDS(mi_outtravel, file=file)
+	file <- '~/Box/OR_Work/2020/2020_covid/data_examples/US_county_to_county_2020-01-30_2020-10-14.rds'
+	saveRDS(mi, file=file)
 }
 
 explore.cellphone.mobility.data.200729 <- function()
@@ -1787,6 +1988,27 @@ explore.contact.matrices_2 <- function()
 			}, by=c('TYPE','part.age.cat','part.age.cat.label','cont.age.cat','cont.age.cat.label')]
 	save(dps, file=file.path(outdir, '200623_contacts_estimates_polymod.rda'))
 	saveRDS(dpsfit, file=file.path(outdir, '200623_contacts_logc_vs_logpop.rds'))
+}
+
+explore.attack.rate.comparison.btw.runs <- function()
+{
+	infile1 <- '/Users/or105/Box/OR_Work/2020/2020_covid/age_renewal_usa/base_age_fsq_mobility_200923c5_cmdstanv-8states_tau10_Sept20/base_age_fsq_mobility_200923c5_cmdstanv-8states_tau10_Sept20-summary_log_ifr_age_posterior.rds'		
+	ifr1 <- readRDS(infile1)
+	ifr1[, run_label:= basename(dirname(infile1))]
+	
+	infile2 <- '/Users/or105/Box/OR_Work/2020/2020_covid/age_renewal_usa/base_age_fsq_mobility_200923c5_cmdstanv-8states_tau10_Aug23_Levin/base_age_fsq_mobility_200923c5_cmdstanv-8states_tau10_Aug23_Levin-summary_log_ifr_age_posterior.rds'
+	ifr2 <- readRDS(infile2)
+	ifr2[, run_label:= basename(dirname(infile2))]
+	
+	ifr <- rbind(ifr1, ifr2)
+	
+	p <- ggplot(ifr) + 
+			geom_point(aes(x=age_band, colour=run_label, y=M)) +
+			geom_errorbar(aes(x=age_band, colour=run_label, ymin=CL, ymax=CU)) +
+			facet_wrap(~loc_label, ncol=2) +
+			theme_bw() +
+			theme(legend.position='bottom')
+	ggsave(file='~/sandbox/ifr_comparison.pdf', p, w=15, h=20)
 }
 
 explore.attack.rate.validation <- function()

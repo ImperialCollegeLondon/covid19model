@@ -14,9 +14,9 @@ library(covid19AgeModel)
 if(0)
 {
 	args_dir <- list()
-	args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_200729h13_cmdstanv'
-	args_dir[['out_dir']] <- '/Users/or105/Box/OR_Work/2020/2020_covid/age_renewal_usa/base_age_fsq_mobility_200729h13_cmdstanv-38states_deaths0801_levinifrprior'
-	args_dir[['job_tag']] <- '38states_deaths0801_levinifrprior'	
+	args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201015e1_cmdstanv'
+	args_dir[['out_dir']] <- '/Users/or105/Box/OR_Work/2020/2020_covid/age_renewal_usa/base_age_fsq_mobility_201015e1_cmdstanv-4states_AZCTFLNYC_Sep20_Levin'
+	args_dir[['job_tag']] <- '4states_AZCTFLNYC_Sep20_Levin'	
 }
 
 
@@ -147,11 +147,30 @@ tryCatch({
   }
 })
 
+# make pair plots "R0", "e_cases_N0","dip_rnde","upswing_rnde", timeeff_shift_age_reduced
+tryCatch({
+  if(all(c("timeeff_shift_age_reduced", "R0", "e_cases_N0") %in%names(transmission.pars)) )
+  {
+    target.pars.state <- c("R0", "e_cases_N0")
+    target.pars.state <- names(fit)[ grepl(paste(target.pars.state,collapse = '|'),names(fit))]
+    target.pars.age <- "timeeff_shift_age_reduced"
+
+    for (i in 1:length(plot.pars.basic$regions)){
+      tmp <- grepl(paste0('\\[',i,'\\]'),target.pars.state)		
+      tmp <- c( target.pars.age, target.pars.state[tmp])
+      h = length(tmp) * 3
+      w = length(tmp) * 3
+      make_state_pairs_plot(fit, tmp, paste0(outfile.base,'-HMC-timeeff_shift_age_reduced-',plot.pars.basic$regions[i]), h, w, fig.type='.pdf')
+    }
+  }
+})
+
+
 # make statewise pair plots
 tryCatch({
-	target.pars.state <- c("R0", "e_cases_N0","dip_rnde","upswing_rnde","^log_ifr_age_rnde_mid1","^log_ifr_age_rnde_mid2","^log_ifr_age_rnde_old")
+	target.pars.state <- c("R0", "e_cases_N0","dip_rnde","upswing_rnde","^log_ifr_age_rnde_mid1","^log_ifr_age_rnde_mid2","^log_ifr_age_rnde_old","^timeeff_shift_mid1","^timeeff_shift_mid2","^timeeff_shift_old")
 	target.pars.state <- names(fit)[ grepl(paste(target.pars.state,collapse = '|'),names(fit))]
-	target.pars.global <- c("beta","kappa","tau","log_relsusceptibility_age_reduced","log_reltransmissibility_age_reduced","_log_ifr_age_rnde_mid1","_log_ifr_age_rnde_mid2","_log_ifr_age_rnde_old")
+	target.pars.global <- c("beta","kappa","tau","log_relsusceptibility_age_reduced","log_reltransmissibility_age_reduced","_log_ifr_age_rnde_mid1","_log_ifr_age_rnde_mid2","_log_ifr_age_rnde_old","_timeeff_shift_mid1","_timeeff_shift_mid2","_timeeff_shift_old")
 	target.pars.global <- names(fit)[ grepl(paste(target.pars.global,collapse = '|'),names(fit))]
 	
 	for (i in 1:length(plot.pars.basic$regions))
@@ -180,4 +199,6 @@ cat("\n ----------- run diagnostics: end ----------- \n")
 
 
 
-cat("\n ----------- end assess mixing ----------- \n")
+cat(" \n -------------------------------- \n \n End assess-mixing.R \n \n -------------------------------- \n")
+
+
