@@ -21,9 +21,9 @@ suppressMessages(library(covid19AgeModel, quietly = TRUE))
 if(1)
 {
 	args_dir <- list()
-	args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_200821b4_cmdstanv'
-	args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_200821b4_cmdstanv-37states_Sep2'
-	args_dir[['job_tag']] <- '37states_Sep2'
+	args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201015f8_cmdstanv'
+	args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201015f8_cmdstanv-40states_tau10_Oct29_Levin'
+	args_dir[['job_tag']] <- '40states_tau10_Oct29_Levin'
 	args_dir[['overwrite']] <- 0
 }
 
@@ -163,6 +163,10 @@ if(file.exists(file))
 {
 	e_acases_eff_byage_c <- readRDS(file)
 }
+if(nrow(subset(e_acases_eff_byage_c, loc == 'US')) > 0)
+{
+	e_acases_eff_byage_c = subset(e_acases_eff_byage_c, loc != 'US')
+}
 
 E_effcasesByAge <- NULL
 E_deathsByAge <- NULL
@@ -258,7 +262,7 @@ for(x in names(plot.pars.basic$deathByAge_data$A_AD))
 		scale_x_date(expand=c(0,0), date_breaks = "4 weeks", labels = date_format("%e %b"), 
 								 limits = c(date.min, 
 								 					 p1.1[[x]]$data$date[length(p1.1[[x]]$data$date)])) +
-		labs(x='',y=paste0('Cumulative number of \ndeaths by age')) +
+		labs(x='',y=paste0('Fit to age-specific COVID-19 \nattributable deaths')) +
 		theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
 		theme(legend.position="right")
 		
@@ -268,7 +272,7 @@ for(x in names(plot.pars.basic$deathByAge_data$A_AD))
 		scale_x_date(expand=c(0,0), date_breaks = "4 weeks", labels = date_format("%e %b"), 
 								 limits = c(date.min, 
 								 					 p1.2[[x]]$data$date[length(p1.2[[x]]$data$date)])) +
-		labs(x='',y=paste0('Cumulative number of \ndeaths by age')) +
+		labs(x='',y=paste0('Fit to age-specific COVID-19 \nattributable deaths')) +
 		theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
 		theme(legend.position="right")
 
@@ -297,7 +301,7 @@ for(c in plot.pars.basic$regions)
 {
 	p_aRt[[c]] <- plot_Rt_byage_c(Rt_byage_c, 
 		"aRt", 
-		ylab='Rt\n(posterior median by age band)', 
+		ylab='Time-varying reproduction numbers', 
 		c, 
 		outfile.base=NULL)	+ 
 		scale_x_date(expand=c(0,0), date_breaks = "4 weeks", labels = date_format("%e %b"), 
@@ -308,7 +312,7 @@ for(c in plot.pars.basic$regions)
 
 	p_eacases_eff[[c]] <- plot_par_byage_c(e_acases_eff_byage_c, 
 		"e_acases_eff", 
-		ylab='Total number of infectious people \n(posterior median by age band)',
+		ylab='Number of infectious individuals',
 		c,
 		outfile.base=NULL) +
 		scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + 
@@ -376,29 +380,34 @@ if(all(snames %in% plot.pars.basic$regions )){
 																				legend="bottom")
 				p_eacases_eff[[c]] <- p_eacases_eff[[c]]  +
 					theme(axis.text.x = element_blank(),legend.text = element_blank()
-								, legend.title = element_blank()) + guides(fill=guide_legend(override.aes=list(fill="white",colour="white", shape = NA,alpha = 0)))
+								, legend.title = element_blank()) + guides(fill=guide_legend(override.aes=list(fill="white",colour="white", shape = NA,alpha = 0),nrow=1))
 				p_aRt[[c]] <- p_aRt[[c]] +
 					theme(axis.text.x = element_blank(),legend.text = element_blank()
-								, legend.title = element_blank()) + guides(color=guide_legend(override.aes=list(fill="white",colour="white", shape = NA,alpha = 0)))
+								, legend.title = element_blank()) + guides(color=guide_legend(override.aes=list(fill="white",colour="white", shape = NA,alpha = 0),nrow=1))
 			}
 			if(c==snames[1]){
-				p1.1[[c]] <- p1.1[[c]] + ggtitle("Cumulative number of \ndeaths by age")
-				p1.2[[c]] <- p1.2[[c]] + ggtitle(" \n ")
 				p_deathsbyage[[c]] <- ggarrange(p1.1[[c]], 
 																				p1.2[[c]],
 																				nrow=1,
 																				common.legend = TRUE,
-																				legend="bottom")
-				p_eacases_eff[[c]] <- p_eacases_eff[[c]]  + ggtitle("Total number of infectious people \n(posterior median by age band)")
-				p_aRt[[c]] <- p_aRt[[c]] + ggtitle("Rt\n(posterior median by age band)")
+																				legend="bottom") 
+				p_deathsbyage[[c]] <- annotate_figure(p_deathsbyage[[c]],
+												top = text_grob("Fit to age-specific COVID-19 attributable deaths",size=26))
+				p_eacases_eff[[c]] <- p_eacases_eff[[c]] + guides(fill=guide_legend(override.aes=list(fill="white",colour="white", shape = NA,alpha = 0),nrow=1))
+				p_eacases_eff[[c]] <- annotate_figure(p_eacases_eff[[c]],
+																								 top = text_grob("Number of infectious individuals",size=26))
+				p_aRt[[c]] <- p_aRt[[c]] + guides(col=guide_legend(override.aes=list(fill="white",colour="white", shape = NA,alpha = 0),nrow=1))
+				p_aRt[[c]] <- annotate_figure(p_aRt[[c]],
+																			top = text_grob("Time-varying reproduction numbers",size=26))
 			}
 		fig2cr[[c]] <- ggarrange(p_eacases_eff[[c]],p_aRt[[c]],legend="bottom",common.legend=TRUE,ncol=2,align="h")
-		fig2c[[c]] <- plot_grid(p_deathsbyage[[c]],fig2cr[[c]],rel_widths=c(2,3),nrow=1,align="hv")
+		fig2c[[c]] <- plot_grid(p_deathsbyage[[c]],fig2cr[[c]],rel_widths=c(2,3),nrow=1,align="hv",axis="b")
 		title <- ggdraw() + draw_label(plot.pars.basic$region_names$loc_label[plot.pars.basic$region_names$loc==c], size = 28, fontface='bold',x = 0,hjust = 0) + theme(plot.margin = margin(0, 0, 0, 5))
 		fig2c[[c]] <- plot_grid(title, fig2c[[c]], ncol=1, rel_heights=c(0.1, 1),align="vh",axis="l")
 	}
 	fig2 <- plot_grid(fig2c[[snames[1]]],fig2c[[snames[2]]],fig2c[[snames[3]]],fig2c[[snames[4]]],ncol=1,rel_heights=c(1.15,1,1,1.15))
 	ggsave(paste0(outfile.base,'-figure_2_panel-4-states', '.png'), fig2, w = 25, h=28)
+	ggsave(paste0(outfile.base,'-figure_2_panel-4-states', '.pdf'), fig2, w = 25, h=28,dpi=500)
 }
 cat(" \n -------------------------------- \n \n completed post-processing-make-deaths-eacases-Rt-plot.R \n \n -------------------------------- \n")
 

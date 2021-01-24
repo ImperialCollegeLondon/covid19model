@@ -115,6 +115,13 @@ cdc_r2$round <- rep(2,nrow(cdc_r2))
 
 cdc <- rbind(cdc_r1,cdc_r2)
 
+# check that states are included in the cdc trial
+if(sum(plot.pars.basic$regions %in% unique(cdc$state)) == 0){
+  cat("No location included in the analysis have been investigated by the CDC")
+  cat(" \n -------------------------------- \n \n completed post-processing-summarise-antibody.R \n \n -------------------------------- \n")
+  quit()
+}
+
 cat(" \n -------------------------------- \n map to model age bands \n -------------------------------- \n")
 
 age_cat_map_NYstudy <- data.table(age.cat=seq(1:18),
@@ -349,8 +356,7 @@ cat("\n ----------- plot estimated/observed attack rates ----------- \n")
 da <- copy( artable[[1]] )
 
 da <- subset(da, select=-c(L_est,L_obs))
-da <- reshape2::melt(da, measure.vars=c('M_est','CL_est','CU_est','M_obs','CL_obs','CU_obs'))
-da = as.data.table(da)
+da <- as.data.table(reshape2::melt(da, measure.vars=c('M_est','CL_est','CU_est','M_obs','CL_obs','CU_obs')))
 set(da, NULL, 'value', da[, as.numeric(value)/100])	
 da[, mtype:= gsub('est','Estimated',gsub('obs','Survey',gsub('^([A-Za-z]+)_([A-Za-z]+)$','\\2',variable)))]
 da[, stat:= gsub('^([A-Za-z]+)_([A-Za-z]+)$','\\1',variable)]
@@ -377,4 +383,3 @@ g <- ggplot(tmp) +
 ggsave(file=paste0(outfile.base, "-attackrate_validation.png"),g,w=15, h=10,limitsize = FALSE)
 
 cat(" \n -------------------------------- \n \n completed post-processing-validate-attackrates.R \n \n -------------------------------- \n")
-

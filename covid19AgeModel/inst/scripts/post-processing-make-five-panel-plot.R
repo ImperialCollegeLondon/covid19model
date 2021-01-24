@@ -21,9 +21,9 @@ suppressMessages(library(covid19AgeModel, quietly = TRUE))
 if(1)
 {	
 	args_dir <- list()
-	args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_200821b2_cmdstanv'
-	args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_200821b2_cmdstanv-39states_Aug20'
-	args_dir[['job_tag']] <- '39states_Aug20'
+	args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201015f8_cmdstanv'
+	args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201015f8_cmdstanv-37states_tau10_Oct21_Levin'
+	args_dir[['job_tag']] <- '37states_tau10_Oct21_Levin'
 	args_dir[['overwrite']] <- 0
 	args_dir[["include_lambda_age"]] <- 0
 }
@@ -119,6 +119,10 @@ if(!file.exists(file) | args_dir[['overwrite']])
 if(file.exists(file))
 {
 	e_acases_eff_byage_c <- readRDS(file)
+}
+if(nrow(subset(e_acases_eff_byage_c, loc == 'US')) > 0)
+{
+	e_acases_eff_byage_c = subset(e_acases_eff_byage_c, loc != 'US')
 }
 
 #
@@ -328,6 +332,7 @@ for(c in plot.pars.basic$regions)
 			heights=c(2,4),
 			widths=c(4,4))
 	ggsave(paste0(outfile.base,'-five_panel_plot_new-', c, '.png'), panel[[c]], w = 14, h=10)
+	ggsave(paste0(outfile.base,'-five_panel_plot_new-', c, '.pdf'), panel[[c]], w = 14, h=10,dpi=500)
 }
 
 cat(" \n -------------------------------- \n \n Completed post-processing-make-five-panel-plot.R \n \n -------------------------------- \n")

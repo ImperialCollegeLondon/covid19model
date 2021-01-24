@@ -662,10 +662,10 @@ plot_mobility_trends_fsq_withbreakpoints <- function(mobility_data,
   	scale_fill_manual(values = c("transparent", "black")) +
   	geom_hline(yintercept = 0, color = 'black', size = 0.75) + 
   	geom_step(aes(x=date, y=mobility_trend, colour=fsq.age.cat.label), direction="vh")			+
-  	scale_y_continuous(breaks = seq(0.5,1.75,0.25),labels = label_percent(suffix="%")) +
+  	scale_y_continuous(breaks = seq(0.25,1.75,0.25),labels = label_percent(suffix="%")) +
   	geom_vline(aes(xintercept = dip_date), color = 'black', size = 0.75, linetype = "dashed") + 
   	geom_vline(aes(xintercept = rebound_date), color = 'black', size = 0.75, linetype = "dashed") + 
-  	coord_cartesian(ylim=c(0.4,1.8)) +
+  	coord_cartesian(ylim=c(0.2,1.8)) +
   	theme_bw() +
   	labs(x= ' ', y='Mobility trends', colour='Age band', fill = "Weekend") +
   	facet_wrap(~loc_label,ncol=4) +
@@ -692,10 +692,10 @@ plot_mobility_trends_fsq_withbreakpoints <- function(mobility_data,
   	scale_fill_manual(values = c("transparent", "black")) +
   	geom_hline(yintercept = 0, color = 'black', size = 0.75) + 
   	geom_step(aes(x=date, y=mobility_trend, colour=fsq.age.cat.label), direction="vh")			+
-  	scale_y_continuous(breaks = seq(0.5,1.75,0.25),labels = label_percent(suffix="%")) +
+  	scale_y_continuous(breaks = seq(0.25,1.75,0.25),labels = label_percent(suffix="%")) +
   	geom_vline(aes(xintercept = dip_date), color = 'black', size = 0.75, linetype = "dashed") + 
   	geom_vline(aes(xintercept = rebound_date), color = 'black', size = 0.75, linetype = "dashed") + 
-  	coord_cartesian(ylim=c(0.4,1.8)) +
+  	coord_cartesian(ylim=c(0.2,1.8)) +
   	theme_bw() +
   	labs(x= ' ', y='Mobility trends', colour='Age band', fill = "Weekend") +
   	facet_wrap(~loc_label,ncol=4) +
@@ -852,6 +852,89 @@ plot_deaths_by_age_data <- function(deathByAge, pop_info, plotdir)
 #' @export
 #' @keywords internal
 #' @import tidyr forcats grid ggplot2
+#' @importFrom gridExtra grid.arrange
+plot_deaths_by_age_prop_data <- function(data, pop_info, plotdir)
+{
+  
+  # aggregate by month
+  data[, month := format(date, format = "%m")]
+  tmp = data[, list(monthly.deaths = sum(daily.deaths, na.rm = T)), by = c("code", "month", "age")]
+  
+  # find proportion of monthly death by age
+  tmp1 = tmp[, list(total.monthly.deaths = sum(monthly.deaths)), by = c("code", "month")]
+  tmp = merge(tmp, tmp1, by = c("code", "month"))
+  tmp[, prop.monthly.deaths := monthly.deaths / total.monthly.deaths]
+  
+  # Extend value for the remaining of the month
+  tmp1 = unique(select(data, code, date, month))
+  tmp = merge(tmp, tmp1, by = c("code", "month"), all.y = T, allow.cartesian=TRUE)
+  
+  # find age cat from 
+  tmp[!grepl("\\+", age), age_cat_from := gsub("(.+)-.*", "\\1", age )]
+  tmp[grepl("\\+", age), age_cat_from := gsub("(.+)\\+", "\\1", age )]
+  
+  # find loc label
+  tmp = merge(tmp, unique(select(pop_info, loc, loc_label)), by.x = "code", by.y = "loc")
+  
+  # plot
+  deathByAge.first.date <- tmp[, min(date)]
+  deathByAge.last.date <- tmp[, max(date)]
+  deathByAge.loc_labels <- unique(tmp$loc_label)	
+  
+  deathByAge.np1 <- 4*4
+  
+  dps <- vector('list',length(deathByAge.loc_labels))
+  for(i in seq_along(deathByAge.loc_labels) )
+  {
+    tmp1 <- subset(tmp, loc_label==deathByAge.loc_labels[i])[order(age_cat_from),]
+    n.col = 1
+    if(unique(tmp1$loc) == "GA") n.col =2
+    dps[[i]] <- ggplot(tmp1, aes(x=date, y=prop.monthly.deaths, fill=age)) +
+      geom_bar(stat='identity',position='fill') +
+      labs(x='', y='', fill='Age band') +
+      scale_x_date(expand=c(0,0),date_breaks = "4 weeks", labels = date_format("%e %b")) +
+      coord_cartesian(xlim=c(deathByAge.first.date, deathByAge.last.date), ylim=c(0,1))  +
+      theme_bw(base_size=22) + 
+      ggtitle(deathByAge.loc_labels[i]) +
+      theme(	plot.title = element_text(size=rel(1), hjust = 0.5),
+             #legend.position= 'bottom',
+             legend.position= c(0.3,0.55),
+             #legend.title=element_text(size=20),
+             legend.text=element_text(size=rel(.7)),
+             # text = element_text(size=20),
+             legend.background=element_blank(),
+             legend.key.size = unit(2, "mm"),
+             axis.text.x = element_text(angle = 40, vjust = 0.5, hjust=1)) + 
+      guides(fill=guide_legend(ncol=n.col)) +
+      scale_y_continuous(expand=c(0,0),labels = scales::percent) 
+    # remove ticks for facet which are not on the axis
+    if(i %notin% c((deathByAge.np1 - 0:3), (4*4*2):(4*4*2-3),length(deathByAge.loc_labels):(length(deathByAge.loc_labels)-3)  ) ) dps[[i]] <- dps[[i]] + theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+    if(i %notin% c((1 + 4*0:(4*3-1))) ) dps[[i]] <- dps[[i]] + theme(axis.title.y = element_blank(), axis.text.y = element_blank())
+  }
+  
+  p<- gridExtra::grid.arrange(	grobs=dps[1:deathByAge.np1], 
+                               ncol=4, 					
+                               left=text_grob('Monthy reported COVID-19 deaths in percent', size=25, rot = 90),
+                               heights = c(1, 1, 1, 1.25),
+                               widths = c(1.3, 1, 1, 1))
+  ggsave(file=file.path(plotdir, 'death_by_age_prop_p1.png'), plot=p, width = 13, height = 17)
+  p<- gridExtra::grid.arrange(	grobs=dps[(deathByAge.np1+1):(deathByAge.np1*2)], 
+                               ncol=4, 					
+                               left=text_grob('Monthy reported COVID-19 deaths in percent', size=25, rot = 90),
+                               heights = c(1, 1, 1, 1.25),
+                               widths = c(1.3, 1, 1, 1))
+  ggsave(file=file.path(plotdir, 'death_by_age_prop_p2.png'), plot=p, width = 13, height = 17)	
+  p<- gridExtra::grid.arrange(	grobs=dps[(deathByAge.np1*2+1):length(dps)], 
+                               ncol=4, 					
+                               left=text_grob('Monthy reported COVID-19 deaths in percent', size=25, rot = 90),
+                               heights = c(1, 1, 1.25, 1.25),
+                               widths = c(1.3, 1, 1, 1))
+  ggsave(file=file.path(plotdir, 'death_by_age_prop_p3.png'), plot=p, width = 13, height = 17)	
+}
+
+#' @export
+#' @keywords internal
+#' @import tidyr forcats grid ggplot2
 plot_death_by_age_vs_deaths_overall <- function(deathByAge, death_data, pop_info, plotdir)
 {
     
@@ -898,13 +981,16 @@ plot_death_by_age_vs_deaths_overall <- function(deathByAge, death_data, pop_info
            strip.background = element_rect( color="white", fill="white", size=1, linetype="solid" )) +
     scale_color_manual(values = c("#999999", "#E69F00"))
   ggsave(p, file=file.path(plotdir, 'death_by_age_comp_overall.png'), width = 210, height = 297, units = "mm")
+  ggsave(p, file=file.path(plotdir, 'death_by_age_comp_overall.pdf'), width = 210, height = 297, units = "mm",dpi=500)
 }
 
 
 #' @export
 #' @keywords internal
-#' @import tidyr forcats grid ggplot2
+#' @import tidyr forcats grid ggplot2 viridis
 plot_contact_matrix_polymod_countries = function(path_to_file, plotdir){
+  
+  # path_to_file = "~/git/R0t/covid19AgeModel/inst/data/polymod_data_1yageband_200705.rds"
   
   polymod.tab = readRDS(path_to_file)
   
@@ -934,6 +1020,7 @@ plot_contact_matrix_polymod_countries = function(path_to_file, plotdir){
     scale_color_continuous(breaks=seq(0,8,1)) +
     guides(fill = guide_colourbar(barwidth = 45, barheight = 0.5,direction="horizontal")) 
   ggsave(file=file.path(plotdir, paste0("contactmatrix_polymod",'.pdf')), height=24.5,width=21, limitsize=FALSE)
+  ggsave(file=file.path(plotdir, paste0("contactmatrix_polymod",'.png')), height=24.5,width=21, limitsize=FALSE)
 }
 
 
@@ -1121,11 +1208,11 @@ plots_baseline_contact_matrices <- function(pop_info, dcontact, path_to_polymod_
   ggsave(file=file.path(plotdir, paste0('logdiff_weekend_weekday_baseline_cntct_matrix_usa_by_age_allstates','.pdf')), height=29,width=21, limitsize=FALSE)		
 }
 
-#' @export
-#' @keywords internal
-#' @import tidyr forcats grid ggplot2
-plot_school_policy = function(path_to_file_school_intervention, plotdir)
+## deprecated
+plot_school_closure_date_deprecated = function(pkg.dir)
 {
+  path_to_file_school_intervention <- file.path(pkg.dir, "data", "OxCGRT_US_subnational_06Oct2020.csv") 
+    
   school_intervention <- as.data.table(read.csv(path_to_file_school_intervention))
   
   tmp = subset(school_intervention, !is.na(RegionName) & !is.na(Date) & RegionName != "" & !is.na(C1_School.closing))
@@ -1133,36 +1220,33 @@ plot_school_policy = function(path_to_file_school_intervention, plotdir)
   tmp[, loc := gsub("US_(.+)","\\1",RegionCode)]
   tmp[, loc_label := RegionName]
   
-  # remove territories
-  tmp = subset(tmp, loc_label != "Virgin Islands")
+  # remove territories and other countried
+  tmp = subset(tmp, !loc_label %in% c("Virgin Islands"))
+  tmp = subset(tmp, !grepl("UK", loc))
   
-  #
-  # Fix Nevada 
-  # in raw data, school were supposedly recommended to close on 2020-10-9
-  # while they were ordered to close on 2020-03-16, ref http://www.doe.nv.gov/uploadedFiles/ndedoenvgov/content/home/DeclarationofEmergencyDirectiveSchools.pdf
-  tmp1 = tmp[loc_label == "Nevada", C1_School.closing := ifelse(date >= as.Date("2020-03-16"), 3, 0)]
-  tmp = rbind(subset(tmp, loc_label != "Nevada"), tmp1)
-  
-
   #
   # Find number of states with school closure and max date
   tmp1 = unique(tmp[C1_School.closing != 0, list(flag = max(C1_School.closing), date = min(date)), by = c("loc")])
   nrow(subset(tmp1, flag == 1)) # recommend closing
   nrow(subset(tmp1, flag == 2 )) # require closing (only some levels or categories, eg just high school, or just public schools)
   nrow(subset(tmp1, flag == 3)) # require closing all levels
-  subset(tmp1, loc == "DC")$flag
+  
+  #
+  # Find number of states with school closure and max date
+  tmp1 = unique(tmp[C1_School.closing >= 2, list(date = min(date)), by = c("loc")])
+  max(tmp1$date)# first day where school closure was 2 for all states
   
   #
   # Change Washington DC to District of Columbia
   tmp[loc_label == "Washington DC", loc_label:= "District of Columbia"]
-  tmp[,sort(loc_label)]
+
   #
   # Plot
   first_date_plot = as.Date("2020-02-01")
+  last_date_plot = as.Date("2020-08-18")
   tmp2 = select(tmp, loc, loc_label, C1_School.closing, date)
   # find max date
-  tmp1 = tmp2[, list(max_date = max(date)), by = "loc"]
-  tmp2 = subset(tmp2, date < min(tmp1$max_date) & date >= first_date_plot)
+  tmp2 = subset(tmp2, date <= last_date_plot & date >= first_date_plot)
   
   ggplot(subset(tmp2, C1_School.closing != 0), aes(x = date, y = reorder(loc_label, desc(loc_label)))) +
     geom_raster(aes(fill = as.factor(C1_School.closing))) +
@@ -1186,27 +1270,95 @@ plot_school_policy = function(path_to_file_school_intervention, plotdir)
                       breaks = c(1,2,3) ) +
     scale_x_date(date_breaks = "2 weeks", labels = date_format("%e %b"), expand=c(0.01,0)) +
     guides(fill=guide_legend(nrow=2,byrow=TRUE))
-  ggsave(file=file.path(plotdir, paste0('school_closure_status_bystate_overtime','.png')), height=13,width=10, limitsize=FALSE)		
+  ggsave(file=file.path(plotdir, paste0('school_closure_status_bystate_overtime_v2','.png')), height=13,width=10, limitsize=FALSE)		
 }
 
+# deprecated
+plot_school_reopening_date_deprecated = function(pkg.dir)
+{
+  
+  path_to_file_school_intervention <- file.path(pkg.dir, "data", "Coronavirus_and_School_Closures_210113.csv") 
+  
+  school_intervention <- as.data.table(read.csv(path_to_file_school_intervention))
+  
+  tmp = copy(school_intervention)
+  setnames(tmp, c("State", "State_Abbr"), c("loc_label", "loc"))
+  tmp[, date := as.Date(as.character(date))]
+  
+  # remove territories 
+  tmp = subset(tmp, !loc_label %in% c("Virgin Islands", "Puerto Rico"))
+  
+  #
+  # Find number of states with school closure still in 
+  tmp1 = tmp[Status == "State ordered closure in effect (including states where openings are delayed)" & date == "2020-08-28",]
+  
+  #
+  # Fill missing days with last observed data
+  dates = sort(unique(tmp$date))
+  tmp2 = vector(mode = "list", length = length(dates))
+  for(t in seq_along(dates)){
+    Date = dates[t]
+    tmp1 = subset(tmp, date == Date)
+    if(t != length(dates)){
+      tmp1 = tmp1[rep(seq_len(nrow(tmp1)), each = dates[t+1] - dates[t] ), ]
+      tmp1[, date := rep( seq.Date(dates[t], dates[t+1]-1, by = "day"), length(unique(tmp1$loc_label))) ]
+    }
+    tmp2[[t]] = copy(tmp1)
+  }
+  tmp2 = do.call("rbind", tmp2)
+    
+  #
+  # Plot
+  ENCODING_CHANGE_DATE <- as.Date("2020-10-05", format="%Y-%m-%d")
+  tmp1 = select(tmp2, loc, loc_label, Status, date)
+  tmp1 = subset(tmp1, date < ENCODING_CHANGE_DATE)
+  tmp1[, Status := factor(Status, c("State ordered closure in effect (including states where openings are delayed)", 
+                                    "State-ordered regional closure in effect", 
+                                    "Only hybrid or remote instruction allowed",
+                                    "Varies by school/district/dependent on local health authorities", 
+                                    "State-ordered in-person instruction available part-time or full-time*"))]
+  ggplot(tmp1, aes(x = date, y = reorder(loc_label, desc(loc_label)))) +
+    geom_raster(aes(fill = as.factor(Status))) +
+    theme_bw() +
+    labs(y = "", x = "", fill = "School status") +
+    geom_hline(yintercept = 1:length(unique(tmp1$loc_label))+0.5, col = "gray78") +
+    theme(legend.position="bottom",
+          legend.title = element_text(size = 16), 
+          legend.text = element_text(size = 14),
+          axis.text.x=element_text(size=14, angle = 70, hjust = 1),
+          axis.text.y=element_text(size=14),
+          axis.title=element_text(size=20),
+          strip.text = element_text(size = 16),
+          strip.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          panel.spacing = unit(1, "lines")) +
+    scale_x_date(date_breaks = "2 weeks", labels = date_format("%e %b"), expand=c(0.01,0)) +
+    guides(fill=guide_legend(nrow=5,byrow=TRUE)) + 
+    scale_fill_manual(values = c("red4", "brown3", "gold", "lightskyblue2", "royalblue1"))
+  ggsave(file=file.path(plotdir, paste0('school_reopening_status_bystate_overtime','.png')), height=13,width=10, limitsize=FALSE)		
+}
 
 
 #' @export
 #' @keywords internal
-#' @import tidyr forcats grid ggplot2
+#' @import tidyr forcats grid ggplot2 
 #' @importFrom gridExtra grid.arrange
 #' @importFrom scales date_format label_percent
-plot_school_closure_contactmatrix_UK_China = function(stan_data, path_to_file_contact_intensities_outbreak_China, path_to_file_contact_intensities_outbreak_UK)
+plot_school_closure_contactmatrix_UK_China = function(pkg.dir)
 {
   
   #
   # Contact matrices from Zhang et al. Science https://science.sciencemag.org/content/368/6498/1481
   # 
   
+  path_to_file_contact_intensities_outbreak_China <- file.path(pkg.dir, "data", "estimate_contact_intensities_outbreak_China.rds")
+  
   contact_intensities_outbreak_China <- as.data.table(readRDS(path_to_file_contact_intensities_outbreak_China))
   
   age_category = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
-  children_label = c("0-4", "5-9", "10-14")
+  children_label = c("0-4", "5-9", "10-14", "15-19")
 
   #
   # contacts to children
@@ -1218,7 +1370,7 @@ plot_school_closure_contactmatrix_UK_China = function(stan_data, path_to_file_co
   
   p1 = ggplot(subset(tmp, variable != "multiplier"), aes(x = age_index, y = value, col = variable, shape = variable)) +
     geom_point(size = 3) +
-    ylab(paste0("Average number of contacts\n to age group 0-14")) +
+    ylab(paste0("Average number of contacts\n to individuals aged 0-19")) +
     theme_bw() +
     xlab("from age") + 
     scale_color_manual(name = "Contacts", labels = c("pre-pandemic", "during outbreak"), values = c("#56B4E9", "#E69F00")) + 
@@ -1263,7 +1415,7 @@ plot_school_closure_contactmatrix_UK_China = function(stan_data, path_to_file_co
                           c(2, 2)),
     left = textGrob(c("A", "B"), gp=gpar(fontsize=20), y = c(0.95, 0.45)) )
   
-  ggsave(p, file = file.path(outdir, "Zhang_contacts_to_0-14.pdf"), w = 10, h = 10)
+  ggsave(p, file = file.path(outdir, "Zhang_contacts_to_0-19.pdf"), w = 10, h = 10)
   
   
   #
@@ -1276,7 +1428,7 @@ plot_school_closure_contactmatrix_UK_China = function(stan_data, path_to_file_co
   
   p1 = ggplot(subset(tmp, variable != "multiplier"), aes(x = age_contact, y = value, col = variable, shape = variable)) +
     geom_point(size = 3) +
-    ylab(paste0("Average number of contacts\n from one child in 0-14")) +
+    ylab(paste0("Average number of contacts\n from one individual in 0-19")) +
     theme_bw() +
     xlab("to age") + 
     scale_color_manual(name = "Contacts", labels = c("pre-pandemic", "during outbreak"), values = c("#56B4E9", "#E69F00")) + 
@@ -1321,7 +1473,106 @@ plot_school_closure_contactmatrix_UK_China = function(stan_data, path_to_file_co
                           c(2, 2)),
     left = textGrob(c("A", "B"), gp=gpar(fontsize=20), y = c(0.95, 0.45)) )
   
-  ggsave(p, file = file.path(outdir, "Zhang_contacts_from_0-14.pdf"), w = 10, h = 10)
+  ggsave(p, file = file.path(outdir, "Zhang_contacts_from_0-19.pdf"), w = 10, h = 10)
   
   
 }
+
+#' @export
+#' @keywords internal
+#' @import tidyr ggplot2
+#' @importFrom scales date_format 
+plot_school_status_timeline = function(stan_data, dates, pop_info, plotdir){
+  # find school status
+  tmp = vector(mode = "list", length = length(dates))
+  for(m in 1:length(dates)){
+    #m = 1
+    
+    tmp[[m]] = data.table(loc = names(dates)[m],
+                          date = dates[[m]],
+                          school_status = stan_data$SCHOOL_STATUS[1:length(dates[[m]]),m])
+    
+  }
+  tmp = do.call("rbind", tmp)
+  
+  # find loc label
+  tmp = merge(tmp, unique(select(pop_info, loc, loc_label)), by = "loc")
+  
+  p = ggplot(tmp, aes(x = date, y = reorder(loc_label, desc(loc_label)))) +
+    geom_raster(aes(fill = as.factor(school_status))) +
+    theme_bw() +
+    labs(y = "", x = "") +
+    geom_hline(yintercept = 1:length(unique(tmp$loc_label))+0.5, col = "gray78") +
+    theme(legend.position="bottom",
+          legend.title = element_text(size = 16), 
+          legend.text = element_text(size = 14),
+          axis.text.x=element_text(size=14, angle = 70, hjust = 1),
+          axis.text.y=element_text(size=14),
+          axis.title=element_text(size=20),
+          strip.text = element_text(size = 16),
+          strip.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          panel.spacing = unit(1, "lines")) +
+    scale_fill_manual(name = "", values = c("seagreen3","coral1"), # "brown3", "red4" 
+                      labels = c("Schools set to be open", "Schools set to be closed"), 
+                      breaks = c(0,1) ) +
+    scale_x_date(date_breaks = "2 weeks", labels = date_format("%e %b"), expand=c(0.01,0)) +
+    guides(fill=guide_legend(nrow=1,byrow=TRUE))
+  
+  cat("\n Write to file ", file.path(plotdir, paste0("school_status_timeline.png")), "...")
+  
+  ggsave(p, file =file.path(plotdir, 'school_status_timeline.png'), height=13,width=10, limitsize=FALSE)
+}
+
+
+#' @export
+#' @keywords internal
+#' @import tidyr ggplot2 
+plot_comparison_ifr_by_age_prior = function(file_ifr_by_age_prior_Levin, file_ifr_by_age_prior_Levin_v7, plotdir){
+  
+  ifr.by.age.v5 = as.data.table( read.csv(file_ifr_by_age_prior_Levin) )
+  ifr.by.age.v5[, name := 'log IFR prior constructed from the Levin et al meta-analysis, version 5']
+  
+  ifr.by.age.v7 = as.data.table( read.csv(file_ifr_by_age_prior_Levin_v7) )
+  ifr.by.age.v7[, name := 'log IFR prior constructed from the Levin et al meta-analysis, version 7']
+  
+  ifr.by.age = rbind(ifr.by.age.v7, ifr.by.age.v5)
+  ifr.by.age[, name := factor(name, levels = c('log IFR prior constructed from the Levin et al meta-analysis, version 7', 
+                                                'log IFR prior constructed from the Levin et al meta-analysis, version 5'))]
+  
+  colors_viridis = viridis::viridis(n = 3, begin=0.05,end=0.85,direction=-1,option = "magma")
+  
+  ggplot(ifr.by.age, aes(x = age_cat)) + 
+    geom_line(aes(y = ifr_mean, col = name)) + 
+    geom_ribbon(aes(ymin = ifr_cl, ymax = ifr_cu, fill= name), alpha = 0.5) + 
+    theme_bw() + 
+    labs(x = "Age band", y = "Infection Fatality Rate prior (log scale)", fill = '', color= '') + 
+    theme(axis.text.x = element_text(angle = 70, vjust = 0.5,size = 12), 
+          legend.position = 'bottom', 
+          panel.grid.minor = element_blank(),
+          axis.title.x= element_text(size = 16),
+          axis.title.y= element_text(size = 16),
+          axis.text.y=element_text(size = 12),
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 14),
+          strip.text = element_text(size = 16)) + 
+    scale_x_continuous(breaks = unique(sort(ifr.by.age$age_cat)), labels = unique(ifr.by.age$age_cat_label)) + 
+    scale_y_log10() +
+    scale_fill_manual(values = colors_viridis[2:3]) + 
+    scale_color_manual(values = colors_viridis[2:3])+
+    guides(fill=guide_legend(nrow=2,byrow=TRUE), color=guide_legend(nrow=2,byrow=TRUE))
+  ggsave(file.path(plotdir, 'comparison_ifr_prior_Levin_v7_v5.png'), w = 7.5, h = 7.5)
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

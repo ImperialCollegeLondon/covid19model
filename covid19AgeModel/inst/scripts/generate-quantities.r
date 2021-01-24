@@ -2,14 +2,12 @@ require(data.table)
 require(rstan)
 require(EnvStats)
 require(covid19AgeModel)
-pkg.dir <- system.file(package = "covid19AgeModel" )
 
 ## command line parsing if any
-args <- list(  	
-  	indir.results= '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_200821b4_cmdstanv-4states_Aug23_fixNYCdata/base_age_fsq_mobility_200821b4_cmdstanv-4states_Aug23_fixNYCdata-2128791[1].pbs',
-	location.index= 1,
-	with.flow=1	
-	)
+args = list()
+args[['location.index']] = 1
+args[['with.flow']] = 1
+args[['indir.results']] = '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201015f8_cmdstanv-40states_tau10_Oct29_Levin/base_age_fsq_mobility_201015f8_cmdstanv-40states_tau10_Oct29_Levin-2558246[1].pbs'
 
 
 args_line <-  as.list(commandArgs(trailingOnly=TRUE))
@@ -22,7 +20,7 @@ if(length(args_line) > 0)
   args[['indir.results']] <- args_line[[2]]  
   args[['location.index']] <- args_line[[4]]  
   args[['with.flow']] <- args_line[[6]]  
-} 
+}
 
 #	print args
 str(args)
@@ -40,6 +38,12 @@ stopifnot(length(infile.stanin)<=1)
 tmp <- load(file.path(indir.results, infile.stanin))
 stopifnot(c('args','stan_data')%in%tmp)
 stan_data$LOCATION_PROCESSING_IDX <- location.index
+if(is.null(stan_data$counterfactual_school_effect)) stan_data$counterfactual_school_effect = -1
+
+#	reset args
+args[['work_dir']] <- getwd()
+
+pkg.dir <- system.file(package = "covid19AgeModel" )
 
 if(with.flow=='1')
 {
@@ -73,19 +77,7 @@ draws <- draws[,!grepl('rho0|Rt|RtByAge|E_deaths|E_deathsByAge|E_casesByAge|lp__
 fit2 <- rstan::gqs(m2, data=stan_data, draws=draws)
 fit.gqs <- rstan::extract(fit2)
 
-tmp <- file.path(indir.results, paste0(basename(args$job_dir), '_location',location.index,'_stangqs.RDS'))
-tmp2 <- 5
-repeat
-{
-	cat('\nSave quantities to file ',tmp,'...')
-  comp_9 = xzfile(tmp, compression = 9)
-	saveRDS(fit.gqs, comp_9)
-	check_if_saved <- try(readRDS(file=tmp))
-	tmp2 <- tmp2-1
-	if(!'try-error'%in%class(check_if_saved))
-		break	
-	if(tmp2<=0)
-		break
-}
+file <- file.path(indir.results, paste0(basename(args$job_dir), '_location',location.index,'_stangqs.RDS'))
+io_saveRDS(fit.gqs, args[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
 
 cat('\nFinished base-ages-generate-quantities.r ...')

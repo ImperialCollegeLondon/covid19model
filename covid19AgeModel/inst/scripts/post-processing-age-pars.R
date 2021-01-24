@@ -4,24 +4,27 @@
 
 cat(" \n -------------------------------- \n \n Running post-processing-age-pars.R \n \n -------------------------------- \n")
 
-library(data.table)
-library(bayesplot)
-library(ggplot2)
-library(tidyverse)
-library(RColorBrewer)
-library(scales)
-library(ggpubr)
-library(gridExtra)
-library(cowplot)
-library(magick)
-library(viridis)
-library(covid19AgeModel)
+suppressMessages(library(data.table, quietly = TRUE))
+suppressMessages(library(bayesplot, quietly = TRUE))
+suppressMessages(library(ggplot2, quietly = TRUE))
+suppressMessages(library(tidyverse, quietly = TRUE))
+suppressMessages(library(RColorBrewer, quietly = TRUE))
+suppressMessages(library(scales, quietly = TRUE))
+suppressMessages(library(ggpubr, quietly = TRUE))
+suppressMessages(library(gridExtra, quietly = TRUE))
+suppressMessages(library(cowplot, quietly = TRUE))
+suppressMessages(library(magick, quietly = TRUE))
+suppressMessages(library(viridis, quietly = TRUE))
+suppressMessages(library(covid19AgeModel, quietly = TRUE))
 
-#	for dev purposes: olli
-args_dir <- list()
-args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_200703f_cmdstanv'
-args_dir[['out_dir']] <- '/rdsgpfs/general/user/ablenkin/home/covid/base_age_fsq_mobility_200703f_cmdstanv-4states_lifr_eta2_devcntct_dataJ29_test2'
-args_dir[['job_tag']] <- '4states_lifr_eta2_devcntct_dataJ29_test2'
+#	for dev purposes: melodie
+if(0){
+  args_dir <- list()
+  args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201009c7_cmdstanv'
+  args_dir[['out_dir']] <- '~/Box\ Sync/2020/R0t/results/base_age_fsq_mobility_201009c7_cmdstanv-4states_AZCTFLNYC_Sep20_Levin'
+  args_dir[['job_tag']] <- '4states_AZCTFLNYC_Sep20_Levin'
+  args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201009c7_cmdstanv-4states_AZCTFLNYC_Sep20_Levin'
+}
 
 #	for runtime
 args_line <-  as.list(commandArgs(trailingOnly=TRUE))
@@ -95,17 +98,56 @@ tryCatch(
 tryCatch(
 		if("log_ifr_age_base" %in% names(plot.pars.trmspars)) 
 		{
-			tmp <- as.matrix(exp(plot.pars.trmspars$log_ifr_age_base))
-			make_posterior_intervals(tmp, 
-					"ifr_age_base",
-					plot.pars.basic$dages$age_band,
-					xintercept=1,
-					xmin=NULL, 
-					xlab=NULL, 
-					outfile.base = outfile.base, 
-					logscale = 0,
-					label=1) 
+			
+			tmp <- summarise_ifr_age_base(log_ifr_age_base = plot.pars.trmspars$log_ifr_age_base,
+			                                  dages = plot.pars.basic$dages)
+			
+			make_log_ifr_age_base_prior_posterior_plot(ifr_by_age = tmp, 
+			                                           dages = plot.pars.basic$dages, 
+			                                           stan_data = plot.pars.basic$stan_data, 
+			                                           pop_info = plot.pars.basic$pop_info, 
+			                                           outfile.base = outfile.base)
+			
 		}
+)
+
+tryCatch(
+  if(all(c("log_ifr_age_base", "log_ifr_age_rnde_mid1", "log_ifr_age_rnde_mid2", "log_ifr_age_rnde_old") %in% names(plot.pars.trmspars))) 
+  {
+    tmp <- summarise_ifr_age_by_state(log_ifr_age_base = plot.pars.trmspars$log_ifr_age_base,
+                                      log_ifr_age_rnde_mid1 = plot.pars.trmspars$log_ifr_age_rnde_mid1,
+                                      log_ifr_age_rnde_mid2 = plot.pars.trmspars$log_ifr_age_rnde_mid2,
+                                      log_ifr_age_rnde_old = plot.pars.trmspars$log_ifr_age_rnde_old,
+                                      regions = plot.pars.basic$regions,
+                                      dages = plot.pars.basic$dages,
+                                      pop_info = plot.pars.basic$pop_info)
+    file = paste0(outfile.base, "-summary_log_ifr_age_posterior.rds")
+    cat("Write ", file)
+    saveRDS(tmp, file = file)
+    
+    make_log_ifr_age_prior_posterior_plot(ifr_by_age_state = tmp, 
+                                          regions = plot.pars.basic$regions, 
+                                          dages = plot.pars.basic$dages, 
+                                          stan_data = plot.pars.basic$stan_data, 
+                                          pop_info = plot.pars.basic$pop_info, 
+                                          outfile.base = outfile.base)
+  }
+)
+
+tryCatch(
+  if("timeeff_shift_age" %in% names(plot.pars.trmspars) & length(dim(plot.pars.trmspars$timeeff_shift_age)) == 2) 
+  {			
+    tmp <- as.matrix(plot.pars.trmspars$timeeff_shift_age)
+    make_posterior_intervals(tmp, 
+                             "timeeff_shift_age",
+                             plot.pars.basic$dages$age_band,
+                             xintercept=0,
+                             xmin=NULL,
+                             xlab=expression("timeeff_shift_age"[a]), 
+                             outfile.base = outfile.base, 
+                             logscale = 0,
+                             label=1)
+  }
 )
 
 tryCatch(
@@ -123,6 +165,7 @@ tryCatch(
 					label=1)
 		}
 )
+
 
 tryCatch(
 		if("sd_log_relsusceptibility_age" %in% names(plot.pars.trmspars)) 

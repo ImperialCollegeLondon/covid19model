@@ -1,0 +1,235 @@
+---
+title: 'Results for age-specific/mobility renewal model'
+output:
+  html_document: 
+    default
+params:
+  stanModelFile:
+    value: x
+  job_dir:
+    value: x
+  job_tag:
+    value: x
+---
+  
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+args = params
+file.to.figure = function(name) file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-", name, ".png"))
+file.to.rds = function(name) file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, "-", name, ".rds"))
+
+```
+
+## Session info
+This file presents the results of Stan model 
+```{r, echo=FALSE}
+args$stanModelFile
+```
+with job tag
+```{r, echo=FALSE}
+args$job_tag
+```
+
+# Results
+
+## Expected forecasted deaths {.tabset .tabset-fade}
+With school re-opening multiplier 
+
+
+### Forecast
+
+#### School closed until level {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new_deaths-forecast_counterfactual_0_multiplier_100_level_K5"))) '##### K5'`
+
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new_deaths-forecast_counterfactual_0_multiplier_100_level_K5"))){
+  knitr::include_graphics(file.to.figure("new_deaths-forecast_counterfactual_0_multiplier_100_level_K5"))
+}
+```
+
+`r if (file.exists(file.to.figure("new_deaths-forecast_counterfactual_0_multiplier_100_level_K12"))) '##### K12'`
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new_deaths-forecast_counterfactual_0_multiplier_100_level_K12"))){
+  knitr::include_graphics(file.to.figure("new_deaths-forecast_counterfactual_0_multiplier_100_level_K12"))
+}
+```
+
+### Counterfactual
+
+#### School closed until level {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new_deaths-forecast_counterfactual_1_multiplier_100_level_K5"))) '##### K5'`
+
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new_deaths-forecast_counterfactual_1_multiplier_100_level_K5"))){
+  knitr::include_graphics(file.to.figure("new_deaths-forecast_counterfactual_1_multiplier_100_level_K5"))
+}
+```
+
+`r if (file.exists(file.to.figure("new_deaths-forecast_counterfactual_0_multiplier_100_level_K12"))) '##### K12'`
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new_deaths-forecast_counterfactual_1_multiplier_100_level_K12"))){
+  knitr::include_graphics(file.to.figure("new_deaths-forecast_counterfactual_1_multiplier_100_level_K12"))
+}
+```
+
+
+## Expected contribution {.tabset .tabset-fade}
+
+For a forecast period from
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12")) ){
+  ans = readRDS(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12"))
+  print(ans[[3]])
+}
+
+```
+to
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12")) ){
+  ans = readRDS(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12"))
+  print(ans[[4]])
+}
+```
+
+### Under school closure scenario
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12")) ){
+  ans = readRDS(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12"))
+  knitr::kable(ans[[1]])
+}
+
+```
+
+
+### Under school re-opening scenario {.tabset .tabset-fade}
+
+#### Forecast
+
+##### School closed until level {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K5"))) '###### K5'`
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K5"))){
+  ans = readRDS(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K5"))
+  knitr::kable(ans[[2]])
+}
+```
+
+`r if (file.exists(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12"))) '###### K12'`
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12"))){
+  ans = readRDS(file.to.rds("flow-onward-forecast_counterfactual_0_multiplier_100_level_K12"))
+  knitr::kable(ans[[2]])
+}
+```
+
+#### Counterfactual
+
+##### School closed until level {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.rds("flow-onward-forecast_counterfactual_1_multiplier_100_level_K5"))) '###### K5'`
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("flow-onward-forecast_counterfactual_1_multiplier_100_level_K5"))){
+  ans = readRDS(file.to.rds("flow-onward-forecast_counterfactual_1_multiplier_100_level_K5"))
+  knitr::kable(ans[[2]])
+}
+```
+
+`r if (file.exists(file.to.rds("flow-onward-forecast_counterfactual_1_multiplier_100_level_K12"))) '###### K12'`
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("flow-onward-forecast_counterfactual_1_multiplier_100_level_K12"))){
+  ans = readRDS(file.to.rds("flow-onward-forecast_counterfactual_1_multiplier_100_level_K12"))
+  knitr::kable(ans[[2]])
+}
+```
+
+
+## Excess COVID-19 infection and mortality {.tabset .tabset-fade}
+
+For a forecast period from
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K12"))){
+  ans = readRDS(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K12"))
+  print(ans[[2]])
+}
+
+```
+to
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K12"))){
+  ans = readRDS(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K12"))
+  print(ans[[3]])
+}
+
+```
+
+### Forecast
+
+#### School closed until level {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K5"))) '##### K5'`
+
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K5"))){
+  ans = readRDS(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K5"))
+  tmp = rbind( t(c("",
+                 "SARS-CoV-2 infections, closure scenario, (number)","Excess SARS-CoV-2 infections, re-opening scenario, (percent increase)", "Excess SARS-CoV-2 infections, re-opening scenario, (difference)",
+                 "COVID-19 attributable deaths, closure scenario, (number)","Excess COVID-19 attributable deaths, re-opening scenario (percent increase)","Excess COVID-19 attributable deaths, re-opening scenario, (difference)")), as.matrix(ans[[1]]))
+  knitr::kable(tmp)
+}
+```
+
+
+`r if (file.exists(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K12"))) '##### K12'`
+
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K12"))){
+  ans = readRDS(file.to.rds("excess-forecast_counterfactual_0_multiplier_100_level_K12"))
+  tmp = rbind( t(c("",
+                 "SARS-CoV-2 infections, closure scenario, (number)","Excess SARS-CoV-2 infections, re-opening scenario, (percent increase)", "Excess SARS-CoV-2 infections, re-opening scenario, (difference)",
+                 "COVID-19 attributable deaths, closure scenario, (number)","Excess COVID-19 attributable deaths, re-opening scenario (percent increase)","Excess COVID-19 attributable deaths, re-opening scenario, (difference)")), as.matrix(ans[[1]]))
+  knitr::kable(tmp)
+}
+```
+
+
+
+
+### Counterfactual
+
+#### School closed until level {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.rds("excess-forecast_counterfactual_1_multiplier_100_level_K5"))) '##### K5'`
+
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("excess-forecast_counterfactual_1_multiplier_100_level_K5"))){
+  ans = readRDS(file.to.rds("excess-forecast_counterfactual_1_multiplier_100_level_K5"))
+  tmp = rbind( t(c("",
+                 "SARS-CoV-2 infections, closure scenario, (number)","Excess SARS-CoV-2 infections, re-opening scenario, (percent increase)", "Excess SARS-CoV-2 infections, re-opening scenario, (difference)",
+                 "COVID-19 attributable deaths, closure scenario, (number)","Excess COVID-19 attributable deaths, re-opening scenario (percent increase)","Excess COVID-19 attributable deaths, re-opening scenario, (difference)")), as.matrix(ans[[1]]))
+  knitr::kable(tmp)
+}
+```
+
+
+
+`r if (file.exists(file.to.rds("excess-forecast_counterfactual_1_multiplier_100_level_K12"))) '##### K12'`
+
+```{r, out.width="120%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.rds("excess-forecast_counterfactual_1_multiplier_100_level_K12"))){
+  ans = readRDS(file.to.rds("excess-forecast_counterfactual_1_multiplier_100_level_K12"))
+  tmp = rbind( t(c("",
+                 "SARS-CoV-2 infections, closure scenario, (number)","Excess SARS-CoV-2 infections, re-opening scenario, (percent increase)", "Excess SARS-CoV-2 infections, re-opening scenario, (difference)",
+                 "COVID-19 attributable deaths, closure scenario, (number)","Excess COVID-19 attributable deaths, re-opening scenario (percent increase)","Excess COVID-19 attributable deaths, re-opening scenario, (difference)")), as.matrix(ans[[1]]))
+  knitr::kable(tmp)
+}
+```
+
+
+

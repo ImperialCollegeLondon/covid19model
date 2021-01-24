@@ -1,5 +1,5 @@
 Package: covid19AgeModel
-Version: 1.0-0
+Version: 1.2-0
 Date: 2018/10/31
 Title: 
 Authors@R: c(person("Melodie", "Monod", role = c("aut"), email = "melodie.monod18@imperial.ac.uk"),

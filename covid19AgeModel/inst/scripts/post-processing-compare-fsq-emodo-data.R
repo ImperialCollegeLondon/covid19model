@@ -20,25 +20,16 @@ suppressMessages(library(covid19AgeModel, quietly = TRUE))
 #	for dev purposes
 if(0)
 {
-  args_dir <- list()
-  args_dir[['script_dir']] <- '~/git/R0t'
-  args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_200703f_cmdstanv'
-  args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_200703f_cmdstanv-19states_stdctn_2'
-  args_dir[['job_tag']] <- '19states_stdctn_2'
+  args_dir <- list()    
+  args_dir[['out_dir']] <- '~/Box/OR_Work/2020/2020_covid/mobility_comparison_201020'  
 }
 
 args_line <-  as.list(commandArgs(trailingOnly=TRUE))
 if(length(args_line) > 0) 
 {
-  stopifnot(args_line[[1]]=='-script_dir')	
-  stopifnot(args_line[[3]]=='-stanModelFile')	
-  stopifnot(args_line[[5]]=='-out_dir')
-  stopifnot(args_line[[7]]=='-job_tag')
+  stopifnot(args_line[[1]]=='-out_dir')  
   args_dir <- list()
-  args_dir[['script_dir']] <- args_line[[2]]
-  args_dir[['stanModelFile']] <- args_line[[4]]
-  args_dir[['out_dir']] <- args_line[[6]]
-  args_dir[['job_tag']] <- args_line[[8]]
+  args_dir[['out_dir']] <- args_line[[6]]  
 } 
 
 ## start script
@@ -52,9 +43,10 @@ cat(" \n -------------------------------- \n read data sets \n -----------------
 
 #
 #	make pop_info
-pop_count <- read_pop_count_us(file.path(args_dir$script_dir,"usa","data","us_population_withnyc.rds"))
-pop_by_age <- read_pop_count_by_age_us( file.path(args_dir$script_dir,"usa","data","us_population_withnyc.rds"))
-darea <- read_us_state_areas(file.path(args_dir$script_dir,"usa","data","us_states_area_measurements.csv"))
+pkg.dir <- system.file(package = "covid19AgeModel" )
+pop_count <- read_pop_count_us(file.path(pkg.dir,"data","us_population_withnyc.rds"))
+pop_by_age <- read_pop_count_by_age_us( file.path(pkg.dir,"data","us_population_withnyc.rds"))
+darea <- read_us_state_areas(file.path(pkg.dir,"data","us_states_area_measurements.csv"))
 pop_info <- process_make_pop_info(pop_count, pop_by_age, darea)
 setkey(pop_info, loc_label, age.cat)
 pop_by_age <- NULL
@@ -63,29 +55,26 @@ darea <- NULL
 
 #
 # 	read fsq data
-mob_fsq <- read_foursquare_mobility(pop_info, infile_fsq=file.path(args_dir$script_dir, "usa","data",'fsq_visit_data_aug_refresh_200829.csv'))	
+mob_fsq <- read_foursquare_mobility(pop_info, infile_fsq=file.path(pkg.dir, "data",'fsq_visit_data_nov_refresh_201112.csv'))	
 fsq_age_cat_map <- make_fsq_age_cat_map(mob_fsq, pop_info)
 mob_fsq <- make_mobility_trends_fsq(mob_fsq, fsq_age_cat_map)	
 mob_fsq <- make_decoupled_mobility_trends_into_3_parts_fsq(mob_fsq, pop_info)
-mob_fsq[, week:= as.integer(strftime(date, format = "%V"))]
+mob_fsq[, week:= as.integer(strftime(date, format = "%U"))]
 
 #
 #	read Emodo data
 mob_emodo <- read_emodo_cell_phone_contact_intensities(infile_emodo = '~/Box/OR_Work/2020/2020_covid/data_examples/emodo_contacts_by_age_20200830.csv')
-mob_emodo <- read_emodo_cell_phone_contact_intensities_2(infile_emodo = '~/Box/OR_Work/2020/2020_covid/data_examples/emodo_mobility_by_age_20200831.csv')
+mob_emodo <- read_emodo_cell_phone_contact_intensities_2(infile_emodo = '~/Box/OR_Work/2020/2020_covid/mobility_comparison_200920/mobility_by_age_20200201_20200920.csv')
 #mob_emodo <- read_emodo_cell_phone_contact_intensities(infile_emodo = '~/contacts_and_mobility/contacts_by_age_20200729.csv')
 emo_age_cat_map <- make_emodo_age_cat_map(mob_emodo, pop_info)
 mob_emodo <- make_mobility_trends_emo(mob_emodo, emo_age_cat_map)
-mob_emodo[, week:= as.integer(strftime(date, format = "%V"))]
+mob_emodo[, week:= as.integer(strftime(date, format = "%U"))]
 
 #
 #	reduce to pure data
 mob_fsq <- unique(subset(mob_fsq, select=-c(age.cat, age.cat.label)))
 mob_emodo <- unique(subset(mob_emodo, select=-c(age.cat, age.cat.label)))
 
-#
-#	remove suspicious data
-mob_emodo <- subset(mob_emodo, week<=30)
 
 cat(" \n -------------------------------- \n Foursquare only analysis \n -------------------------------- \n")
 
@@ -113,13 +102,14 @@ fsq_last_week <- week_date[week==fsq_last_week,range(date)]
 emodo_last_week <- dwks[grepl('emodo_last_',week_type),unique(week)]
 emodo_last_week <- week_date[week==emodo_last_week,range(date)]
 emodo_date <- format(range(mob_emodo$date),"%b %d")
+
 #
 #	get data in these weeks
 mob_fsq_s <- merge(dwks, mob_fsq, by=c('loc','week'))
 mob_emodo_s <- merge(dwks, mob_emodo, by=c('loc','week'))
 
 #	absolute
-#	make analysis which age groups significant at rebound week
+#	make analysis which age groups significant in FSQ at rebound week
 m1_rbd_fsq <- glm(mobility_trend~fsq.age.cat.label:loc-1,family = Gamma(link = "log"),data=subset(mob_fsq_s, week_type=='rebound_week'))
 m1_rbd_fsq_coeff <- data.table(coef(summary(m1_rbd_fsq)),keep.rownames = TRUE)
 m1_rbd_fsq_coeff[,age.cat.label:=unlist(lapply(strsplit(rn,':'),function(x){x[1]}))]
@@ -131,18 +121,7 @@ m1_rbd_fsq_coeff[, analysis_type:= 'absolute']
 #	
 
 #
-#	make analysis which age groups significant in Emodo last week
-m1_elast_fsq <- glm(mobility_trend~fsq.age.cat.label:loc-1,family = Gamma(link = "log"),data=subset(mob_fsq_s, week_type=='emodo_last_week'))
-m1_elast_fsq_coeff <- data.table(coef(summary(m1_elast_fsq)),keep.rownames = TRUE)
-m1_elast_fsq_coeff[,age.cat.label:=unlist(lapply(strsplit(rn,':'),function(x){x[1]}))]
-m1_elast_fsq_coeff[,loc:=unlist(lapply(strsplit(rn,':'),function(x){x[2]}))]
-m1_elast_fsq_coeff[, week_type:= 'emodo_last_week']
-m1_elast_fsq_coeff[, data_type:= 'FSQ']
-m1_elast_fsq_coeff[, analysis_type:= 'absolute']
-
-
-#
-#	make analysis which age groups significant in last week
+#	make analysis which age groups significant in FSQ in last week
 m1_last_fsq <- glm(mobility_trend~fsq.age.cat.label:loc-1,family = Gamma(link = "log"),data=subset(mob_fsq_s, week_type=='fsq_last_week'))
 m1_last_fsq_coeff <- data.table(coef(summary(m1_last_fsq)),keep.rownames = TRUE)
 m1_last_fsq_coeff[,age.cat.label:=unlist(lapply(strsplit(rn,':'),function(x){x[1]}))]
@@ -153,6 +132,60 @@ m1_last_fsq_coeff[, analysis_type:= 'absolute']
 #	--> some locations some ages have significant drop < 1
 #	--> some locations some ages have significant increase > 1
 
+
+#
+#	make analysis which age groups significant in FSQ data at Emodo last week
+m1_elast_fsq <- glm(mobility_trend~fsq.age.cat.label:loc-1,family = Gamma(link = "log"),data=subset(mob_fsq_s, week_type=='emodo_last_week'))
+m1_elast_fsq_coeff <- data.table(coef(summary(m1_elast_fsq)),keep.rownames = TRUE)
+m1_elast_fsq_coeff[,age.cat.label:=unlist(lapply(strsplit(rn,':'),function(x){x[1]}))]
+m1_elast_fsq_coeff[,loc:=unlist(lapply(strsplit(rn,':'),function(x){x[2]}))]
+m1_elast_fsq_coeff[, week_type:= 'emodo_last_week']
+m1_elast_fsq_coeff[, data_type:= 'FSQ']
+m1_elast_fsq_coeff[, analysis_type:= 'absolute']
+
+#
+#	make analysis which age groups significant in FSQ every calendar week
+tmp <- mob_fsq[, unique(week)]
+m1_cw_fsq_coeff <- vector('list', length(tmp))
+for(i in seq_along(tmp))
+{
+	m1_cw_fsq <- glm(mobility_trend~fsq.age.cat.label:loc-1,family = Gamma(link = "log"), data=subset(mob_fsq, week==tmp[i]))
+	tmp2 <- data.table(coef(summary(m1_cw_fsq)),keep.rownames = TRUE)
+	tmp2[,age.cat.label:=unlist(lapply(strsplit(rn,':'),function(x){x[1]}))]
+	tmp2[,loc:=unlist(lapply(strsplit(rn,':'),function(x){x[2]}))]
+	tmp2[, week_type:= paste0('fsq_calendar_week_',tmp[i])]
+	tmp2[, data_type:= 'FSQ']
+	tmp2[, analysis_type:= 'absolute']
+	m1_cw_fsq_coeff[[i]] <- copy(tmp2)
+}
+m1_cw_fsq_coeff <- do.call('rbind', m1_cw_fsq_coeff)
+
+#	make analysis which age groups significant in FSQ at every calendar week
+# 	relative to baseline 35-44
+wks <- mob_fsq[, unique(week)]
+locs <- sort(unique(mob_fsq$loc))
+m2_cw_fsq_coeff <- vector('list', length(wks))
+for(i in seq_along(wks))
+{		
+	m2_fsq_coeff <- vector('list',length(locs))
+	names(m2_fsq_coeff) <- locs
+	for(x in locs)
+	{
+		tmp <- subset(mob_fsq, loc==x & week==wks[i])
+		tmp[, fsq.age.cat.label:=factor(fsq.age.cat.label, levels = c('35-44','18-24', '25-34', '45-54', '55-64','65+'))]
+		tmp2 <- glm(mobility_trend~fsq.age.cat.label,family = Gamma(link = "log"),data=tmp)
+		tmp2 <- coef(summary(tmp2))	
+		m2_fsq_coeff[[x]] <- as.data.table(tmp2)
+		m2_fsq_coeff[[x]][, row.names:= rownames(tmp2)]
+		m2_fsq_coeff[[x]][, loc:= x]		
+		m2_fsq_coeff[[x]][, week_type:= paste0('fsq_calendar_week_',wks[i])]
+	}
+	m2_fsq_coeff <- do.call('rbind',m2_fsq_coeff)
+	m2_cw_fsq_coeff[[i]] <- copy(m2_fsq_coeff)
+}
+m2_cw_fsq_coeff <- do.call('rbind', m2_cw_fsq_coeff)
+m2_cw_fsq_coeff[, data_type:= 'FSQ']
+m2_cw_fsq_coeff[, analysis_type:= 'relative to 35-44']
 
 
 #	make analysis which age groups significant at rebound week for each state
@@ -244,7 +277,50 @@ m1_last_emodo_coeff[, week_type:= 'emodo_last_week']
 m1_last_emodo_coeff[, data_type:= 'Emodo']
 m1_last_emodo_coeff[, analysis_type:= 'absolute']
 
+#
+#	make analysis which age groups significant in Emodo every calendar week
+tmp <- mob_emodo[week>=6, unique(week)]
+m1_cw_emodo_coeff <- vector('list', length(tmp))
+for(i in seq_along(tmp))
+{
+	m1_cw_emodo <- glm(mobility_trend~emo.age.label:loc-1,family = Gamma(link = "log"), data=subset(mob_emodo, week==tmp[i]))
+	tmp2 <- data.table(coef(summary(m1_cw_emodo)),keep.rownames = TRUE)
+	tmp2[,age.cat.label:=unlist(lapply(strsplit(rn,':'),function(x){x[1]}))]
+	tmp2[,loc:=unlist(lapply(strsplit(rn,':'),function(x){x[2]}))]
+	tmp2[, week_type:= paste0('emodo_calendar_week_',tmp[i])]
+	tmp2[, data_type:= 'Emodo']
+	tmp2[, analysis_type:= 'absolute']
+	m1_cw_emodo_coeff[[i]] <- copy(tmp2)
+}
+m1_cw_emodo_coeff <- do.call('rbind', m1_cw_emodo_coeff)
 
+
+#	make analysis which age groups significant in FSQ at every calendar week
+# 	relative to baseline 35-44
+wks <- mob_emodo[week>=6, unique(week)]
+locs <- sort(unique(mob_emodo$loc))
+m2_cw_emodo_coeff <- vector('list', length(wks))
+for(i in seq_along(wks))
+{		
+	m2_emodo_coeff <- vector('list',length(locs))
+	names(m2_emodo_coeff) <- locs
+	for(x in locs)
+	{
+		tmp <- subset(mob_emodo, loc==x & week==wks[i])
+		tmp[, emo.age.label:=factor(emo.age.label, levels = c('35-44','18-24', '25-34', '45-54', '55-64','65+'))]
+		tmp2 <- glm(mobility_trend~emo.age.label,family = Gamma(link = "log"),data=tmp)
+		tmp2 <- coef(summary(tmp2))	
+		m2_emodo_coeff[[x]] <- as.data.table(tmp2)
+		m2_emodo_coeff[[x]][, row.names:= rownames(tmp2)]
+		m2_emodo_coeff[[x]][, loc:= x]		
+		m2_emodo_coeff[[x]][, week_type:= paste0('emodo_calendar_week_',wks[i])]
+	}
+	m2_emodo_coeff <- do.call('rbind',m2_emodo_coeff)
+	m2_cw_emodo_coeff[[i]] <- copy(m2_emodo_coeff)
+}
+m2_cw_emodo_coeff <- do.call('rbind', m2_cw_emodo_coeff)
+m2_cw_emodo_coeff[, data_type:= 'Emodo']
+m2_cw_emodo_coeff[, analysis_type:= 'relative to 35-44']
 
 
 #	make analysis which age groups significant at rebound week for each state
@@ -298,8 +374,10 @@ cat(" \n -------------------------------- \n Collecting results \n -------------
 ans <- rbind( m1_rbd_fsq_coeff, 
 	m1_elast_fsq_coeff,
 	m1_last_fsq_coeff, 
+	m1_cw_fsq_coeff,
 	m1_rbd_emodo_coeff, 
-	m1_last_emodo_coeff)
+	m1_last_emodo_coeff,
+	m1_cw_emodo_coeff)
 set(ans, NULL, 'age.cat.label', gsub('fsq.age.cat.label|emo.age.label','',ans$age.cat.label))
 set(ans, NULL, 'loc', gsub('loc','',ans$loc))
 setnames(ans, 'rn', 'row.names')
@@ -312,8 +390,10 @@ ans <- merge(unique(subset(pop_info, select=c(loc, loc_label))), ans, by='loc')
 tmp <- rbind(m2_rbd_fsq_coeff, 
 	m2_elast_fsq_coeff,
 	m2_last_fsq_coeff,
+	m2_cw_fsq_coeff,
 	m2_rbd_emodo_coeff, 
-	m2_last_emodo_coeff)
+	m2_last_emodo_coeff,
+	m2_cw_emodo_coeff)
 tmp[, age.cat.label:= row.names]
 set(tmp, tmp[, which(age.cat.label=='(Intercept)')], 'age.cat.label', '35-44')
 set(tmp, NULL, 'age.cat.label', gsub('fsq.age.cat.label|emo.age.label','',tmp$age.cat.label))
@@ -324,10 +404,39 @@ tmp <- merge(unique(subset(pop_info, select=c(loc, loc_label))), tmp, by='loc')
 
 ans <- rbind(ans, tmp)
 
-cat(" \n -------------------------------- \n Make FSQ plot \n -------------------------------- \n")
+cat(" \n -------------------------------- \n Make FSQ plots \n -------------------------------- \n")
 
 #
-#	heatmaps FSQ data analysis -- absolute
+#	heatmaps FSQ data analysis -- absolute by calendar week
+tmp <- subset(ans, analysis_type=='absolute' & data_type=='FSQ' &  grepl('calendar_week',week_type))
+set(tmp,NULL,'week_type',tmp[, as.integer(gsub('fsq_calendar_week_','',week_type))])
+tmp[ , week:= as.Date(paste(2020, tmp$week_type, 7, sep="-"), "%Y-%U-%u")]
+p.fsq.abs.cw <- ggplot(tmp) +			
+	scale_x_date(expand=c(0,0), date_breaks= '2 weeks') +
+	scale_y_discrete(expand=c(0,0)) +
+	geom_tile(aes(x= week, y= reorder(loc_label, desc(loc_label)), fill=as.character(updwn))) +
+	scale_fill_manual(values = c('-1'="#D9F0D3", '0'="#5AAE61", '1'="#00441B"),
+		labels=c('-1'='sig lower than baseline','0'='not sig different to baseline', '1'='sig higher than baseline')) +
+	labs(x= '', y='', fill='Mobility trend') +
+	facet_wrap(~age.cat.label, ncol=2) +	
+	guides(fill = guide_legend(nrow = 1, title.position = "top")) +
+	theme_bw() +
+	theme(legend.position='bottom',
+		legend.justification = "left",
+		legend.margin=margin(0,0,0,0),
+		legend.box.margin=margin(0,-30,0,0),
+		plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
+		axis.text.x=element_text(angle=60, vjust = 0.9, hjust=1),
+		axis.title.x = element_blank(),
+		panel.grid.major = element_blank(), 
+		panel.grid.minor = element_blank(),
+		panel.background = element_blank(),
+		strip.background = element_blank()
+		)
+ggsave(file=paste0(outfile.base,'-fsq-analysis-absolute-by-week.pdf'), p.fsq.abs.cw, w = 16, h = 20)
+
+#
+#	heatmaps FSQ data analysis -- absolute rebound week
 tmp <- subset(ans, analysis_type=='absolute' & data_type=='FSQ' &  week_type!='emodo_last_week')
 tmp$week_type <- factor(tmp$week_type,levels = c("rebound_week","fsq_last_week"),
                         labels=c("rebound week", "last week"))
@@ -356,7 +465,37 @@ p.fsq.abs <- ggplot(tmp) +
         strip.background = element_blank())
 
 #
-#	heatmaps FSQ data analysis -- relative
+#	heatmaps FSQ data analysis -- relative by calendar week
+tmp <- subset(ans, analysis_type=='relative to 35-44' & data_type=='FSQ' &  grepl('calendar_week',week_type))
+set(tmp,NULL,'week_type',tmp[, as.integer(gsub('fsq_calendar_week_','',week_type))])
+tmp <- subset(tmp, age.cat.label!='35-44')
+tmp[ , week:= as.Date(paste(2020, tmp$week_type, 7, sep="-"), "%Y-%U-%u")]
+p.fsq.abs.rel3544 <- ggplot(tmp) +			
+		scale_x_date(expand=c(0,0), date_breaks= '2 weeks') +
+		scale_y_discrete(expand=c(0,0)) +
+		geom_tile(aes(x= week, y= reorder(loc_label, desc(loc_label)), fill=as.character(updwn))) +
+		scale_fill_manual(values = c('-1'="#E7D4E8" , '0'="#9970AB", '1'="#40004B"),
+				labels=c('-1'='sig lower than 35-44','0'='not sig different to 35-44', '1'='sig higher than 35-44')) +		
+		labs(x= '', y='', fill='Mobility trend') +
+		facet_wrap(~age.cat.label, ncol=2) +	
+		guides(fill = guide_legend(nrow = 1, title.position = "top")) +
+		theme_bw() +
+		theme(legend.position='bottom',
+				legend.justification = "left",
+				legend.margin=margin(0,0,0,0),
+				legend.box.margin=margin(0,-30,0,0),
+				plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
+				axis.text.x=element_text(angle=60, vjust = 0.9, hjust=1),
+				axis.title.x = element_blank(),
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank(),
+				panel.background = element_blank(),
+				strip.background = element_blank()
+		)
+ggsave(file=paste0(outfile.base,'-fsq-analysis-relative-by-week.pdf'), p.fsq.abs.rel3544, w = 16, h = 20)
+
+#
+#	heatmaps FSQ data analysis -- relative 
 tmp <- subset(ans, analysis_type=='relative to 35-44' & data_type=='FSQ' &  week_type!='emodo_last_week')
 tmp <- subset(tmp, age.cat.label!='35-44')
 tmp$week_type <- factor(tmp$week_type,levels = c("rebound_week","fsq_last_week"),
@@ -397,9 +536,115 @@ p <- ggarrange(p.fsq.abs,
 
 ggsave(file=paste0(outfile.base,'-fsq-analysis.pdf'), p, width = 250, height = 200, units = "mm")
 
+
+cat(" \n -------------------------------- \n Make Emodo plots \n -------------------------------- \n")
+
+#
+#	heatmaps FSQ data analysis -- absolute by calendar week
+tmp <- subset(ans, analysis_type=='absolute' & data_type=='Emodo' &  grepl('calendar_week',week_type))
+set(tmp,NULL,'week_type',tmp[, as.integer(gsub('emodo_calendar_week_','',week_type))])
+tmp[ , week:= as.Date(paste(2020, tmp$week_type, 7, sep="-"), "%Y-%U-%u")]
+p.emo.abs.cw <- ggplot(tmp) +			
+		scale_x_date(expand=c(0,0), date_breaks= '2 weeks') +
+		scale_y_discrete(expand=c(0,0)) +
+		geom_tile(aes(x= week, y= reorder(loc_label, desc(loc_label)), fill=as.character(updwn))) +
+		scale_fill_manual(values = c('-1'="#D9F0D3", '0'="#5AAE61", '1'="#00441B"),
+				labels=c('-1'='sig lower than baseline','0'='not sig different to baseline', '1'='sig higher than baseline')) +
+		labs(x= '', y='', fill='Mobility trend') +
+		facet_wrap(~age.cat.label, ncol=2) +	
+		guides(fill = guide_legend(nrow = 1, title.position = "top")) +
+		theme_bw() +
+		theme(legend.position='bottom',
+				legend.justification = "left",
+				legend.margin=margin(0,0,0,0),
+				legend.box.margin=margin(0,-30,0,0),
+				plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
+				axis.text.x=element_text(angle=60, vjust = 0.9, hjust=1),
+				axis.title.x = element_blank(),
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank(),
+				panel.background = element_blank(),
+				strip.background = element_blank()
+		)
+ggsave(file=paste0(outfile.base,'-emo-analysis-absolute-by-week.pdf'), p.emo.abs.cw, w = 16, h = 5)
+
+#
+#	heatmaps FSQ data analysis -- relative by calendar week
+tmp <- subset(ans, analysis_type=='relative to 35-44' & data_type=='Emodo' &  grepl('calendar_week',week_type))
+set(tmp,NULL,'week_type',tmp[, as.integer(gsub('emodo_calendar_week_','',week_type))])
+tmp <- subset(tmp, age.cat.label!='35-44')
+tmp[ , week:= as.Date(paste(2020, tmp$week_type, 7, sep="-"), "%Y-%U-%u")]
+p.emo.abs.rel3544 <- ggplot(tmp) +			
+		scale_x_date(expand=c(0,0), date_breaks= '2 weeks') +
+		scale_y_discrete(expand=c(0,0)) +
+		geom_tile(aes(x= week, y= reorder(loc_label, desc(loc_label)), fill=as.character(updwn))) +
+		scale_fill_manual(values = c('-1'="#E7D4E8" , '0'="#9970AB", '1'="#40004B"),
+				labels=c('-1'='sig lower than 35-44','0'='not sig different to 35-44', '1'='sig higher than 35-44')) +		
+		labs(x= '', y='', fill='Mobility trend') +
+		facet_wrap(~age.cat.label, ncol=2) +	
+		guides(fill = guide_legend(nrow = 1, title.position = "top")) +
+		theme_bw() +
+		theme(legend.position='bottom',
+				legend.justification = "left",
+				legend.margin=margin(0,0,0,0),
+				legend.box.margin=margin(0,-30,0,0),
+				plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
+				axis.text.x=element_text(angle=60, vjust = 0.9, hjust=1),
+				axis.title.x = element_blank(),
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank(),
+				panel.background = element_blank(),
+				strip.background = element_blank()
+		)
+ggsave(file=paste0(outfile.base,'-emo-analysis-relative-by-week.pdf'), p.emo.abs.rel3544, w = 16, h = 5)
+
+
 cat(" \n -------------------------------- \n Make FSQ-Emodo plot \n -------------------------------- \n")
 
-#	comparing FSQ + Emodo data
+#	comparing FSQ + Emodo data, version 2 plot
+tmp <- unique(mob_emodo$loc)
+tmp <- subset(ans, 
+	analysis_type=='relative to 35-44' & 
+	grepl('calendar_week',week_type) & 
+	loc %in% tmp & 
+	!age.cat.label%in%c('35-44','55+','55-64','65+')
+	)
+set(tmp, NULL, 'data_type', factor(tmp$data_type,levels = c("FSQ","Emodo"), labels=c("Foursquare", "Emodo")))
+set(tmp, NULL, 'week', tmp[, as.integer(gsub('.*_calendar_week_','',week_type))])
+tmp[ , week:= as.Date(paste(2020, tmp$week, 7, sep="-"), "%Y-%U-%u")]
+tmp2 <- subset(tmp, data_type=='Emodo')[, max(week)]
+tmp <- subset(tmp, week<=tmp2)
+#reorder(loc_label, desc(loc_label))
+
+p.comparison <- ggplot(tmp) +			
+	scale_x_date(expand=c(0,0), date_breaks= '2 weeks') +
+	scale_y_discrete(expand=c(0,0)) +
+	geom_tile(aes(x= week, y= data_type, fill=as.character(updwn))) +
+	scale_fill_manual(values = c('-1'="#E7D4E8" , '0'="#9970AB", '1'="#40004B"),
+		labels=c('-1'='sig lower than 35-44','0'='not sig different to 35-44', '1'='sig higher than 35-44')) +
+	labs(x= '', y='', fill='Mobility trend') +
+	facet_wrap(paste0(loc_label, ', ', age.cat.label)~., ncol=3) +		
+	guides(fill = guide_legend(nrow = 1, title.position = "top")) +
+	theme_bw() +  
+	theme(legend.position='bottom',
+		legend.justification = "left",
+		legend.title = element_text(size = 10), 
+		legend.text = element_text(size = 8),
+		legend.margin=margin(0,0,0,0),
+		legend.box.margin=margin(0,-30,0,0),
+		plot.title = element_text(size = 15, face = "bold",hjust = 0.5),
+		axis.text.x=element_text(angle=60, vjust = 0.9, hjust=1),
+		axis.title.x = element_blank(),
+		panel.grid.major = element_blank(), 
+		panel.grid.minor = element_blank(),
+		panel.background = element_blank(),
+		strip.background = element_blank(),
+		axis.title.y=element_blank()
+		)
+ggsave(file=paste0(outfile.base,'-compare-fsq-emodo-analysis_v2.pdf'), p.comparison, width = 250, height = 250, units = "mm")
+
+
+#	comparing FSQ + Emodo data, version 1 plot
 tmp <- unique(mob_emodo$loc)
 tmp <- subset(ans, analysis_type=='absolute' & week_type!='fsq_last_week' & loc %in% tmp & !age.cat.label%in%c('55+','55-64','65+'))
 set(tmp, NULL, 'week_type', 
@@ -529,21 +774,21 @@ cat(" \n -------------------------------- \n compare Emodo to FSQ trends \n ----
 #
 #	keep only loc_labels with Emodo data
 tmp <- unique(mob_emodo$loc_label)
-mob_fsq <- subset(mob_fsq, loc_label%in%tmp)
+mob <- subset(mob_fsq, loc_label%in%tmp)
 
 #
 #	merge
-setnames(mob_fsq, c('fsq.age.cat.label','mobility_trend'), c('age.cat.label','fsq_trend'))
-setnames(mob_emodo, c('emo.age.label','mobility_trend'), c('age.cat.label','emo_trend'))
-mob_fsq <- subset(mob_fsq, select=c(loc, loc_label, week, date, age.cat.label, fsq_trend, dip_date, rebound_date))
-mob_emodo <- subset(mob_emodo, select=c(loc, loc_label, week, date, age.cat.label, emo_trend))
-mob <- merge(mob_fsq, mob_emodo, by=c('loc','loc_label','week','date','age.cat.label'))
+setnames(mob, c('fsq.age.cat.label','mobility_trend'), c('age.cat.label','fsq_trend'))
+mob <- subset(mob, select=c(loc, loc_label, week, date, age.cat.label, fsq_trend, dip_date, rebound_date))
+tmp <- subset(mob_emodo, select=c(loc, loc_label, week, date, emo.age.label, mobility_trend))
+setnames(tmp, c('emo.age.label','mobility_trend'), c('age.cat.label','emo_trend'))
+mob <- merge(mob, tmp, by=c('loc','loc_label','week','date','age.cat.label'))
 
 #	plot direct comparison
 tmp <- reshape2::melt(mob, measure.vars=c('emo_trend','fsq_trend'))
 ggplot(tmp, aes(x=date, y=value, colour=variable)) +
 	scale_y_continuous(labels=scales::percent) +
-	scale_x_date(expand=c(0,0)) +
+	scale_x_date(expand=c(0,0), date_breaks='1 month') +
     #scale_colour_viridis(discrete=TRUE,begin=0,end=.8*4/6,alpha=1,direction=-1,option='magma') +
     scale_colour_manual(
 		values = c('emo_trend'='deepskyblue','fsq_trend'='deeppink4'),
@@ -555,6 +800,7 @@ ggplot(tmp, aes(x=date, y=value, colour=variable)) +
 	facet_grid(loc_label~age.cat.label)+
   	theme(legend.position='bottom',
 		legend.justification='left',
+		axis.text.x=element_text(angle=60, vjust = 0.9, hjust=1),
 		legend.title = element_text(size = 10), 
 		legend.text = element_text(size = 8),					
 		strip.background= element_blank()) 

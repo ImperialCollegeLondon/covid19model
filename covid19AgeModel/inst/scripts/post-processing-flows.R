@@ -25,6 +25,11 @@ args_dir[['job_tag']] <- '4states_lifr_eta2_devcntct_dataJ29_test'
 args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_200703f_cmdstanv'
 args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_200703f_cmdstanv-19states_stdcntct_newpostpr'
 args_dir[['job_tag']] <- '19states_stdcntct_newpostpr'
+# xx
+args_dir <- list()
+args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201015f8_cmdstanv'
+args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201015f8_cmdstanv-40states_tau10_Oct29_Levin/'
+args_dir[['job_tag']] <- '40states_tau10_Oct29_Levin'
 
 #	for runtime
 args_line <-  as.list(commandArgs(trailingOnly=TRUE))
@@ -93,6 +98,12 @@ tryCatch({
 tryCatch({
 	flow <- subset(reduced_flows_summary, stat=="flow_abs")
 	make_flow_sources_onward_side_by_side_plot(flow, paste0(outfile.base,'-reduced_flow_sourcesonwardabs'))
+})
+
+# make stacked source of transmissions (abs value)
+tryCatch({
+  flow <- subset(reduced_flows_summary, stat=="flow_abs")
+  make_flow_stacked_sources_plot(flow,plot.pars.basic$region_names, paste0(outfile.base,'-reduced_flow_sourceabs_stacked_alllocations'))
 })
 
 tryCatch({

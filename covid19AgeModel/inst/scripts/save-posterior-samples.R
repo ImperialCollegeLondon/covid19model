@@ -9,6 +9,15 @@ pkg.dir <- system.file(package = "covid19AgeModel" )
 
 `%notin%` <- Negate(`%in%`)
 
+# for dev purpose: Melodie
+if(0){
+  args_dir <- list()
+  args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201015i4_cmdstanv'
+  args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201015i4_cmdstanv-40states_Oct29_Levin7_schoolbound6_v2'
+  args_dir[['job_tag']] <- '40states_Oct29_Levin7_schoolbound6_v2'
+  args_dir[['numb_chains']] <- 8
+}
+
 # save args for report before loading those from running session 
 args_line <-  as.list(commandArgs(trailingOnly=TRUE))
 if(length(args_line) > 0) 
@@ -25,6 +34,8 @@ if(length(args_line) > 0)
 } 
 
 ## start script
+args_dir[['work_dir']] <- getwd()
+
 cat(" \n --------------------------------  with arguments -------------------------------- \n")
 str(args_dir)
 
@@ -53,6 +64,7 @@ z <- load( gsub('_stanout.RData','_stanin.RData',do[1,F]) )
 if(grepl('sensititivity',args_dir$out_dir)){
   stan_data <- readRDS( gsub('pbs_stanout.RData','pbs_stan_data.RDS',do[1,F]) ) 
 }
+
 cntct_by <- as.integer(args$cntct_by)
 cntct_bands <- stan_data$A
 seedAge <- args$seedAge
@@ -65,6 +77,8 @@ change_covariates_coef_after_upswing <- 0
 if(!is.null( args$change_covariates_coef_after_upswing)) change_covariates_coef_after_upswing <- args$change_covariates_coef_after_upswing
 with_contact_intensities_zhang <- 0
 if(!is.null( args$with_contact_intensities_zhang)) with_contact_intensities_zhang <- args$with_contact_intensities_zhang
+with_elementary_high_schools_status <- 0
+if(!is.null( args$with_elementary_high_schools_status)) with_elementary_high_schools_status <- args$with_elementary_high_schools_status
 if(is.null(args$cntct_by)) args$cntct_by = args$contact_by ## there was a change of variable 
 if(!is.null(args$states)) states = args$states
 
@@ -85,9 +99,10 @@ for(i in seq_len(nrow(do)))
   z <- load(do[i,F])
   stopifnot('fit' %in% z)
   median_lp_[i] = median(rstan:::extract(fit)$lp__)
+  if(all(rstan::summary(fit)$summary[,1] == 0) & all(is.na(rstan::summary(fit)$summary[,2]))) next
   rf[[i]] <- fit
 }
-fit <- rstan:::sflist2stanfit(rf)
+fit <- rstan:::sflist2stanfit(rf[lapply(rf,length)>0])
 re <- rstan::extract(fit)
 
 # exclude chain that did not converge using lp__
@@ -100,11 +115,11 @@ mild.threshold.lower = lowerq - (iqr * 1.5)
 # Any data point outside (> mild.threshold.upper or < mild.threshold.lower) these values is a mild outlier
 num.outlier = sum(median_lp_ < mild.threshold.lower | median_lp_ > mild.threshold.upper)
 
-cat("/n There is (are) ", num.outlier, "chain that did not converge /n")
+cat("\n There is (are) ", num.outlier, "chain that did not converge \n")
 # remove outliers if any
 if(num.outlier != 0){
   outliers = which(median_lp_ < mild.threshold.lower | median_lp_ > mild.threshold.upper)
-  cat("chain(s)", outliers, "did not converge and is (are) removed /n")
+  cat("\nchain(s) number", outliers, "did not converge and is (are) removed \n")
   rf <- rf[-outliers]
   fit <- rstan:::sflist2stanfit(rf)
   re <- rstan::extract(fit)
@@ -113,7 +128,7 @@ if(num.outlier != 0){
 
 cat(" \n -------------------------------- save: fit -------------------------------- \n")
 cat("\n save file:", paste0(outfile.base,'-stanout-fit.RDS'))
-saveRDS(fit, file = paste0(outfile.base,'-stanout-fit.RDS') )
+io_saveRDS(fit, args_dir[['work_dir']], args_dir[['out_dir']], basename(paste0(outfile.base,'-stanout-fit.RDS')), check_if_saved_n=10)
 fit <- NULL
 gc()
 
@@ -124,6 +139,8 @@ do[, STANMF:= gsub('^([^-]+)-([^-]+)-([^-]+)$','\\1',basename(F))]
 do[, JOB_TAG:= gsub('^([^-]+)-([^-]+)-([^-]+)$','\\2',basename(F))]
 do[, JOB_ID:= gsub('^([^-]+)-([^-]+)-([^-]+)$','\\3',basename(F))]
 do <- subset(do, grepl(args_dir$stanModelFile,STANMF) & grepl(args_dir$job_tag, JOB_TAG))
+
+do[, JOB_ID2:= gsub('.*\\[(.+)\\].*','\\1',basename(F))]
 
 # remove outliers if any
 if(num.outlier != 0){
@@ -189,6 +206,9 @@ if(nrow(do)!=0){
   if("RtByAge" %in% vars) re[["RtByAge"]] <- aperm(re[["RtByAge"]], c(1, 4, 2, 3))
   if("lambdaByAge" %in% vars) re[["lambdaByAge"]] <- aperm(re[["lambdaByAge"]], c(1, 4, 2, 3))
   if("E_effcasesByAge" %in% vars) re[["E_effcasesByAge"]] <- aperm(re[["E_effcasesByAge"]], c(1, 4, 2, 3))
+  if("contacts_ByAge" %in% vars) re[["contacts_ByAge"]] <- aperm(re[["contacts_ByAge"]], c(1, 4, 2, 3))
+  if("RtByAge_counter" %in% vars) re[["RtByAge_counter"]] <- aperm(re[["RtByAge_counter"]], c(1, 4, 2, 3))
+  if("E_effcasesByAge_counter" %in% vars) re[["E_effcasesByAge_counter"]] <- aperm(re[["E_effcasesByAge_counter"]], c(1, 4, 2, 3))
   gc()
 }
 
@@ -265,13 +285,14 @@ basic <- list(regions=regions,
               deathByAge_data=deathByAge_data,
               change_covariates_coef_after_upswing=change_covariates_coef_after_upswing,
               with_contact_intensities_zhang = with_contact_intensities_zhang, 
+              with_elementary_high_schools_status =with_elementary_high_schools_status,
               outfile.base=outfile.base,
               outfile.base2=outfile.base2,
               script_dir=pkg.dir,
               with_avg_mobility_data=with_avg_mobility_data,
               JOBID = args_dir$JOBID)
-cat("\n save file:", paste0(outfile.base,'-stanout-basic.RDS'))
-saveRDS(basic, file = paste0(outfile.base,'-stanout-basic.RDS'))
+file <- paste0(outfile.base,'-stanout-basic.RDS')
+io_saveRDS(basic, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
 basic <- NULL
 gc()
 cat(" \n -------------------------------- processing basic quantities: end -------------------------------- \n")
@@ -282,7 +303,8 @@ cat(" \n -------------------------------- processing basic quantities: end -----
 if("E_deathsByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing E_deathsByAge: start -------------------------------- \n")
-  saveRDS(re$E_deathsByAge,paste0(outfile.base,'-stanout-E_deathsByAge-gqs.RDS'))
+  file = paste0(outfile.base,'-stanout-E_deathsByAge-gqs.RDS')
+  io_saveRDS(re$E_deathsByAge, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
   re$E_deathsByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing E_deathsByAge: done -------------------------------- \n")	
@@ -293,7 +315,8 @@ if("E_deathsByAge" %in% names(re))
 if("E_antibodyByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing E_antibodyByAge: start -------------------------------- \n")
-  saveRDS(re$E_antibodyByAge,paste0(outfile.base,'-stanout-E_antibodyByAge-gqs.RDS'))
+  file = paste0(outfile.base,'-stanout-E_antibodyByAge-gqs.RDS')
+  io_saveRDS(re$E_antibodyByAge, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
   re$E_antibodyByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing E_antibodyByAge: done -------------------------------- \n")	
@@ -304,7 +327,8 @@ if("E_antibodyByAge" %in% names(re))
 if("E_casesByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing E_casesByAge: start -------------------------------- \n")
-  saveRDS(re$E_casesByAge,paste0(outfile.base,'-stanout-E_casesByAge-gqs.RDS'))
+  file = paste0(outfile.base,'-stanout-E_casesByAge-gqs.RDS')
+  io_saveRDS(re$E_casesByAge, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
   re$E_casesByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing E_casesByAge: done -------------------------------- \n")	
@@ -315,7 +339,8 @@ if("E_casesByAge" %in% names(re))
 if("lambdaByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing lambdaByAge: start -------------------------------- \n")
-  saveRDS(re$lambdaByAge,paste0(outfile.base,'-stanout-lambdaByAge-gqs.RDS'))
+  file = paste0(outfile.base,'-stanout-lambdaByAge-gqs.RDS')
+  io_saveRDS(re$lambdaByAge, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
   re$lambdaByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing lambdaByAge: done -------------------------------- \n")	
@@ -326,8 +351,21 @@ if("lambdaByAge" %in% names(re))
 if("E_effcasesByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing eff cases by Age: start -------------------------------- \n")
-  saveRDS(re$E_effcasesByAge,paste0(outfile.base,'-stanout-E_effcasesByAge-gqs.RDS'))
+  file = paste0(outfile.base,'-stanout-E_effcasesByAge-gqs.RDS')
+  io_saveRDS(re$E_effcasesByAge, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
   re$E_effcasesByAge <- NULL
+  gc()
+  cat(" \n -------------------------------- processing eff cases by Age: done -------------------------------- \n")	
+}
+
+#
+#	processing eff cases by Age
+if("E_effcasesByAge_counter" %in% names(re))
+{
+  cat(" \n -------------------------------- processing eff cases by Age: start -------------------------------- \n")
+  file = paste0(outfile.base,'-stanout-E_effcasesByAge_noageeff-gqs.RDS')
+  io_saveRDS(re$E_effcasesByAge_counter, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
+  re$E_effcasesByAge_counter <- NULL
   gc()
   cat(" \n -------------------------------- processing eff cases by Age: done -------------------------------- \n")	
 }
@@ -337,12 +375,36 @@ if("E_effcasesByAge" %in% names(re))
 if("RtByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing RtByAge: start -------------------------------- \n")
-  saveRDS(re$RtByAge,paste0(outfile.base,'-stanout-RtByAge-gqs.RDS'))
+  file = paste0(outfile.base,'-stanout-RtByAge-gqs.RDS')
+  io_saveRDS(re$RtByAge, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
   re$RtByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing RtByAge: done -------------------------------- \n")	
 }
 
+#
+#	processing eff cases by Age
+if("RtByAge_counter" %in% names(re))
+{
+  cat(" \n -------------------------------- processing RtByAge_counter: start -------------------------------- \n")
+  file = paste0(outfile.base,'-stanout-RtByAge_noageeff-gqs.RDS')
+  io_saveRDS(re$RtByAge_counter, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
+  re$RtByAge_counter <- NULL
+  gc()
+  cat(" \n -------------------------------- processing RtByAge_counter: done -------------------------------- \n")	
+}
+
+#
+#	processing contacts_ByAge
+if("contacts_ByAge" %in% names(re))
+{
+  cat(" \n -------------------------------- processing contacts_ByAge: start -------------------------------- \n")
+  file = paste0(outfile.base,'-stanout-contacts_ByAge-gqs.RDS')
+  io_saveRDS(re$contacts_ByAge, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
+  re$contacts_ByAge <- NULL
+  gc()
+  cat(" \n -------------------------------- processing contacts_ByAge: done -------------------------------- \n")	
+}
 
 #
 #	processing impact_intv
@@ -350,7 +412,8 @@ if("impact_intv" %in% names(re))
 {
   cat(" \n -------------------------------- processing impact_intv:start -------------------------------- \n")
   re[["impact_intv"]] <- aperm(re[["impact_intv"]], c(1, 4, 2, 3))
-  saveRDS(re$impact_intv,paste0(outfile.base,'-stanout-impact_intv-gqs.RDS'))
+  file = paste0(outfile.base,'-stanout-impact_intv-gqs.RDS')
+  io_saveRDS(re$impact_intv, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
   re$impact_intv <- NULL
   gc()
   cat(" \n -------------------------------- processing impact_intv: done -------------------------------- \n")	
@@ -364,8 +427,8 @@ flows_gqs <- list()
 if("reduced_flows" %in% names(re)) flows_gqs$reduced_flows <- re$reduced_flows
 if("full_flows" %in% names(re)) flows_gqs$full_flows <- re$full_flows
 
-cat("\n save file:", paste0(outfile.base,'-stanout-flows-gqs.RDS'))
-saveRDS(flows_gqs, file = paste0(outfile.base,'-stanout-flows-gqs.RDS'))
+file <- paste0(outfile.base,'-stanout-flows-gqs.RDS')
+io_saveRDS(flows_gqs, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
 
 # construct median and CI for reduced flows
 reduced_flows_summary <- make_flow_summaries(flows_gqs$reduced_flows, 
@@ -373,8 +436,8 @@ reduced_flows_summary <- make_flow_summaries(flows_gqs$reduced_flows,
                                              dates, 
                                              regions, 
                                              pop_info)
-cat("\n save file:", paste0(outfile.base,'-stanout-reduced-flows-summary-gqs.RDS'))
-saveRDS(reduced_flows_summary, file = paste0(outfile.base,'-stanout-reduced-flows-summary-gqs.RDS'))
+file <- paste0(outfile.base,'-stanout-reduced-flows-summary-gqs.RDS')
+io_saveRDS(reduced_flows_summary, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
 
 # construct median and CI for full flows
 full_flows_summary <- make_flow_summaries(flows_gqs$full_flows, 
@@ -382,8 +445,8 @@ full_flows_summary <- make_flow_summaries(flows_gqs$full_flows,
                                           dates, 
                                           regions, 
                                           pop_info)
-cat("\n save file:", paste0(outfile.base,'-stanout-full-flows-summary-gqs.RDS'))
-saveRDS(full_flows_summary, file = paste0(outfile.base,'-stanout-full-flows-summary-gqs.RDS'))
+file <- paste0(outfile.base,'-stanout-full-flows-summary-gqs.RDS')
+io_saveRDS(full_flows_summary, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
 
 if("reduced_flows" %in% names(re))
 {
@@ -400,9 +463,11 @@ cat(" \n -------------------------------- processing flows: end ----------------
 
 cat(" \n -------------------------------- processing transmission pars: start -------------------------------- \n")		  
 
-cat("\n save file:", paste0(outfile.base,'-stanout-transmission_pars.RDS'))
+file =paste0(outfile.base,'-stanout-transmission_pars.RDS')
+cat("\n save file:", file)
 cat("\n saving objects:", names(re))
-saveRDS(re, file = paste0(outfile.base,'-stanout-transmission_pars.RDS'))
+io_saveRDS(re, args_dir[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
+
 gc()
 cat(" \n -------------------------------- processing transmission pars: end -------------------------------- \n")
 

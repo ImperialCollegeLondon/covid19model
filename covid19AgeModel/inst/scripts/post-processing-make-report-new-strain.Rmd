@@ -1,0 +1,227 @@
+---
+title: 'Results for age-specific/mobility renewal model -- new strain'
+output:
+  html_document: 
+    default
+params:
+  stanModelFile:
+    value: x
+  job_dir:
+    value: x
+  job_tag:
+    value: x
+---
+  
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+args = params
+file.to.figure = function(name) file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag, '-', name, ".png"))
+file.to.rds = function(name) file.path(args$job_dir, paste0(args$stanModelFile, "-",args$job_tag,'-', name, ".rds"))
+
+```
+
+## Session info
+This file presents the results of Stan model 
+```{r, echo=FALSE}
+args$stanModelFile
+```
+with job tag
+```{r, echo=FALSE}
+args$job_tag
+```
+
+# Results
+
+## Expected daily deaths {.tabset .tabset-fade}
+
+### Total {.tabset .tabset-fade}
+
+#### With rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-deaths_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-deaths_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))
+}
+```
+
+#### Without rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-deaths_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deaths_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-deaths_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))
+}
+```
+
+### By strain {.tabset .tabset-fade}
+
+#### With rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))
+}
+```
+
+#### Without rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-deathsbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))
+}
+```
+
+
+
+## Expected daily cases {.tabset .tabset-fade}
+
+### Total {.tabset .tabset-fade}
+
+#### With rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-cases_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-cases_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-cases_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-cases_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-cases_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-cases_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))
+}
+```
+
+#### Without rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-cases_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-cases_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-cases_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-cases_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-cases_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-cases_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))
+}
+```
+
+
+### By strain {.tabset .tabset-fade}
+
+#### With rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-casesbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("new-casesbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))
+}
+```
+
+#### Without rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))) '##### Schools stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-casesbystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))
+}
+```
+
+`r if (file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))) '##### Schools close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("new-casesbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("new-casesbystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))
+}
+```
+
+
+## Expected reproduction number by age {.tabset .tabset-fade}
+
+### With rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))) '#### School stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_TRUE_rebound_mobility_TRUE"))
+}
+```
+
+`r if (file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))) '#### School close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))){
+  knitr::include_graphics(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_FALSE_rebound_mobility_TRUE"))
+}
+```
+
+### Without rebound mobility {.tabset .tabset-fade}
+
+`r if (file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))) '#### School stay open'`
+
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_TRUE_rebound_mobility_FALSE"))
+}
+```
+
+`r if (file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))) '#### School close on 2021, Jan 1'`
+```{r, out.width="70%", fig.show='hold', fig.align='centre', echo=FALSE}
+if(file.exists(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))){
+  knitr::include_graphics(file.to.figure("Rt_byage_bystrain_new_strain_school_closure_2_FALSE_rebound_mobility_FALSE"))
+}
+```
+
+

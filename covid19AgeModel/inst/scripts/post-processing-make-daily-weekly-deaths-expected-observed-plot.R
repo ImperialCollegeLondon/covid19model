@@ -91,10 +91,10 @@ if(!file.exists(file) | args_dir[['overwrite']])
   
   cat("\n ----------- summarise_deaths_byage_c ----------- \n")
   e_adeaths_daily <- make_daily_deaths_by_age_summaries(E_deathsByAge,
-                                                plot.pars.basic$pop_info,
-                                                plot.pars.basic$dates,
-                                                age_state,
-                                                plot.pars.basic$regions)	
+                                                        plot.pars.basic$pop_info,
+                                                        plot.pars.basic$dates,
+                                                        age_state,
+                                                        plot.pars.basic$regions)	
   cat("\nWrite ",file," ... ")
   saveRDS(e_adeaths_daily, file=file)
 }
@@ -113,10 +113,10 @@ if(!file.exists(file) | args_dir[['overwrite']])
   
   cat("\n ----------- summarise_deaths_byage_c ----------- \n")
   e_adeaths_weekly <- make_weekly_deaths_by_age_summaries(E_deathsByAge,
-                                                  plot.pars.basic$pop_info,
-                                                  plot.pars.basic$dates,
-                                                  age_state,
-                                                  plot.pars.basic$regions)	
+                                                          plot.pars.basic$pop_info,
+                                                          plot.pars.basic$dates,
+                                                          age_state,
+                                                          plot.pars.basic$regions)	
   cat("\nWrite ",file," ... ")
   saveRDS(e_adeaths_weekly, file=file)
 }

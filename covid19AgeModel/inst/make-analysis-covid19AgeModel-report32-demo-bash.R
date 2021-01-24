@@ -5,14 +5,22 @@ pkg.dir <- system.file(package = "covid19AgeModel" )
 cmdstan_dir <- '~/git/cmdstan'
 out_dir <- '~/short_run_test'
 report_dir <- '~/short_run_test/reports'
+hmc_chains_n <- 2
 
-## This is a bash job that can be run on a personal machine in ~24 hours.
-## For a full run with 37 states, please see make-analysis-covid19AgeModel-report32-bash.R
+## important notes:
 
+# This is a demo bash job 
+# For a full run with 37 states, please see make-analysis-covid19AgeModel-report32-bash.R
+
+# the combination of stanModelFile and job_tag should be unique for each analysis
+# all outputs with stanModelFile-job_tag are assumed to be several HMC chains run in parallel
+
+## Report 32 central analysis
 if(1)
 {	
-  countries <-  "CO,CT,FL,NYC"
+  countries <- "CO,CT,FL,NYC"
   n_countries <- length(unlist(strsplit(countries,',')))
+  hpc.nproc.cmdstan <- ifelse(n_countries>=20,floor(n_countries/2),n_countries)
   hpc.nproc.cmdstan <- n_countries
   args <- data.table(			
     source_dir= pkg.dir,
@@ -34,11 +42,10 @@ if(1)
     cmdstan = 1L,
     multiplier_cntct_school_closure = 1.0,
     with_forecasts = 0,
-    forecast_with_schools_reopened = 0, # if true, school re-opening date is set to 2020-08-24. if false, it is set to the first day of forecast (i.e., without death observation)
+    forecast_with_schools_reopened = 0, 
     ifr_by_age_prior = "BetaBinomial"				
   )
 }
-
 
 if(exists('hpc.nproc.cmdstan'))
 {
@@ -47,7 +54,7 @@ if(exists('hpc.nproc.cmdstan'))
 
 if(1)
 {
-  tmp <- data.table(chain=1:2)		
+  tmp <- data.table(chain=1:hmc_chains_n)		
   tmp[, seed:= round(runif(seq_len(nrow(tmp)))*1e6)]		
   set(args, NULL, colnames(tmp), NULL)
   tmp[, dummy:= 1L]
@@ -61,6 +68,7 @@ if(1)
 cmds <- vector('list', nrow(args))
 for(i in seq_len(nrow(args)))
 {
+  cmd				<- '#!/bin/sh\n'		
   # allow for multi-threadings
   cmd <- paste0("export STAN_NUM_THREADS=",hpc.nproc.cmdstan,"\nexport TBB_CXX_TYPE=gcc\nexport CXXFLAGS+=-fPIE\n")
   #	general housekeeping
@@ -95,10 +103,10 @@ for(i in seq_len(nrow(args)))
     #	clean up any existing model code
     cmd <- paste0(cmd, 'rm ', file.path('$CWD',paste0(args$stanModelFile[i],'.*')), ' \n')
     #	copy stan model file
-    cmd	<- paste0(cmd, 'cp ',file.path(args$source_dir[i], 'stan-models',paste0(args$stanModelFile[i],'.stan')), ' ./\n')
+    cmd	<- paste0(cmd, 'cp -R ',file.path(args$source_dir[i], 'stan-models',paste0(args$stanModelFile[i],'.stan')),' .\n')
     #	build model		
     cmd <- paste0(cmd, 'cd ', args$cmdstan_dir[i], '\n')
-    cmd <- paste0(cmd, 'make ', file.path('$CWD',args$stanModelFile[i]), ' \n')
+    cmd <- paste0(cmd, 'make STAN_THREADS=TRUE ', file.path('$CWD',args$stanModelFile[i]), ' \n')
     cmd <- paste0(cmd, 'cd $CWD\n')
     #	set up env variables
     cmd <- paste0( cmd, 'JOB_DIR=$(ls -d "',tmpdir,'"/*/)\n')
@@ -165,6 +173,7 @@ for(i in seq_len(nrow(args)))
     cmd <- paste0( cmd, 'echo "----------- Generating quantities for forecast: ------------"\n')
     # school closure
     cmd <- paste0( cmd, 'FORECAST_PERIOD=',90,'\n')
+    Level = 'K5' # school level until K5
     tmp <- length(unlist(strsplit(args$countries[i], split=',')))
     cmd <- paste0( cmd, paste0("echo {1..",tmp,"} | tr ' ' '\\n' | ") )
     tmp <- ifelse(args$cmdstan[i]==1, hpc.nproc.cmdstan, 1)
@@ -176,7 +185,9 @@ for(i in seq_len(nrow(args)))
                   ' -with.flow 1',
                   ' -forecast.period $FORECAST_PERIOD',
                   ' -school.reopen 0',
-                  ' -multiplier_cntct_school_opening 1')		
+                  ' -multiplier_cntct_school_opening 1',
+                  ' -school_level ',Level,
+                  ' -counterfactual.scenario 0')		
     cmd <- paste0(cmd, tmp,'\n')
     # school reopening
     for(multiplier in c(0.2, 0.33, 0.5, 1.0)){
@@ -191,7 +202,9 @@ for(i in seq_len(nrow(args)))
                     ' -with.flow 1',
                     ' -forecast.period $FORECAST_PERIOD',
                     ' -school.reopen 1',
-                    ' -multiplier_cntct_school_opening ', multiplier)		
+                    ' -multiplier_cntct_school_opening ', multiplier,
+                    ' -school_level ',Level,
+                    ' -counterfactual.scenario 0')		
       cmd <- paste0(cmd, tmp,'\n')
     }
   }
@@ -326,10 +339,12 @@ for(i in seq_len(nrow(args)))
                    'PERIOD_LENGTH=7\n',
                    'WITH_FORECAST=',1,'\n',
                    'FORECAST_PERIOD=',90,'\n',
-                   'MULTIPLIER_CNTCT_OPENING=',0.5,'\n'
+                   'MULTIPLIER_CNTCT_OPENING=',0.5,'\n',
+                   'LEVEL=K5','\n',
+                   'COUNTERFACTUAL=0','\n'
     )
     tmp <- paste0('Rscript ', file.path('$SCRIPT_DIR','scripts','save-posterior-samples-forecast.R'),
-                  ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -numb_chains $NUMB_CHAINS -school.reopen 0 -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING')
+                  ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -numb_chains $NUMB_CHAINS -school.reopen 0 -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING -school_level $LEVEL -counterfactual.scenario $COUNTERFACTUAL')
     cmd2 <- paste0(cmd2,tmp,'\n')		
     # write submission file	 
     post.processing.file.forecast <- file.path(tmpdir2, 'post_processing_forecast_reopen_0_multiplier_50.sh')
@@ -354,22 +369,27 @@ for(i in seq_len(nrow(args)))
                      'OVERWRITE=0\n',
                      'PERIOD_LENGTH=7\n',
                      'WITH_FORECAST=',1,'\n',
-                     'MULTIPLIER_CNTCT_OPENING=',multiplier,'\n'
+                     'MULTIPLIER_CNTCT_OPENING=',multiplier,'\n',
+                     'LEVEL=K5','\n',
+                     'COUNTERFACTUAL=0','\n'
       )
       tmp <- paste0('Rscript ', file.path('$SCRIPT_DIR','scripts','save-posterior-samples-forecast.R'),
-                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -numb_chains $NUMB_CHAINS -school.reopen 1 -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING')
+                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -numb_chains $NUMB_CHAINS -school.reopen 1 -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING -school_level $LEVEL -counterfactual.scenario $COUNTERFACTUAL')
       cmd2 <- paste0(cmd2,tmp,'\n')
       tmp <- paste0('Rscript ', file.path('$SCRIPT_DIR','scripts','post-processing-forecast-contributions.r'),
-                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING')
+                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING -school_level $LEVEL -counterfactual.scenario $COUNTERFACTUAL')
       cmd2 <- paste0(cmd2,tmp,'\n')
       tmp <- paste0('Rscript ', file.path('$SCRIPT_DIR','scripts','post-processing-forecast-increase-deaths-cases.r'),
-                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING')
+                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING -school_level $LEVEL -counterfactual.scenario $COUNTERFACTUAL')
       cmd2 <- paste0(cmd2,tmp,'\n')
       tmp <- paste0('Rscript ', file.path('$SCRIPT_DIR','scripts','post-processing-forecast-plot-deaths.r'),
-                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING')
+                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING -school_level $LEVEL -counterfactual.scenario $COUNTERFACTUAL')
       cmd2 <- paste0(cmd2,tmp,'\n')
       tmp <- paste0('Rscript ', file.path('$SCRIPT_DIR','scripts','post-processing-forecast-increase-Rt.r'),
-                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING -period_length $PERIOD_LENGTH')
+                    ' -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -overwrite $OVERWRITE -with_forecast $WITH_FORECAST -multiplier_cntct_school_opening $MULTIPLIER_CNTCT_OPENING -school_level $LEVEL -period_length $PERIOD_LENGTH -counterfactual.scenario $COUNTERFACTUAL')
+      cmd2 <- paste0(cmd2,tmp,'\n')
+      tmp <- paste0('Rscript ', file.path('$SCRIPT_DIR','scripts','post-processing-knit-report-forecast.r'),
+                    ' -rmd_file scripts/post-processing-make-report-forecast-report32.Rmd -stanModelFile $STAN_MODEL_FILE -out_dir $OUT_DIR -job_tag $JOB_TAG -report_dir "', args$report_dir[i],'"')
       cmd2 <- paste0(cmd2,tmp,'\n')
       # write submission file	 
       post.processing.file.forecast <- file.path(tmpdir2, paste0('post_processing_forecast_reopen_1_multiplier_',as.integer(multiplier*100),'.sh'))
@@ -378,9 +398,9 @@ for(i in seq_len(nrow(args)))
       Sys.chmod(post.processing.file.forecast, mode='775')	
     }
   }
+  #cat(cmd)
   cmds[[i]]	<- cmd	
 }	
-
 
 #	make bash scripts
 for(i in seq_len(nrow(args)))
@@ -392,3 +412,4 @@ for(i in seq_len(nrow(args)))
   # set permissions
   Sys.chmod(tmp, mode='775')
 }
+
