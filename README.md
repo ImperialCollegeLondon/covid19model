@@ -13,7 +13,7 @@ To run this code you need to follow the steps listed in the age-specific model [
 
 The code should be run in full mode to obtain credible results. Not running a full run to estimate anything is not recommended and discouraged. Only a full run should be used to get results.
 
-The instructions for European, Italy, Brazil, USA, Nature, and IFR  code are the same as earlier (Look at version 3, version 4, version 5, version 6, version 7, and version 8). This release is specific to [upcoming peer-reviewed age paper](https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1).
+The instructions for reproducing European report , Italy report , Brazil report , USA report , Nature, IFR, USA age specific report and Nature Communincations    are the same as earlier (Look at version 3, version 4, version 5, version 6, version 7, version 8, version 9 and version 10). This release is specific to [upcoming peer-reviewed age paper](https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1).
 
 This release has been checked on macOS Catalina version 10.15.6/7 and Ubuntu version 18.04.2.
 
