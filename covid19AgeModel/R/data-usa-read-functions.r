@@ -55,10 +55,12 @@ read_death_data <- function(fname_jhu_death_data_padded,
     death_data <- death_data[which(death_data$date <= max_date),]
   } else if(source == "nyc"){
     death_data <- read.csv(fname_nyc_death_data_padded)
+    var_date_of_interest = 'date_of_interest'
+    if('DATE_OF_INTEREST' %in% names(death_data)) var_date_of_interest = 'DATE_OF_INTEREST'
     death_data <- data.table(death_data) %>%
       dplyr::mutate(code = "NYC",
              state = "New_York_City",
-             date = as.Date(DATE_OF_INTEREST, format = "%m/%d/%y")) %>%
+             date = as.Date(get(var_date_of_interest), format = "%m/%d/%y")) %>%
       dplyr::rename(Cases = CASE_COUNT, Deaths = DEATH_COUNT) %>%
       dplyr::select(Cases, Deaths, date, code, state) 
     
@@ -513,4 +515,164 @@ read_emodo_cell_phone_contact_intensities_with_cont <- function(infile_emodo = N
   dc
 }
 
+#' @export
+#' @keywords internal
+#' @import data.table tidyr
+load_EduWeekly_data = function(path_to_file_school_EduWeek_data, path_to_file_school_Ox_data) {
+  
+  data = as.data.table( read.csv(path_to_file_school_EduWeek_data))
+  data = select(data, State, State_Abbr, Status, date)
+  data[, date:= as.Date(as.character(date))]
+  
+  # the encoding changed from the 5th october
+  ENCODING_CHANGE_DATE1 <- as.Date("2020-10-05", format="%Y-%m-%d")
+  ENCODING_CHANGE_DATE2 <- as.Date("2020-11-25", format="%Y-%m-%d")
+  
+  data[, new_encoding1:= date>=ENCODING_CHANGE_DATE1]
+  data[, new_encoding2:= date>=ENCODING_CHANGE_DATE2]
+  
+  #
+  # Remove territories
+  data = subset(data, !State %in% c("Puerto Rico"))
+  
+  #
+  # Use NY for NYC
+  tmp = subset(data, State_Abbr == "NY")
+  tmp[, State_Abbr := "NYC"]
+  tmp[, State := "New York City"]
+  data = rbind(data, tmp)
+  
+  #
+  # Clean
+  setnames(data, c("State", "State_Abbr", "Status"), c("loc_label", "loc", "School_Status"))
+  data[, School_Status := factor(School_Status, levels = c("State-ordered in-person instruction available part-time or full-time*",
+                                                           "State ordered closure in effect (including states where openings are delayed)",
+                                                           "State-ordered regional closure in effect",
+                                                           "Varies by school/district/dependent on local health authorities",
+                                                           "Only hybrid or remote instruction allowed",
+                                                           "No order",
+                                                           "Partial closure",
+                                                           "Full closure",
+                                                           "Ordered open",
+                                                           "No order in effect",
+                                                           "Partial closure in effect",
+                                                           "Full closure in effect"))]
+  stopifnot(sum(is.na(data))==0)
+  
+  #
+  # Correct Status for Maine 
+  data[date %in% as.Date(c("2020-08-19", "2020-08-21", "2020-08-28")) & loc_label == "Maine", School_Status := "State ordered closure in effect (including states where openings are delayed)" ]
+  # "However, K-12 schools and universities remain closed as of 20th August," so we should indeed keep schools closed for that week.
+  
+  #
+  # Correct Status for New York (state).
+  data[date %in% as.Date(c("2020-08-19", "2020-08-21", "2020-08-28")) & loc_label == "New York", School_Status := "State ordered closure in effect (including states where openings are delayed)"]
+  # No New York schools opened before 29th September. Source: https://edition.cnn.com/2020/09/27/us/nyc-schools-reopening-latest/index.html
+  
+  #
+  # sanity check, compare to Oxford data
+  check_EduWeekly_data(data, path_to_file_school_Ox_data) 
+  
+  #
+  # Clean
+  setnames(data, "date", "date_EduWeek_data")
+  data = select(data, -new_encoding1, -new_encoding2)
+  
+  return(data)
+}
 
+#' @export
+#' @keywords internal
+#' @import data.table tidyr 
+check_EduWeekly_data = function(Edu_data, path_to_file_school_Ox_data) {
+  
+  #
+  # load Oxford data
+  school_intervention <- as.data.table(read.csv(path_to_file_school_Ox_data))
+  tmp = subset(school_intervention, !is.na(RegionName) & !is.na(Date) & RegionName != "" & !is.na(C1_School.closing))
+  tmp[, date := as.Date(as.character(Date), format= "%Y%m%d")]
+  tmp[, loc := gsub("US_(.+)","\\1",RegionCode)]
+  tmp[, loc_label := RegionName]
+  
+  # remove territories and other countried
+  tmp = subset(tmp, !loc_label %in% c("Virgin Islands", "Wales", "Scotland", "Puerto Rico", "Northern Ireland", "England"))
+  
+  # Change Washington DC to District of Columbia
+  tmp[loc_label == "Washington DC", loc_label:= "District of Columbia"]
+  
+  # Create  School status
+  tmp1 = subset(tmp, C1_School.closing == 3)
+  tmp1[, School_Status := ifelse(C1_Flag == 0, "3T", "3G")]
+  tmp2 = subset(tmp, C1_School.closing == 2)
+  tmp2[, School_Status := ifelse(C1_Flag == 0, "2T", "2G")]
+  tmp1 = rbind(tmp1, tmp2)
+  tmp2 = subset(tmp, C1_School.closing == 1)
+  tmp2[, School_Status := ifelse(C1_Flag == 0, "1T", "1G")]
+  tmp1 = rbind(tmp1, tmp2)
+  tmp2 = subset(tmp, C1_School.closing == 0)
+  tmp2[, School_Status := "No measure"]
+  tmp = rbind(tmp1, tmp2)
+  
+  # Clean
+  tmp = dplyr::select(tmp, loc, loc_label, School_Status, date)
+  
+  #
+  # Correct Status for Michigan 
+  tmp[(date %in% c(as.Date("2020-08-19"), as.Date("2020-08-21"), as.Date("2020-08-28"))) & loc_label == "Michigan", School_Status := "3T"]
+  # Gov. Gretchen Whitmer said in-person learning can only occur in a region that's in at least phase four of her reopening plan. 
+  # The state legislature passed a measure that says districts must reconfirm their plans on how to deliver instruction every 30 days. 
+  # Districts that reopen for in-person instruction must prioritize K-5 students.
+  
+  #
+  # Correct Status for Virginia
+  tmp[date %in% c(as.Date("2020-08-19"), as.Date("2020-08-21")) & loc_label == "Virginia", School_Status := "2T"]
+  # The state is currently requiring that in-person instruction be accompanied by strict social distancing measures, which means many 
+  # districts will have to blend remote and face-to-face learning. But Gov. Ralph Northam also said Virginia won't reopen schools if infection 
+  #rates start to rise, as is happening in some regions of the state.
+  
+  #
+  # Correct status for Kentucky
+  tmp[date %in% c(as.Date("2020-11-25")) & loc_label == "Kentucky", School_Status := "3G"]
+  # "Kentucky schools and death of 15-year-old girl prompts statewide school closures": https://www.wsws.org/en/articles/2020/11/28/scho-n28.html
+  # "Beshear stops all in-person K-12 classes in Kentucky...": https://www.kentucky.com/news/local/education/article247273244.html
+  # Effective from 23rd Nov with possibility of schools reopining in low-infection rate counties 7 Dec
+  
+  # Check if EdWeekly is cured
+  setnames(tmp, "School_Status", "School_Status_Ox")
+  tmp1 = merge(tmp, Edu_data, by = c("loc", "loc_label", "date"))
+  
+  tmp1[, disagreement := ifelse( School_Status_Ox == "3G" & !School_Status %in% c("State ordered closure in effect (including states where openings are delayed)", "Full closure", "Full closure in effect"), 1, 0)]
+  
+  if(sum(tmp1$disagreement) != 0) {
+    mismatches <- tmp1 %>% dplyr::filter(disagreement==1)
+    cat(sprintf("The EduWeek and Oxford datasets diasagree for the following %d rows:\n", nrow(mismatches)))
+    print(mismatches %>% select(loc_label, date, School_Status_Ox, School_Status))
+    stop("Disagreements between Eduweek and Oxford school closing datasets")
+  }
+}
+
+#' @export
+#' @keywords internal
+#' @import data.table
+read_seroprevalence_data <- function(path_to_cdc_survey, path_to_cross_sectional_national_survey, with_cross_sectional_national = 0)
+{
+	#path_to_cdc_survey <- args$file_cdc_survey; path_to_cross_sectional_national_survey <- args$file_cross_sectional_national; with_cross_sectional_national <- 0
+	spd <- as.data.table( read.csv(path_to_cdc_survey, stringsAsFactor=FALSE) )
+	if(with_cross_sectional_national)
+	{
+		tmp1 <- as.data.table( read.csv( path_to_cross_sectional_national_survey, stringsAsFactor=FALSE ) )
+		tmp1[, round := 1]
+		tmp1[, age_band := "overall"]
+		spd = rbind(spd, tmp1)
+	}
+	spd[, date := as.Date(date_end, format = "%d/%m/%Y")]
+	spd[, date_start := as.Date(date_start, format = "%d/%m/%Y")]
+	spd[, date_end := as.Date(date_end, format = "%d/%m/%Y")]
+	spd[is.na(X18plus), X18plus := 0]
+	set(spd, NULL, 'M_obs', spd[, M_obs/100])
+	set(spd, NULL, 'CL_obs', spd[, CL_obs/100])
+	set(spd, NULL, 'CU_obs', spd[, CU_obs/100])	
+	setnames(spd, "state", "loc")
+	spd <- subset(spd, !is.na(date) & !is.na(M_obs) & !is.na(CL_obs) & !is.na(CU_obs) )
+	spd
+}

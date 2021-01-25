@@ -16,13 +16,22 @@ suppressMessages(library(cowplot, quietly = TRUE))
 suppressMessages(library(viridis, quietly = TRUE))
 suppressMessages(library(covid19AgeModel, quietly = TRUE))
 
+pkg.dir <- system.file(package = "covid19AgeModel" )
+
 #	for dev purposes
 if(0)
 {
   args_dir <- list()
-  args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_200803c2_cmdstanv'
-  args_dir[['out_dir']] <- '/rdsgpfs/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_200803c2_cmdstanv-4states_updateifrprior_cap85'
-  args_dir[['job_tag']] <- '4states_updateifrprior_cap85'	
+  args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201204b_cmdstanv'
+  args_dir[['out_dir']] <- '/rdsgpfs/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201204b_cmdstanv-4states_Oct29_ifrdecay20_ifrdecaystartJune_Levinv7'
+  args_dir[['job_tag']] <- '4states_Oct29_ifrdecay20_ifrdecaystartJune_Levinv7'	
+}
+if(0)
+{
+  args_dir <- list()
+  args_dir[['stanModelFile']] <- 'base_age_fsq_mobility_201204b_cmdstanv'
+  args_dir[['out_dir']] <- '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201204b_cmdstanv-4states_Oct29_ifrdecay20_ifrdecaystartJune_Levinv7'
+  args_dir[['job_tag']] <- '4states_Oct29_ifrdecay20_ifrdecaystartJune_Levinv7'	
 }
 
 
@@ -51,6 +60,10 @@ outfile.base <- paste0(args_dir$out_dir, "/", args_dir$stanModelFile , "-", args
 file <- paste0(outfile.base,'-stanout-basic.RDS')
 cat("\n read RDS:", file)
 plot.pars.basic <- readRDS(file)
+
+file = paste0(outfile.base,'-stanout-E_casesByAge-gqs.RDS')
+cat("\n read RDS:", file)
+casesByAge <- readRDS(file)
 
 # set E_casesByAge to NULL
 E_casesByAge <- NULL
@@ -128,5 +141,29 @@ g <-  ggplot(attackrate) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") 
 ggsave(paste0(outfile.base,'-attackrateoverall-bystate', '.png'), g, w = 21, h=5)
 
+cat("\n ----------- make_attackrate_school_summaries ----------- \n")
+last_date = max(plot.pars.basic$deathByAge$date)
+file = file.path(pkg.dir, "data", "school_cases.csv")
+observed_attackrate_school <- data.table(read.csv(file))
+observed_attackrate_school = observed_attackrate_school[,list(number_students=sum(number_students,na.rm = T),
+                                 cumulative_students=sum(cumulative_students,na.rm = T)),
+                           by=c('loc','start','date')]
+observed_attackrate_school[,attackrate:=cumulative_students/number_students]
+observed_attackrate_school = observed_attackrate_school[as.Date(date)<=last_date,]
+observed_attackrate_school = observed_attackrate_school[, .SD[which.max(date)], by='loc']
+setnames(observed_attackrate_school, c('start','date'),c('duration_start','duration_end'))
+# observed_attackrate_school <- data.table(loc=c('FL','TX'),
+#                                          duration_start = c('2020-09-06','2020-08-24'),
+#                                          duration_end = c('2020-10-24','2020-10-25'),
+#                                          attackrate = c(paste0(round(0.3034215,4),'%'),paste0(round(0.3375885,4),'%')))
+observed_attackrate_school = subset(observed_attackrate_school, loc %in% plot.pars.basic$regions)
+attackrate_school <- make_attackrate_school_summaries(casesByAge, plot.pars.basic$dates,plot.pars.basic$regions,
+                                                      observed_attackrate_school,
+                                                       plot.pars.basic$pop_info)
+attackrate_school <- cbind(observed_attackrate_school, attackrate_school)
+
+file <- paste0(outfile.base,'-summary-attackrate-school.RDS')
+cat("\nWrite ",file," ... ")
+saveRDS(attackrate_school, file=file)
 
 cat(" \n -------------------------------- \n \n completed post-processing-make-attackrate-table.R \n \n -------------------------------- \n")

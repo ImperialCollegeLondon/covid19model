@@ -6,12 +6,14 @@ pkg.dir <- system.file(package = "covid19AgeModel" )
 
 ## command line parsing if any
 args <- list(    
-  indir.results= '/Users/or105/Box/OR_Work/2020/2020_covid/age_renewal_usa/base_age_fsq_mobility_200821b4_cmdstanv-37states_tau05_Sep2_sensititivity_3months_school_reopen_1/base_age_fsq_mobility_200821b4_cmdstanv-37states_tau05_Sep2-2132914[3].pbs',
+  indir.results= '/rds/general/project/ratmann_covid19/live/age_renewal_usa/base_age_fsq_mobility_201015e8_cmdstanv-4states_Oct21_Levin_K12open/base_age_fsq_mobility_201015e8_cmdstanv-4states_Oct21_Levin_K12open-2501614[1].pbs',
   location.index= 1,
   with.flow=1,
   forecast.period= 90, # days
   school.reopen= 1,
-  multiplier_cntct_school_opening=0.5  
+  school_level="K5",
+  multiplier_cntct_school_opening = 1,
+  counterfactual.scenario = 1
 )
 
 
@@ -24,14 +26,19 @@ if(length(args_line) > 0)
   stopifnot(args_line[[7]]=='-forecast.period')
   stopifnot(args_line[[9]]=='-school.reopen')
   stopifnot(args_line[[11]]=='-multiplier_cntct_school_opening')
+  stopifnot(args_line[[13]]=='-school_level')
+  stopifnot(args_line[[15]]=='-counterfactual.scenario')
+  
   args <- list()    
   args[['indir.results']] <- args_line[[2]]  
   args[['location.index']] <- args_line[[4]]  
   args[['with.flow']] <- args_line[[6]]  
   args[['forecast.period']] <- args_line[[8]]  
-  args[['school.reopen']] <- args_line[[10]]  
+  args[['school.reopen']] <- args_line[[10]] 
   args[['multiplier_cntct_school_opening']] <- args_line[[12]]
-} 
+  args[['school_level']] <- args_line[[14]]
+  args[['counterfactual.scenario']] <- args_line[[16]]
+}
 
 #	print args
 str(args)
@@ -41,8 +48,10 @@ indir.results <- args$indir.results
 location.index <- as.integer(args$location.index)
 with.flow <- args$with.flow
 forecast.period <- as.numeric(args$forecast.period)
-school.reopen <- args$school.reopen == '1'
 multiplier_cntct_school_opening <- as.numeric(args$multiplier_cntct_school_opening)
+school.reopen <- args$school.reopen == '1'
+school_level <- as.character(args$school_level)
+counterfactual.scenario = as.numeric(args$counterfactual.scenario)
 
 #	read Stan input data and add location.index to parallelise computations
 cat('\nReading Stan input data...')
@@ -53,12 +62,29 @@ tmp <- load(file.path(indir.results, infile.stanin))
 stopifnot(c('args','stan_data')%in%tmp)
 stan_data$LOCATION_PROCESSING_IDX <- location.index
 
-
 # reset args
 forecast <- forecast.period
-args$forecast_with_schools_reopened <- school.reopen
+args[['work_dir']] <- getwd()
+pkg.dir <- system.file(package = "covid19AgeModel" )
 args$file_contact_intensities_outbreak_China <- file.path(pkg.dir, "data", "estimate_contact_intensities_outbreak_China.rds")
-args$file_school_intervention <- file.path(pkg.dir, "data", "OxCGRT_US_subnational_09Sept2020.csv") 
+args$file_school_Ox_NPI_data <- file.path(pkg.dir, "data", "OxCGRT_US_subnational_13Jan2021.csv") 
+args$file_school_EduWeek_data <- file.path(pkg.dir, "data", "Coronavirus_and_School_Closures_210113.csv") 
+
+# dev for new args
+if(is.null(args$with_EduWeek_data)) args$with_EduWeek_data = 0
+if(is.null(args$with_ifr_fixed_time_decay)) args$with_ifr_fixed_time_decay = 0
+if(is.null(args$effect_weeks)) args$effect_weeks <- 2
+
+# determine which levels have closed/reopened
+args$with_elementary_schools_status = 0
+args$with_elementary_high_schools_status = 0
+if(school_level == "K5"){
+  args$with_elementary_schools_status = 1
+}
+if(school_level == "K12"){
+  args$with_elementary_high_schools_status = 1
+}
+
 num_days_sim <- (max(death_data$date) - min(death_data$date) + 1 + forecast)[[1]]
 
 # reprocess data
@@ -68,8 +94,7 @@ processed_data <- make_stan_data_core(states = args$states,
                                           ifr.by.age = ifr.by.age,                                         
                                           serial_interval = serial_interval,
                                           pop_info = pop_info, 
-                                          dcontact= dcontact,                                          
-                                          seedAge = args$seedAge, 
+                                          dcontact= dcontact,     
                                           num_days_sim = num_days_sim, 
                                           forecast = forecast)
 
@@ -119,27 +144,93 @@ if( args$with_estimated_pairwise_mobility_trends)
   cat('\n Add pairwise mobility trend ... ')	
   processed_data <- stan_data_add_pairwise_mobility_trends(processed_data,file.path(pkg.dir,'data','chi_emodo_mobility_trends.rds'))
 }
-if( args$with_biweekly_upswing_time_effect )
+if( args$with_biweekly_upswing_time_effect | 
+    args$with_biweekly_upswing_time_effect_for_all_loc |
+    args$with_ifr_fixed_time_decay
+)
 {
-	cat('\nAdding upswing time effects ... ')
-	processed_data <- stan_data_add_upswing_time_effect(processed_data, mobility_data, effect_weeks=2)		 	
+  cat('\nAdding upswing time effects ... ')
+  processed_data <- stan_data_add_upswing_time_effect(
+	processed_data, 
+	mobility_data, 
+	effect_weeks=args$effect_weeks)		 	
 }
-if( args$with_contact_intensities_zhang)
+if( args$with_contact_intensities_zhang && !args$with_EduWeek_data )
 {
-  reopening_Date= as.Date("2020-08-24")
-  processed_data <- stan_data_add_school_status(processed_data, args$file_school_intervention, args$forecast_with_schools_reopened, reopening_Date=reopening_Date)	 	
-  cat('\nAdding contact intensities during outbreak from Zhang et al. and mutliplier... ')
-  processed_data <- stan_data_add_contact_school_closure(processed_data, 
-		  dcontact, 
-		  args$file_contact_intensities_outbreak_China, 
-		  args$multiplier_cntct_school_closure)  
-  processed_data <- stan_data_add_contact_school_opening(processed_data, 
-		  dcontact, 
-		  args$file_contact_intensities_outbreak_China, 
-		  args$multiplier_cntct_school_closure, 
-		  multiplier_cntct_school_opening, 
-		  min_pc_contacts=0.05, 
-		  reopening_date=reopening_Date)
+  reopening_date <- as.Date("2020-08-24")
+  cat('\nAdding school status ... ')
+  processed_data <- stan_data_add_school_status(
+    processed_data, 
+    args$file_school_Ox_NPI_data, 
+    school.reopen, 
+    reopening_Date= reopening_date
+  )    
+}
+if( args$with_contact_intensities_zhang && args$with_EduWeek_data)
+{
+  default_school_reopening_date <- as.Date("2020-08-24")
+  cat('\nAdding school status with Education Weekly data ... ')
+  processed_data <- stan_data_add_school_status_EduWeek(
+    processed_data = processed_data, 
+    path_to_file_school_Ox_data = args$file_school_Ox_NPI_data, 
+    path_to_file_school_EduWeek_data = args$file_school_EduWeek_data,
+    default_school_reopening_date = default_school_reopening_date,
+    counterfactual_scenario = as.numeric(school.reopen == 0 | counterfactual.scenario == 1),
+    forecast_with_schools_reopened = school.reopen
+  )    
+}
+if( args$with_contact_intensities_zhang && args$with_elementary_schools_status ){
+  cat('\nAdding contact intensities during elementary school closure from Zhang et al. and mutliplier... ')
+  processed_data <- stan_data_add_contact_school_closure(
+    processed_data, 
+    dcontact, 
+    args$file_contact_intensities_outbreak_China, 
+    args$multiplier_cntct_school_closure
+  )
+}
+if( args$with_contact_intensities_zhang && args$with_elementary_high_schools_status ){
+  cat('\nAdding contact intensities during elementary and high school closure from Zhang et al. and mutliplier... ')
+  processed_data <- stan_data_add_contact_elementary_high_school_closure(
+    processed_data, 
+    dcontact, 
+    args$file_contact_intensities_outbreak_China, 
+    args$multiplier_cntct_school_closure
+  )
+}
+if( args$with_contact_intensities_zhang && !args$with_EduWeek_data && args$with_elementary_schools_status )
+{
+  cat('\nAdding contact intensities after school re-opening from Zhang et al. and mutliplier... ')
+  processed_data <- stan_data_add_contact_school_opening(
+    processed_data, 
+    dcontact, 
+    args$file_contact_intensities_outbreak_China, 
+    args$multiplier_cntct_school_closure, 
+    multiplier_cntct_school_opening=multiplier_cntct_school_opening, 
+    min_pc_contacts=0.05,
+    reopening_date= reopening_date
+  )	  
+}
+if(args$with_contact_intensities_zhang && args$with_EduWeek_data && args$with_elementary_schools_status){
+  cat('\nAdding contact intensities after school re-opening from Zhang et al. and mutliplier... ')
+  processed_data <- stan_data_add_contact_school_opening_EduWeek(
+    processed_data, 
+    dcontact, 
+    path_to_file_contact_intensities_outbreak_China = args$file_contact_intensities_outbreak_China, 
+    multiplier_cntct_school_closure=args$multiplier_cntct_school_closure, 
+    multiplier_cntct_school_opening=multiplier_cntct_school_opening, 
+    min_pc_contacts=0.05
+  )	  
+}
+if(args$with_contact_intensities_zhang && args$with_EduWeek_data && args$with_elementary_high_schools_status){
+  cat('\nAdding contact intensities after elementary and high school re-opening from Zhang et al. and mutliplier... ')
+  processed_data <- stan_data_add_contact_elementary_high_school_opening_EduWeek(
+    processed_data, 
+    dcontact, 
+    args$file_contact_intensities_outbreak_China, 
+    args$multiplier_cntct_school_closure, 
+    multiplier_cntct_school_opening=multiplier_cntct_school_opening, 
+    min_pc_contacts=0.05
+  )	  
 }
 
 # reset stan_data
@@ -156,6 +247,14 @@ if(is.null(stan_data$rev_iar_daysSinceInfection))
 {
   stan_data <- gqs_add_stan_data_for_iar(stan_data)
 }
+
+# if it is a counterfactual scenario, the school effect is the supplied school reopening multiplier 
+if(counterfactual.scenario & school.reopen){
+  stan_data[['counterfactual_school_effect']] = multiplier_cntct_school_opening
+} else{ # else the school effect is elt_school_intv_effect estimated in the analysis
+  stan_data[['counterfactual_school_effect']] = -1
+}
+
 
 #	read stanfits
 cat('\nReading Stanfit ...')
@@ -175,38 +274,28 @@ m2 <- rstan::stan_model(file_stanModel_gqs)
 
 cat('\nGenerating quantities ...')
 draws <- as.matrix(fit)
-draws <- draws[,!grepl('Rt|RtByAge|rho|lp__|E_deaths|E_deathsByAge|E_casesByAge', colnames(draws)) ]
 fit2 <- rstan::gqs(m2, data=stan_data, draws=draws)
 fit.gqs <- rstan::extract(fit2)
 
 #	save stan_data
-multiplier_name <- (multiplier_cntct_school_opening)*100
 if(location.index==1)
 {
-  tmp <- file.path(indir.results, paste0(basename(args$job_dir),'_stan_data', '_sensitivity_school_reopen_', as.integer(school.reopen), '_multiplier_', multiplier_name,'.RDS'))
-  if(as.integer(school.reopen) == 0){
-    tmp <- file.path(indir.results, paste0(basename(args$job_dir),'_stan_data', '_sensitivity_school_reopen_', as.integer(school.reopen), '.RDS'))
-  }
+  	multiplier_name <- (multiplier_cntct_school_opening)*100
+  	tmp <- file.path(indir.results, paste0(basename(args$job_dir),'_stan_data', '_sensitivity_school_reopen_', as.integer(school.reopen), '_counterfactual_', counterfactual.scenario,  '_multiplier_', multiplier_name, '_level_', school_level,'.RDS'))
+  	if(as.integer(school.reopen) == 0)
+	{
+    	tmp <- file.path(indir.results, paste0(basename(args$job_dir),'_stan_data', '_sensitivity_school_reopen_', as.integer(school.reopen), '_level_', school_level, '.RDS'))
+  	}
 	saveRDS(stan_data, file=tmp)	  
 }
 
 #	save fit.gqs, try up to 5 times
-tmp <- file.path(indir.results, paste0(basename(args$job_dir), '_location', location.index,'_stangqs', '_sensitivity_school_reopen_', as.integer(school.reopen), '_multiplier_', multiplier_name, '.RDS'))
-if(as.integer(school.reopen) == 0){
-  tmp <- file.path(indir.results, paste0(basename(args$job_dir), '_location', location.index,'_stangqs', '_sensitivity_school_reopen_', as.integer(school.reopen), '.RDS'))
-}
-tmp2 <- 5
-repeat
+multiplier_name <- (multiplier_cntct_school_opening)*100
+file <- file.path(indir.results, paste0(basename(args$job_dir), '_location', location.index,'_stangqs', '_sensitivity_school_reopen_', as.integer(school.reopen), '_counterfactual_', counterfactual.scenario, '_multiplier_', multiplier_name, '_level_', school_level, '.RDS'))
+if(as.integer(school.reopen) == 0)
 {
-	cat('\nSave quantities to file ',tmp,'...')
-  comp_9 = xzfile(tmp, compression = 9)
-	saveRDS(fit.gqs, comp_9)
-	check_if_saved <- try(readRDS(file=tmp))
-	tmp2 <- tmp2-1
-	if(!'try-error'%in%class(check_if_saved))
-		break	
-	if(tmp2<=0)
-		break
+	file <- file.path(indir.results, paste0(basename(args$job_dir), '_location', location.index,'_stangqs', '_sensitivity_school_reopen_', as.integer(school.reopen), '_level_', school_level, '.RDS'))
 }
+io_saveRDS(fit.gqs, args[['work_dir']], dirname(file), basename(file), check_if_saved_n=10)
 
 cat('\nFinished base-ages-generate-quantities-forecast.r ...')

@@ -73,6 +73,7 @@ for(x in plot.pars.basic$regions){
 	mtcm <- ggarrange(mt,cm,ncol=1,heights=c(3,5),align="v")
 	g <- ggarrange(deaths,mtcm, labels=c('A','B'),font.label=list(size=20),ncol=1,vjust=1,heights=c(3,6),widths=c(4,6),align="hv")
 	ggsave(paste0(outfile.base,'-deaths_mobilitytrends_contactpatterns-', x, '.png'), g, w = 15, h=17)
+	ggsave(paste0(outfile.base,'-deaths_mobilitytrends_contactpatterns-', x, '.pdf'), g, w = 15, h=17,dpi=500)
 }
 
 cat(" \n -------------------------------- \n \n completed post-processing-make-deaths-mobility-contacts-plot.R \n \n -------------------------------- \n")

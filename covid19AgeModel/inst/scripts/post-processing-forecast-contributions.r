@@ -24,7 +24,7 @@ args_dir[['out_dir']] <- '~/Box\ Sync/2020/R0t/results/base_age_fsq_mobility_200
 args_dir[['job_tag']] <- '37states_Sep2'
 args_dir[['overwrite']] = 0
 args_dir[['with_forecast']] = 1
-args_dir[['multiplier_cntct_school_opening']] = 0.5
+args_dir[['school_level']] = "K5"
 
 #	for runtime
 args_line <-  as.list(commandArgs(trailingOnly=TRUE))
@@ -35,7 +35,10 @@ if(length(args_line) > 0)
   stopifnot(args_line[[5]]=='-job_tag')
   stopifnot(args_line[[7]]=='-overwrite')
   stopifnot(args_line[[9]]=='-with_forecast')
-  stopifnot(args_line[[11]]=='-multiplier_cntct_school_opening')	
+  stopifnot(args_line[[11]]=='-multiplier_cntct_school_opening') 
+  stopifnot(args_line[[13]]=='-school_level')	
+  stopifnot(args_line[[15]]=='-counterfactual.scenario')
+  
   args_dir <- list()
   args_dir[['stanModelFile']] <- args_line[[2]]
   args_dir[['out_dir']] <- args_line[[4]]
@@ -43,6 +46,8 @@ if(length(args_line) > 0)
   args_dir[['overwrite']] <- as.numeric(args_line[[8]])
   args_dir[['with_forecast']] <- as.numeric(args_line[[10]])
   args_dir[['multiplier_cntct_school_opening']] <- as.numeric(args_line[[12]])
+  args_dir[['school_level']] <- as.character(args_line[[14]])
+  args_dir[['counterfactual.scenario']] <- args_line[[16]]
 } 
 
 outfile.base <- paste0(args_dir$out_dir, "/",
@@ -50,8 +55,9 @@ outfile.base <- paste0(args_dir$out_dir, "/",
 
 multiplier = (args_dir$multiplier_cntct_school_opening)*100
 
-suffix_sensitivity_school0 = '_sensitivity_school_reopen_0'
-suffix_sensitivity_school1 = paste0('_sensitivity_school_reopen_1_multiplier_', multiplier)
+suffix_sensitivity_school0 = paste0('_sensitivity_school_reopen_0', '_level_', args_dir$school_level)
+suffix_sensitivity_school1 = paste0('_sensitivity_school_reopen_1', '_counterfactual_', args_dir$counterfactual.scenario, '_multiplier_', multiplier, '_level_', args_dir$school_level)
+
 
 # load inputs for this script
 file <- paste0(outfile.base,'-stanout-basic', suffix_sensitivity_school0,'.RDS')
@@ -59,12 +65,20 @@ cat("\n read RDS:", file)
 plot.pars.basic <- readRDS(file)
 
 # add age labels to reduced flows
-pop_info_2 = add_pop_info_age_school_children(plot.pars.basic$pop_info)
-age_cat_map <- make_age_cat_map_7_school_chidren(pop_info_2)
+if(args_dir$school_level == "K5"){
+  pop_info_2 = add_pop_info_age_school_children(plot.pars.basic$pop_info)
+  age_cat_map <- make_age_cat_map_7_school_chidren(pop_info_2)
+  age.school = "0-11"
+}
+if(args_dir$school_level == "K12"){
+  pop_info_2 = add_pop_info_age_school_children_teen(plot.pars.basic$pop_info)
+  age_cat_map <- make_age_cat_map_7_school_chidren_teen(pop_info_2)
+  age.school = c("0-9", "10-18")
+}
 
 # Set start and end date of the forecast period with school opened
-start_date = as.Date("2020-08-24") # 3 months period
-end_date = as.Date("2020-11-24") # 3 months period
+start_date = as.Date("2020-08-24") # first day of school reopening across states
+end_date = as.Date("2020-10-29") # last day of death data
 
 #
 # Load flows
@@ -78,7 +92,8 @@ flows_gqs_school_reopen_1 <- readRDS(file)
 
 #
 # Make cumulative flow summary with the two scenarios of school status
-cumpropflow_byage = summarise_cumprop_flow_byage_forecast_school_reopen(flows_gqs_school_reopen_1$reduced_flows, 
+if(args_dir$school_level == "K5"){
+cumpropflow_byage = summarise_cumprop_flow_byage_forecast_school_reopen_K5(flows_gqs_school_reopen_1$reduced_flows, 
                                                                         flows_gqs_school_reopen_0$reduced_flows,
                                                                         start_date,
                                                                         plot.pars.basic$stan_data$reduced_flows_Monday_idx, 
@@ -86,8 +101,17 @@ cumpropflow_byage = summarise_cumprop_flow_byage_forecast_school_reopen(flows_gq
                                                                         pop_info_2,
                                                                         plot.pars.basic$dates, 
                                                                         plot.pars.basic$regions)
-
-
+}
+if(args_dir$school_level == "K12"){
+  cumpropflow_byage = summarise_cumprop_flow_byage_forecast_school_reopen_K12(flows_gqs_school_reopen_1$reduced_flows, 
+                                                                             flows_gqs_school_reopen_0$reduced_flows,
+                                                                             start_date,
+                                                                             plot.pars.basic$stan_data$reduced_flows_Monday_idx, 
+                                                                             age_cat_map,
+                                                                             pop_info_2,
+                                                                             plot.pars.basic$dates, 
+                                                                             plot.pars.basic$regions)
+}
 #
 # Table: contribution of children aged 0-9 to onwared spread from 2020-08-24 to 2020-11-24
 
@@ -123,12 +147,12 @@ cumpropflow_byage_school_reopen1 <- cbind(cumpropflow_byage_school_reopen1[, "lo
 
 #
 # Save
-file <- paste0(outfile.base,'-flow-onward-from-age-summary-forecast_multiplier', multiplier, '.rds')
+file <- paste0(outfile.base,'-flow-onward-summary-forecast', '_counterfactual_', args_dir$counterfactual.scenario, '_multiplier_', multiplier, '_level_', args_dir$school_level, '.rds')
 cat("\nWrite table to",file)
 saveRDS(cumpropflow_byage, file = file, version = 2)
 
 ans <- list(cumpropflow_byage_school_reopen0, cumpropflow_byage_school_reopen1, format(start_date, "%B %d, %Y"), format(end_date, "%B %d, %Y") )
-file <- paste0(outfile.base,'-flow-onward-from-age-tables-forecast_multiplier', multiplier, '.rds')
+file <- paste0(outfile.base,'-flow-onward-forecast', '_counterfactual_', args_dir$counterfactual.scenario, '_multiplier_', multiplier, '_level_', args_dir$school_level, '.rds')
 cat("\nWrite table to",file)
 saveRDS(ans, file = file, version = 2)
 

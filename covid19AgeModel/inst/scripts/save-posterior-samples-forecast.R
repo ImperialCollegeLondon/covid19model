@@ -18,21 +18,27 @@ if(length(args_line) > 0)
   stopifnot(args_line[[5]]=='-job_tag')
   stopifnot(args_line[[7]]=='-numb_chains')	
   stopifnot(args_line[[9]]=='-school.reopen')	
-  stopifnot(args_line[[11]]=='-multiplier_cntct_school_opening')	
+  stopifnot(args_line[[11]]=='-multiplier_cntct_school_opening') 
+  stopifnot(args_line[[13]]=='-school_level')	
+  stopifnot(args_line[[15]]=='-counterfactual.scenario')
+  
   args_dir <- list()
   args_dir[['stanModelFile']] <- args_line[[2]]
   args_dir[['out_dir']] <- args_line[[4]]
   args_dir[['job_tag']] <- args_line[[6]]
   args_dir[['numb_chains']] <- args_line[[8]]
   args_dir[['school.reopen']] <- as.numeric(args_line[[10]])
-  args_dir[['multiplier_cntct_school_opening']] <- as.numeric( args_line[[12]] )
+  args_dir[['multiplier_cntct_school_opening']] <- as.numeric(args_line[[12]])
+  args_dir[['school_level']] <- as.character( args_line[[14]] )
+  args_dir[['counterfactual.scenario']] <- args_line[[16]]
 } 
 
+
 if(args_dir$school.reopen){
-  multiplier_name = (args_dir$multiplier_cntct_school_opening)*100
-  suffix_sensitivity = paste0('_sensitivity_school_reopen_1_multiplier_', multiplier_name)
+  multiplier =  (args_dir$multiplier_cntct_school_opening)*100
+  suffix_sensitivity = paste0('_sensitivity_school_reopen_1', '_counterfactual_', args_dir$counterfactual.scenario,  '_multiplier_', multiplier, '_level_', args_dir$school_level)
 } else{
-  suffix_sensitivity = '_sensitivity_school_reopen_0'
+  suffix_sensitivity = paste0('_sensitivity_school_reopen_0', '_level_', args_dir$school_level)
 }
 
 ## start script
@@ -60,8 +66,8 @@ stopifnot(length(outfile.base)==1 )
 cat(" \n -------------------------------- load jobs outputs -------------------------------- \n")
 
 #	load all input variables for this analysis run
-z <- load( gsub('pbs_stanout.RData','pbs_stanin.RData',do[1,F]) )
-stan_data <- readRDS( gsub('pbs_stanout.RData',paste0('pbs_stan_data',suffix_sensitivity,'.RDS'),do[1,F]) ) 
+z <- load( gsub('_stanout.RData','_stanin.RData',do[1,F]) )
+stan_data <- readRDS( gsub('_stanout.RData',paste0('_stan_data',suffix_sensitivity,'.RDS'),do[1,F]) ) 
 cntct_by <- as.integer(args$cntct_by)
 cntct_bands <- stan_data$A
 seedAge <- args$seedAge
@@ -293,7 +299,10 @@ cat(" \n -------------------------------- processing basic quantities: end -----
 if("E_deathsByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing E_deathsByAge: start -------------------------------- \n")
-  saveRDS(re$E_deathsByAge,paste0(outfile.base,'-stanout-E_deathsByAge-gqs',suffix_sensitivity,'.RDS'))
+  file = paste0(outfile.base,'-stanout-E_deathsByAge-gqs',suffix_sensitivity,'.RDS')
+  while(!file.exists(file)){
+    tryCatch( saveRDS(re$E_deathsByAge,file), error=function(e){cat("ERROR :",conditionMessage(e), ", let's try again \n")})
+  }
   re$E_deathsByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing E_deathsByAge: done -------------------------------- \n")	
@@ -304,7 +313,10 @@ if("E_deathsByAge" %in% names(re))
 if("E_casesByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing E_casesByAge: start -------------------------------- \n")
-  saveRDS(re$E_casesByAge,paste0(outfile.base,'-stanout-E_casesByAge-gqs',suffix_sensitivity,'.RDS'))
+  file = paste0(outfile.base,'-stanout-E_casesByAge-gqs',suffix_sensitivity,'.RDS')
+  while(!file.exists(file)){
+    tryCatch( saveRDS(re$E_casesByAge,file), error=function(e){cat("ERROR :",conditionMessage(e), ", let's try again \n")})
+  }
   re$E_casesByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing E_casesByAge: done -------------------------------- \n")	
@@ -315,7 +327,10 @@ if("E_casesByAge" %in% names(re))
 if("E_effcasesByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing eff cases by Age: start -------------------------------- \n")
-  saveRDS(re$E_effcasesByAge,paste0(outfile.base,'-stanout-E_effcasesByAge-gqs',suffix_sensitivity,'.RDS'))
+  file = paste0(outfile.base,'-stanout-E_effcasesByAge-gqs',suffix_sensitivity,'.RDS')
+  while(!file.exists(file)){
+    tryCatch( saveRDS(re$E_effcasesByAge,file), error=function(e){cat("ERROR :",conditionMessage(e), ", let's try again \n")})
+  }
   re$E_effcasesByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing eff cases by Age: done -------------------------------- \n")	
@@ -326,7 +341,10 @@ if("E_effcasesByAge" %in% names(re))
 if("RtByAge" %in% names(re))
 {
   cat(" \n -------------------------------- processing RtByAge: start -------------------------------- \n")
-  saveRDS(re$RtByAge,paste0(outfile.base,'-stanout-RtByAge-gqs',suffix_sensitivity,'.RDS'))
+  file = paste0(outfile.base,'-stanout-RtByAge-gqs',suffix_sensitivity,'.RDS')
+  while(!file.exists(file)){
+    tryCatch( saveRDS(re$RtByAge,file), error=function(e){cat("ERROR :",conditionMessage(e), ", let's try again \n")})
+  }
   re$RtByAge <- NULL
   gc()
   cat(" \n -------------------------------- processing RtByAge: done -------------------------------- \n")	
@@ -338,10 +356,11 @@ cat(" \n -------------------------------- processing flows: start --------------
 flows_gqs <- list()
 if("reduced_flows" %in% names(re)) flows_gqs$reduced_flows <- re$reduced_flows
 if("full_flows" %in% names(re)) flows_gqs$full_flows <- re$full_flows
-
-cat("\n save file:", paste0(outfile.base,'-stanout-flows-gqs', suffix_sensitivity,'.RDS'))
-saveRDS(flows_gqs, file = paste0(outfile.base,'-stanout-flows-gqs', suffix_sensitivity,'.RDS'))
-
+file = paste0(outfile.base,'-stanout-flows-gqs', suffix_sensitivity,'.RDS')
+cat("\n save file:", file)
+while(!file.exists(file)){
+  tryCatch( saveRDS(flows_gqs, file), error=function(e){cat("ERROR :",conditionMessage(e), ", let's try again \n")})
+}
 flows_gqs <- NULL
 gc()
 

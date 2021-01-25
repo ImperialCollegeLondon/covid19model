@@ -89,14 +89,14 @@ make_tables_for_paper <- function(pop_info, stan_data, dates, deathByAge_data, d
 	## number of states with death by age data
 	
 	num.statesd_woDCNYC = sum(unique(deathByAge$code) %notin% c("DC", "NYC"))
-	states_byage_included = paste0(num.statesd_woDCNYC, " U.S. states")
+	states_byage_included = paste0(num.statesd_woDCNYC, " US states")
 	if("NYC" %in% states & "DC" %notin% states) states_byage_included = paste0(states_byage_included, " and New York City")
 	if("DC" %in% states & "NYC" %notin% states) states_byage_included = paste0(states_byage_included, " and the District of Columbia")
 	if("DC" %in% states & "NYC" %in% states) states_byage_included = paste0(states_byage_included, ", the District of Columbia and New York City")
 	
 	## number of states in the analysis and names
 	num.states_woDCNYC = sum(states %notin% c("DC", "NYC"))
-	states_included = paste0(num.states_woDCNYC, " U.S. states")
+	states_included = paste0(num.states_woDCNYC, " US states")
 	if("NYC" %in% states & "DC" %notin% states) states_included = paste0(states_included, " and New York City")
 	if("DC" %in% states & "NYC" %notin% states) states_included = paste0(states_included, " and the District of Columbia")
 	if("DC" %in% states & "NYC" %in% states) states_included = paste0(states_included, ", the District of Columbia and New York City")
@@ -143,6 +143,18 @@ make_tables_for_paper <- function(pop_info, stan_data, dates, deathByAge_data, d
 			paste( tmp_state_max$loc_label , collapse = ", "), unique(tmp_state_max$median_age.cat.label)
 	)
 	
+	# 3. states where school reopening and number of days observed
+	idx_oc_school_reopened = sapply(1:stan_data$M, function(m)  stan_data$SCHOOL_STATUS[stan_data$N[m],m] != 1 )
+	loc_school_reopened = names(dates)[idx_oc_school_reopened]
+	n_loc_total = length(idx_oc_school_reopened)
+	n_loc_school_reopened = length(loc_school_reopened)
+	n_days_school_reopened = 0
+	if(sum(idx_oc_school_reopened) != 0) n_days_school_reopened = sum(sapply((1:stan_data$M)[idx_oc_school_reopened], function(m) length(stan_data$elementary_school_reopening_idx[m]:stan_data$N[m]) ))
+	n_days_school_reopened_pretty = format(n_days_school_reopened, big.mark=",")
+	
+	loc_where_school_reopened = list(list(n_loc_school_reopened, n_loc_total),
+	                                 n_days_school_reopened_pretty)
+	
 	
 	if(!is.na(outfile.base))
 	{
@@ -151,6 +163,9 @@ make_tables_for_paper <- function(pop_info, stan_data, dates, deathByAge_data, d
 		
 		cat('\nWriting ',paste0(outfile.base,'-median_age.rds'),' ...')
 		saveRDS(median_age, file = paste0(outfile.base,'-median_age.rds'), version = 2)
+		
+		cat('\nWriting ',paste0(outfile.base,'-loc_where_school_reopened.rds'),' ...')
+		saveRDS(loc_where_school_reopened, file = paste0(outfile.base,'-loc_where_school_reopened.rds'), version = 2)
 		
 	}
 	
