@@ -1,5 +1,3 @@
-![](https://github.com/ImperialCollegeLondon/covid19model/workflows/CI/badge.svg)
-
 # covid19model [![DOI](https://zenodo.org/badge/250386901.svg)](https://zenodo.org/badge/latestdoi/250386901)
 
 Code for modelling estimated deaths and infections for COVID-19 from ["Estimating the effects of non-pharmaceutical interventions on COVID-19 in Europe"](https://www.nature.com/articles/s41586-020-2405-7), Flaxman, Mishra, Gandy et al, Nature, 2020, the published version of our original [Report 13](https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/report-13-europe-npi-impact/).
