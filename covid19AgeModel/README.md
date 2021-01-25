@@ -1,6 +1,6 @@
 **UPDATE:** 
 
-**XX January 2021 update** package version 1.2.0 <br/>
+**25 January 2021 update** package version 1.2.0 <br/>
 
 - Added data and code for analysis of the final revision for publication 
 
