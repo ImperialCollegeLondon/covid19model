@@ -17,6 +17,8 @@ The instructions for reproducing European report , Italy report , Brazil report 
 
 This release has been checked on macOS Catalina version 10.15.6/7 and Ubuntu version 18.04.2.
 
+**The authors of version 11 Release are Melodie Monod, Alexandra Blenkinsop, Xiaoyue Xi, Oliver Ratmann"**
+
 ## Version 10 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4073091.svg)](https://doi.org/10.5281/zenodo.4073091)
 
 This is the release related to Unwin, H.J.T., Mishra, S., Bradley, V.C. et al. State-level tracking of COVID-19 in the United States. Nat Commun 11, 6189 (2020). https://doi.org/10.1038/s41467-020-19652-6, where we use mobility data to estimate situation in all states of the USA. All other code is still the same.
