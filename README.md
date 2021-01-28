@@ -17,7 +17,7 @@ The instructions for reproducing European report , Italy report , Brazil report 
 
 This release has been checked on macOS Catalina version 10.15.6/7 and Ubuntu version 18.04.2.
 
-**The authors of version 11 Release are Melodie Monod, Alexandra Blenkinsop, Xiaoyue Xi, Oliver Ratmann"**
+**The authors of version 11 Release are Melodie Monod, Alexandra Blenkinsop, Xiaoyue Xi, H Juliette Unwin, Swapnil Mishra, Oliver Ratmann"**
 
 ## Version 10 Release [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4073091.svg)](https://doi.org/10.5281/zenodo.4073091)
 
