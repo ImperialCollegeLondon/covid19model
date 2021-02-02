@@ -7,13 +7,13 @@ If you are looking for the individual based model used in Imperial's [Report 9, 
 
 
 
-This is the release related to our [upcoming peer-reviewed age paper](https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1), where we use age-specific mobility data to estimate the epidemic in the USA by accounting for age-specific heterogeneity. All other code is still the same for previous releases.
+This is the release related to our [Science paper](https://science.sciencemag.org/content/early/2021/02/01/science.abe8372), where we use age-specific mobility data to estimate the epidemic in the USA by accounting for age-specific heterogeneity. All other code is still the same for previous releases.
 
 To run this code you need to follow the steps listed in the age-specific model [here](https://github.com/ImperialCollegeLondon/covid19model/tree/master/covid19AgeModel).
 
 The code should be run in full mode to obtain credible results. Not running a full run to estimate anything is not recommended and discouraged. Only a full run should be used to get results.
 
-The instructions for reproducing European report , Italy report , Brazil report , USA report , Nature, IFR, USA age specific report and Nature Communincations    are the same as earlier (Look at version 3, version 4, version 5, version 6, version 7, version 8, version 9 and version 10). This release is specific to [upcoming peer-reviewed age paper](https://www.medrxiv.org/content/10.1101/2020.09.18.20197376v1).
+The instructions for reproducing European report , Italy report , Brazil report , USA report , Nature, IFR, USA age specific report and Nature Communincations    are the same as earlier (Look at version 3, version 4, version 5, version 6, version 7, version 8, version 9 and version 10). This release is specific to [ Science paper](https://science.sciencemag.org/content/early/2021/02/01/science.abe8372).
 
 This release has been checked on macOS Catalina version 10.15.6/7 and Ubuntu version 18.04.2.
 
