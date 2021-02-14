@@ -25,7 +25,7 @@ df=df[order(as.Date(df$DateRep, format="%Y-%m-%d")),]
 write_csv(df,"Brazil/data/df-Brazil.csv")
 
 #### Adding google mobility data
-mobility.aux = read.csv(paste0(path,"/Global-Mobility-Report.csv"))
+mobility.aux = read.csv("data/Global_Mobility_Report.csv"))
 mobility.aux2 = subset(mobility.aux,mobility.aux$country_region=="Brazil")
 mobility.aux2 = mobility.aux2[which(mobility.aux2$sub_region_1!=""),]
 

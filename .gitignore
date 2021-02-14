@@ -85,6 +85,10 @@ nature/results/*.RDS
 nature/figures/*.csv
 nature/results/*.csv
 
+# No data files
+data/*.csv
+Brazil/data/*.csv
+Italy/data/*.csv
 
 
 # Python

@@ -97,7 +97,7 @@ read_ifr_data <- function(regions){
 }
 
 read_google_mobility <- function(Country){
-  google_mobility <- read.csv('Italy/data/Global_Mobility_Report.csv', stringsAsFactors = FALSE)
+  google_mobility <- read.csv('data/Global_Mobility_Report.csv', stringsAsFactors = FALSE)
   google_mobility$date = as.Date(google_mobility$date, format = '%Y-%m-%d')
   colnames(google_mobility)[which(colnames(google_mobility)=="country_region")]<-"state"
   colnames(google_mobility)[which(colnames(google_mobility)=="sub_region_1")]<-"country"

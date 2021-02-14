@@ -1,5 +1,5 @@
 # print("Fetching data from ECDC")
-# fetch_ecdc_error <- system("Rscript data/fetch-ecdc.r",intern=FALSE)
+# fetch_ecdc_error <- system("Rscript data/fetch-data.r",intern=FALSE)
 # if(fetch_ecdc_error != 0){
 #   stop(sprintf("Error while fetching data from the ECDC! Code: %d", fetch_ecdc_error))
 # }
