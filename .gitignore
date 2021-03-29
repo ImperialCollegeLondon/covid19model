@@ -84,8 +84,9 @@ nature/figures/*.pdf
 nature/results/*.RDS
 nature/figures/*.csv
 nature/results/*.csv
-
-
+tiers/figures
+tiers/results
+tiers/stan_models/*.rds
 
 # Python
 # Byte-compiled / optimized / DLL files
