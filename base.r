@@ -6,6 +6,13 @@ library(dplyr)
 library(tidyr)
 library(EnvStats)
 library(optparse)
+library(bayesplot)
+# Load libraries used in other files in order to fail early if they're missing
+library(ggpubr)
+library(svglite)
+library(abind)
+library(stringr)
+library(jsonlite)
 
 source('utils/read-data.r')
 source('utils/process-covariates.r')
@@ -52,7 +59,7 @@ if(DEBUG) {
 countries <- read.csv('data/regions.csv', stringsAsFactors = FALSE)
 # Read deaths data for regions
 d <- read_obs_data(countries)
-# Read ifr 
+# Read ifr
 ifr.by.country <- read_ifr_data()
 
 # Read interventions
@@ -62,7 +69,7 @@ forecast <- 7 # increase to get correct number of days to simulate
 # Maximum number of days to simulate
 N2 <- (max(d$DateRep) - min(d$DateRep) + 1 + forecast)[[1]]
 
-processed_data <- process_covariates(countries = countries, interventions = interventions, 
+processed_data <- process_covariates(countries = countries, interventions = interventions,
                                      d = d , ifr.by.country = ifr.by.country, N2 = N2)
 stan_data = processed_data$stan_data
 dates = processed_data$dates
@@ -77,9 +84,9 @@ if(DEBUG) {
   fit = sampling(m,data=stan_data,iter=40,warmup=20,chains=2)
 } else if (FULL) {
   fit = sampling(m,data=stan_data,iter=1800,warmup=1000,chains=5,thin=1,control = list(adapt_delta = 0.95, max_treedepth = 15))
-} else { 
+} else {
   fit = sampling(m,data=stan_data,iter=1000,warmup=500,chains=4,thin=1,control = list(adapt_delta = 0.95, max_treedepth = 10))
-}   
+}
 
 out = rstan::extract(fit)
 prediction = out$prediction
@@ -101,7 +108,6 @@ dir.create("figures/", showWarnings = FALSE, recursive = TRUE)
 dir.create("web/", showWarnings = FALSE, recursive = TRUE)
 dir.create("web/data", showWarnings = FALSE, recursive = TRUE)
 
-library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)
 
 print("Generating covariate size effects plot")
